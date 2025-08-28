@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import express, { Application } from "express";
 import { AppDataSource } from "./config/data-source";
-import router from "./routes/UserRoutes";
+import router from "./routes/index";
 
 const app: Application = express();
 const PORTA: number = 3000;

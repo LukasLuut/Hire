@@ -1,17 +1,14 @@
-import { Router } from "express";
-import { UserController } from "../controllers/UserController";
-import { Address } from "../models/Address";
-import { AddressController } from "../controllers/AddressController";
+import { Router } from 'express'
+import { UserController } from '../controllers/UserController'
+import { authMiddleware } from '../middlewares/authMidlleware'
 
-const router = Router();
-const userController = new UserController();
-const addressController = new AddressController();
+const router = Router()
+const controller = new UserController()
 
-router.get('/users', userController.list);
-// router.get('/users/:id', userController.getUserById);
-router.post('/users', userController.create);
-// router.delete('/users/:id', userController.deleteUser)
-router.post('/address', addressController.create);
-router.get('/address', addressController.list);
+router.get('/me', authMiddleware, controller.getById.bind(controller))
+// router.get('/:id', authMiddleware, controller.getById.bind(controller))
+router.put('/me', authMiddleware, controller.update.bind(controller))
+router.delete('/me', authMiddleware, controller.remove.bind(controller))
 
-export default router;
+export default router
+
