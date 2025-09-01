@@ -63,5 +63,5 @@ export const AppDataSource = new DataSource({
 
     // Aqui registramos as entidades (as classes que representam tabelas).
     // O TypeORM precisa saber quais são para criar o mapeamento com o banco.
-    entities: [User, Address],
+    entities: [User, Address, Category],
 });
