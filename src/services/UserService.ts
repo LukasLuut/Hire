@@ -12,12 +12,12 @@ export class UserService {
   }) {
     const exists = await this.repo.findOne({ where: { email: data.email } });
 
-    if (exists) throw new Error("E-mail já cadastrado");
+    if (!exists) throw new Error("Usuário não existente");
 
     const user = this.repo.create(data);
     await this.repo.save(user);
 
-    const clone:any = { ...user };
+    const clone: any = { ...user };
     delete clone.password;
     return clone;
   }

@@ -3,6 +3,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn, ManyToOne, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { Address } from './Address';
 import bcrypt from 'bcrypt';
+import { ServiceProvider } from './ServiceProvider';
 
 
 // Importa a entidade Post, para definir a relação entre User e Post
@@ -27,6 +28,9 @@ export class User {
 
   @ManyToOne(() => Address, (address) => address.user)
   address: Address
+
+  @OneToOne(() => ServiceProvider, { cascade: true })
+  provider: ServiceProvider;
 
   @BeforeInsert()
   @BeforeUpdate()

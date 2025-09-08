@@ -21,7 +21,7 @@ export class CategoryService {
         const category = await this.categoryRepository.findOne({ where: { id } });
 
         if (!category) throw new Error("Categoria não encontrada");
-        const { ...rest} = data
+        const { ...rest } = data
         Object.assign(category, rest);
         return await this.categoryRepository.save(category);
     }
@@ -33,6 +33,6 @@ export class CategoryService {
 
         await this.categoryRepository.remove(category);
 
-        return { message: "Categoria removida com sucesso"}
+        return { message: "Categoria removida com sucesso" }
     }
 }

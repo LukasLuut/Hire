@@ -16,6 +16,8 @@ import * as dotenv from "dotenv";
 import { User } from '../models/User';
 import { Address } from '../models/Address';
 import { Category } from '../models/Category';
+import { Service } from '../models/Service';
+import { ServiceProvider } from '../models/ServiceProvider';
 
 // Carrega as variáveis de ambiente do arquivo .env para o process.env
 // Agora podemos acessar process.env.DB_HOST, process.env.DB_USER, etc.
@@ -63,5 +65,5 @@ export const AppDataSource = new DataSource({
 
     // Aqui registramos as entidades (as classes que representam tabelas).
     // O TypeORM precisa saber quais são para criar o mapeamento com o banco.
-    entities: [User, Address, Category],
+    entities: [User, Address, Category, Service, ServiceProvider],
 });

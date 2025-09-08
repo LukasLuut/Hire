@@ -1,8 +1,8 @@
-import { Column, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { ProviderService } from "./ProviderService";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { ServiceProvider } from "./ServiceProvider";
 import { Category } from "./Category";
 
-
+@Entity('service')
 export class Service {
     @PrimaryGeneratedColumn()
     id: number;
@@ -16,9 +16,10 @@ export class Service {
     @Column({ length: 100, nullable: false })
     description_service: string;
 
-    @ManyToOne(() => ProviderService, (provider) => provider.services)
-    provider: ProviderService
+    @ManyToOne(() => ServiceProvider, (provider) => provider.services)
+    provider: ServiceProvider
     
     @ManyToOne(() => Category, (category) => category.services)
     category: Category   
+
 }

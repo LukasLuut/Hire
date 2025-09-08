@@ -6,7 +6,7 @@ interface Payload {
 }
 
 export const generateToken = (payload: Payload) => {
-  return jwt.sign(payload, process.env.JWT_SECRET!, {
+  return jwt.sign(payload, process.env.JWT_SECRET = "23412343", {
     expiresIn: Number(process.env.JWT_EXPIRES_IN)
   })
 }
