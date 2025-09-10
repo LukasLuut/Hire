@@ -1,4 +1,4 @@
-import { ChildEntity, Column, Entity, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { ChildEntity, Column, Entity, JoinColumn, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./User";
 import { Service } from "./Service";
 import { Category } from "./Category";
@@ -12,6 +12,7 @@ export class ServiceProvider {
     companyName: string;
 
     @OneToOne(() => User, { cascade: true })
+    @JoinColumn()
     user: User;
 
     @OneToMany(() => Category, (category) => category.provider)

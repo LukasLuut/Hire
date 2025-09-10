@@ -12,7 +12,7 @@ export class UserService {
   }) {
     const exists = await this.repo.findOne({ where: { email: data.email } });
 
-    if (!exists) throw new Error("Usuário não existente");
+    if (exists) throw new Error("Usuário já existente");
 
     const user = this.repo.create(data);
     await this.repo.save(user);

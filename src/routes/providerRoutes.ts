@@ -1,14 +1,14 @@
 import { Router } from 'express'
-import { UserController } from '../controllers/UserController'
 import { authMiddleware } from '../middlewares/authMidlleware'
+import { ProviderController } from '../controllers/ProviderController'
 
 const providerRouter = Router()
-const controller = new UserController()
+const controller = new ProviderController()
 
 providerRouter.post('/me', authMiddleware, controller.create.bind(controller))
-// router.get('/:id', authMiddleware, controller.getById.bind(controller))
+providerRouter.get('/me', authMiddleware, controller.getById.bind(controller))
 // providerRouter.put('/me', authMiddleware, controller.update.bind(controller))
-// providerRouter.delete('/me', authMiddleware, controller.remove.bind(controller))
+providerRouter.delete('/me', authMiddleware, controller.delete.bind(controller))
 
 export default providerRouter;
 
