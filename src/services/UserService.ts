@@ -14,11 +14,16 @@ export class UserService {
 
     if (exists) throw new Error("Usuário já existente");
 
+    const cpf = data.cpf_cnpj.replace(/[.-]/g, "")
+
+    data.cpf_cnpj = cpf;
+
     const user = this.repo.create(data);
     await this.repo.save(user);
 
     const clone: any = { ...user };
     delete clone.password;
+    
     return clone;
   }
 
