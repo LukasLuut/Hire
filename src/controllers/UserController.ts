@@ -4,9 +4,10 @@ import { Request, Response } from 'express';
 import { User } from '../models/User';
 import { AppDataSource } from '../config/data-source';
 import { UserService } from '../services/UserService';
+import { AddressService } from '../services/AddressService';
 
 const userService = new UserService();
-
+const addressService = new AddressService();
 
 export class UserController {
 
@@ -41,7 +42,7 @@ export class UserController {
             const result = await userService.remove((req as any).user.id)
             res.json(result)
         } catch (e: any) {
-            res.status(404).json({ message: e.message })
+            res.status(400).json({ message: e.message })
         }
     }
 
@@ -51,7 +52,16 @@ export class UserController {
             const user = await userService.findById((req as any).user.id)
             res.json(user)
         } catch (e: any) {
-            res.status(404).json({ message: e.message })
+            res.status(400).json({ message: e.message })
+        }
+    }
+
+    async createAddress(req: Request, res: Response) {
+        try {
+            const address = await addressService.create((req as any).user.id, req.body)
+            res.json(address)
+        } catch(e: any) {
+            res.status(400).json({ message: e.message})
         }
     }
 
