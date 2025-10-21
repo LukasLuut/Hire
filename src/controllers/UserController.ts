@@ -11,7 +11,7 @@ const addressService = new AddressService();
 
 export class UserController {
 
-     list = async (req: Request, res: Response) => {
+    list = async (req: Request, res: Response) => {
     const users = await userService.findAll();
     return res.json(users);
   }

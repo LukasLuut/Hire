@@ -14,8 +14,8 @@ import {
 import { Address } from "./Address";
 import bcrypt from "bcrypt";
 import { ServiceProvider } from "./ServiceProvider";
-
-// Importa a entidade Post, para definir a relação entre User e Post
+import { Contract } from "./Contract";
+import { Hire } from "./Hire";
 
 // @Entity('users') indica que esta classe representa a tabela "users" no banco
 @Entity("users")
@@ -35,11 +35,18 @@ export class User {
   @Column({ select: false })
   password: string;
 
-  @ManyToOne(() => Address, (address) => address.user)
+  @OneToOne(() => Address, (address) => address.user, { cascade: true })
+  @JoinColumn()
   address: Address;
 
-  @OneToOne(() => ServiceProvider, provider => provider.user)
+  @OneToOne(() => ServiceProvider, (provider) => provider.user)
   provider: ServiceProvider;
+
+  @OneToMany(() => Contract, (contract) => contract.user)
+  contracts: Contract[];
+
+  @OneToMany(() => Hire, (hire) => hire.user)
+  hires: Hire[];
 
   @BeforeInsert()
   @BeforeUpdate()
@@ -54,6 +61,4 @@ export class User {
   async validatePassword(plain: string): Promise<boolean> {
     return await bcrypt.compare(plain, this.password);
   }
-
-
 }

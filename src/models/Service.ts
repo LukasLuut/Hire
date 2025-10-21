@@ -1,25 +1,31 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { ServiceProvider } from "./ServiceProvider";
 import { Category } from "./Category";
+import { Hire } from "./Hire";
 
-@Entity('service')
+@Entity("services")
 export class Service {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ type: "date" })
-    firstContact: Date;
+  @Column({ length: 100, nullable: false })
+  title: string;
 
-    @Column({ type: "double" })
-    price: number;
+  @Column({ length: 250, nullable: false })
+  description_service: string;
 
-    @Column({ length: 100, nullable: false })
-    description_service: string;
+  @ManyToOne(() => ServiceProvider, (provider) => provider.services)
+  provider: ServiceProvider;
 
-    @ManyToOne(() => ServiceProvider, (provider) => provider.services)
-    provider: ServiceProvider
-    
-    @ManyToOne(() => Category, (category) => category.services)
-    category: Category   
+  @ManyToOne(() => Category, (category) => category.services)
+  category: Category;
 
+  @OneToOne(() => Hire, (hire) => hire.service)
+  hire: Hire;
 }

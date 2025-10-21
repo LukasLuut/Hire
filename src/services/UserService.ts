@@ -14,7 +14,7 @@ export class UserService {
 
     if (exists) throw new Error("Usuário já existente");
 
-    const cpf = data.cpf_cnpj.replace(/[.-]/g, "")
+    const cpf = data.cpf_cnpj.replace(/[.-]/g, "");
 
     data.cpf_cnpj = cpf;
 
@@ -23,7 +23,7 @@ export class UserService {
 
     const clone: any = { ...user };
     delete clone.password;
-    
+
     return clone;
   }
 
@@ -73,6 +73,9 @@ export class UserService {
   }
 
   async findByEmail(email: string) {
-    return this.repo.findOne({ where: { email }, select: ['id', 'name', 'email', 'password', 'cpf_cnpj', 'address'] });
+    return this.repo.findOne({
+      where: { email },
+      select: ["id", "name", "email", "password", "cpf_cnpj", "address"],
+    });
   }
 }
