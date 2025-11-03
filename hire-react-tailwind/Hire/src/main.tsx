@@ -15,6 +15,7 @@ import ScheduleConfigurator from "./components/Schedule.tsx";
 import {ServiceCreationWizardModal} from "./components/ServiceCreator/ServiceCreationWizardModal.tsx"
 import ServiceDashboard from "./components/ServiceEditor/ServiceEditor.tsx";
 import  PostCard from "./components/Post.tsx";
+import ServiceDashboardSophisticated from "./pages/DashboardClient.tsx";
 
 
 function ThemeWrapper() {
@@ -43,7 +44,7 @@ function ThemeWrapper() {
       <Navbar theme={theme} setTheme={setTheme} />
 
       {/* Conteúdo principal */}
-      <PostCard/>
+      <PostCard isMobile={false}/>
     </>
   );
 }

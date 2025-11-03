@@ -125,8 +125,8 @@ export default function PostCard({ isMobile }: { isMobile: boolean }) {
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
       {/* Desktop arrows */}
-      {!isMobile && (
-        <div className="absolute inset-0 flex items-center justify-between px-4 z-20">
+      
+        <div className="absolute -top-20 inset-0 flex items-center justify-between px-4 z-20">
           <button onClick={prev} className="p-2 rounded-full bg-black/40 hover:bg-black/60 transition">
             <ArrowLeft className="text-white" />
           </button>
@@ -134,7 +134,7 @@ export default function PostCard({ isMobile }: { isMobile: boolean }) {
             <ArrowRight className="text-white" />
           </button>
         </div>
-      )}
+      
 
       {/* Botão like canto superior */}
       <div className="absolute top-4 right-4 z-20 flex flex-col items-center gap-2">
@@ -171,7 +171,7 @@ export default function PostCard({ isMobile }: { isMobile: boolean }) {
             initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
             animate={{ x: p.x, y: p.y, opacity: 0, scale: 0.7 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="absolute inset-0  -top-180 left-83 flex items-center justify-center pointer-events-none"
+            className="absolute inset-0  -top-50  flex items-center justify-center pointer-events-none"
           >
             <div
               style={{
@@ -205,7 +205,7 @@ export default function PostCard({ isMobile }: { isMobile: boolean }) {
               </span>
             )}
           </div>
-          <div className="flex gap-2 mb-2">
+          <div className="flex justify-between gap-2 mb-2">
             {service.featured && <span className="bg-yellow-500/30 px-2 py-1 rounded-full text-yellow-200 text-xs">Featured</span>}
             {service.status && <span className="bg-blue-500/30 px-2 py-1 rounded-full text-blue-200 text-xs">{service.status}</span>}
           </div>

@@ -45,7 +45,7 @@ export default function ServiceDashboard() {
   ]);
 
   /* --------------------------- Controle de seleção e responsividade --------------------------- */
-  const [selectedId, setSelectedId] = useState<number>(services[0].id);
+  const [selectedId] = useState<number>(services[0].id);
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 768);
 
   // Controle de qual slide está visível no mobile (editor ou preview)
