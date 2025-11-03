@@ -6,7 +6,6 @@ const providerService = new ProviderService;
 export class ProviderController {
     create = async (req: Request, res: Response) => {
         try {
-            
             const provider = await providerService.create((req as any).user.id, req.body);
             res.status(201).json(provider);
         } 
@@ -33,25 +32,25 @@ export class ProviderController {
             }
         }
 
-    // list = async (req: Request, res: Response) => {
-    //     try {
-    //         const categories = await categoryService.list();
-    //         res.json(categories)
-    //     }
-    //     catch(err: any) {
-    //         res.status(400).json({ message: err.message})
-    //     }
-    // }
+    list = async (req: Request, res: Response) => {
+        try {
+            const providers = await providerService.list();
+            res.json(providers)
+        }
+        catch(err: any) {
+            res.status(400).json({ message: err.message})
+        }
+    }
 
-    // update = async (req: Request, res: Response) => {
-    //       try {
-    //             const { id } = req.params;
-    //             const category = await categoryService.update(Number(id), req.body)
-    //             res.json(category)
-    //         } catch (e: any) {
-    //             res.status(400).json({ message: e.message })
-    //         }
-    //     }
+    update = async (req: Request, res: Response) => {
+          try {
+                const { id } = req.params;
+                const category = await providerService.update((req as any).user.id, req.body)
+                res.json(category)
+            } catch (e: any) {
+                res.status(400).json({ message: e.message })
+            }
+        }
 
     // async delete(req: Request, res: Response) {
     //         try {
