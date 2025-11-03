@@ -1,0 +1,161 @@
+@import "tailwindcss";
+
+*{
+  transition:Background-color 0.3s ease;
+}
+
+:root {
+  
+  /* hsl (fallback color) */
+  --bg-dark: hsl(336 0% 1%);
+  --bg: hsl(300 0% 4%);
+  --bg-light: hsl(0 0% 9%);
+  --text: hsl(300 0% 95%);
+  --text-muted: hsl(300 0% 69%);
+  --highlight: hsl(330 0% 39%);
+  --border: hsl(0 0% 28%);
+  --border-muted: hsl(300 0% 18%);
+  --primary: hsl(211, 100%, 45%);
+  --secondary: hsl(32 61% 63%);
+  --danger: hsl(9 26% 64%);
+  --warning: hsl(52 19% 57%);
+  --success: hsl(146 17% 59%);
+  --info: hsl(217 28% 65%);
+  /* oklch */
+  --bg-dark: oklch(9.693% 0.00001 271.152);
+  --bg: oklch(0.15 0 250);
+  --bg-light: oklch(0.2 0 250);
+  --text: oklch(0.96 0 250);
+  --text-muted: oklch(0.76 0 250);
+  --highlight: oklch(0.5 0 250);
+  --border: oklch(0.4 0 250);
+  --border-muted: oklch(0.3 0 250);
+  --primary: oklch(0.55 0.20 255);
+  --secondary: oklch(0.76 0.1 70);
+  --danger: oklch(0.7 0.05 30);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+
+  --arrow:-10;
+}
+body.light {
+  /* hsl (fallback color) */
+  --bg-dark: hsl(0 0% 90%);
+  --bg: hsl(300 0% 95%);
+  --bg-light: hsl(300 50% 100%);
+  --text: hsl(300 0% 4%);
+  --text-muted: hsl(0 0% 28%);
+  --highlight: hsl(300 50% 100%);
+  --border: hsl(NaN 0% 50%);
+  --border-muted: hsl(340 0% 62%);
+  --primary: hsl(211, 100%, 45%);
+  --secondary: hsl(38 100% 17%);
+  --danger: hsl(9 21% 41%);
+  --warning: hsl(52 23% 34%);
+  --success: hsl(147 19% 36%);
+  --info: hsl(217 22% 41%);
+  /* oklch */
+  --bg-dark: oklch(0.92 0 250);
+  --bg: oklch(0.96 0 250);
+  --bg-light: oklch(1 0 250);
+  --text: oklch(0.15 0 250);
+  --text-muted: oklch(0.4 0 250);
+  --highlight: oklch(1 0 250);
+  --border: oklch(0.6 0 250);
+  --border-muted: oklch(0.7 0 250);
+  --primary: oklch(0.55 0.20 255);
+  --secondary: oklch(0.4 0.1 70);
+  --danger: oklch(0.5 0.05 30);
+  --warning: oklch(0.5 0.05 100);
+  --success: oklch(0.5 0.05 160);
+  --info: oklch(0.5 0.05 260);
+  --teste:hsl(211, 100%, 45%);
+}
+
+/* --------------------------------------------------------------------------
+ * html2canvas-compat.css
+ * Corrige incompatibilidade do html2canvas com cores OKLCH (Tailwind v4)
+ * -------------------------------------------------------------------------- */
+
+.html2canvas-compat {
+  --bg-dark: rgb(3, 3, 3);
+  --bg: rgb(10, 10, 10);
+  --bg-light: rgb(25, 25, 25);
+  --text: rgb(245, 245, 245);
+  --text-muted: rgb(175, 175, 175);
+  --highlight: rgb(60, 130, 250);
+  --border: rgb(200, 200, 200);
+
+  color-scheme: light !important;
+  background-color: rgb(255, 255, 255) !important;
+}
+
+/* Neutraliza temas escuros temporariamente */
+.html2canvas-compat .dark\:bg-neutral-950,
+.html2canvas-compat .dark\:bg-neutral-900,
+.html2canvas-compat .dark\:bg-neutral-800 {
+  background-color: rgb(255, 255, 255) !important;
+}
+
+.html2canvas-compat .dark\:text-neutral-100,
+.html2canvas-compat .dark\:text-neutral-200,
+.html2canvas-compat .dark\:text-neutral-300 {
+  color: rgb(0, 0, 0) !important;
+}
+
+/* Corrige botões e elementos interativos */
+.html2canvas-compat .bg-blue-600,
+.html2canvas-compat .hover\:bg-blue-700:hover {
+  background-color: rgb(37, 99, 235) !important; /* Azul padrão Tailwind */
+}
+
+.html2canvas-compat .text-white {
+  color: rgb(255, 255, 255) !important;
+}
+
+.html2canvas-compat .border-neutral-300,
+.html2canvas-compat .dark\:border-neutral-700 {
+  border-color: rgb(200, 200, 200) !important;
+}
+
+/* Garante boa legibilidade do texto e fundo */
+.html2canvas-compat * {
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+  color-adjust: exact !important;
+  transition: none !important;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+ /* animação infinita de rotação 3D (mesmo sentido) */
+        @keyframes spin3d {
+          0% {
+            transform: rotateY(0deg);
+          }
+          100% {
+            transform: rotateY(360deg);
+          }
+        }
+        /* classe que aplicamos condicionalmente quando isSpinning === true */
+        .spin-3d {
+          animation: spin3d 4s linear ;
+          transform-style: preserve-3d;
+        }
+
+        /* Forçar preserve-3d no container para melhor resultado 3D */
+        .preserve-3d {
+          transform-style: preserve-3d;
+        }
