@@ -21,7 +21,7 @@ export class HireService {
     }
 
     async list() {
-        return await this.hireRepository.find();
+        return await this.hireRepository.find({ relations: { user: true, provider: true, service: true }});
     }
 
     async update(id: number, data: Partial<Hire>) {

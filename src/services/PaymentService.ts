@@ -5,15 +5,21 @@ import { Payment } from "../models/Payment";
 export class PaymentService {
     private paymentRepository = AppDataSource.getRepository(Payment);
 
-    async create(data: { price: number, method: string, status: string, date: Date, hireId: number, providerId: number }) {
+    async create(data: {
+        price: number, 
+        method: string, 
+        status: string, 
+        hireId: number,
+        providerId: number
+    }) {
 
-        const { price, method, status, date, hireId, providerId } = data;
+        const { price, method, status, hireId, providerId } = data;
 
         const payment = this.paymentRepository.create({
             price,
             method,
             status,
-            date,
+            date: new Date(),
             hire: { id: hireId },
             provider: { id: providerId },
         });
@@ -22,7 +28,7 @@ export class PaymentService {
     }
 
     async list() {
-        return await this.paymentRepository.find();
+        return await this.paymentRepository.find({ relations: { provider: true, hire: true}});
     }
 
     // async update(id: number, data: Partial<Category>) {
