@@ -44,7 +44,7 @@ function ThemeWrapper() {
       <Navbar theme={theme} setTheme={setTheme} />
 
       {/* Conteúdo principal */}
-      <PostCard isMobile={false}/>
+      <ServiceDashboard />
     </>
   );
 }

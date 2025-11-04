@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Clock, Tag as TagIcon, Heart } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, Tag as TagIcon, Heart, HandCoins } from "lucide-react";
 
 /* --------------------------------------------------------------------------
  * Interface do Serviço
@@ -22,7 +22,7 @@ interface Service {
 /* --------------------------------------------------------------------------
  * Componente PostCard com Partículas de Like
  * -------------------------------------------------------------------------- */
-export default function PostCard({ isMobile }: { isMobile: boolean }) {
+export default function PostCard() {
   const service: Service = {
     id: 1,
     title: "Design de Logotipo Profissional",
@@ -137,7 +137,7 @@ export default function PostCard({ isMobile }: { isMobile: boolean }) {
       
 
       {/* Botão like canto superior */}
-      <div className="absolute top-4 right-4 z-20 flex flex-col items-center gap-2">
+      <div className="absolute top-4 right-4 z-20 flex flex-col items-center">
         <button
           onPointerDown={startHold}
           onPointerUp={endHold}
@@ -145,7 +145,7 @@ export default function PostCard({ isMobile }: { isMobile: boolean }) {
         >
           <Heart className="w-5 h-5 text-white" />
         </button>
-        <span className="text-xs text-white/90">{likeCount}</span>
+        <span className="text-xs absolut text-white/90">{likeCount}</span>
       </div>
 
       {/* Like central */}
@@ -198,7 +198,7 @@ export default function PostCard({ isMobile }: { isMobile: boolean }) {
           <h3 className="text-lg sm:text-xl font-semibold mb-2">{service.title}</h3>
           <p className="text-sm text-gray-200 line-clamp-2 mb-3">{service.description}</p>
           <div className="flex items-center justify-between text-sm font-medium mb-2">
-            {service.price && <span className="bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm">💰 {service.price}</span>}
+            {service.price && <span className="bg-white/10 px-3 flex gap-1 items-center py-1 rounded-full backdrop-blur-sm"><HandCoins size={16}/> {service.price}</span>}
             {service.duration && (
               <span className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm">
                 <Clock size={14} /> {service.duration}
@@ -206,8 +206,8 @@ export default function PostCard({ isMobile }: { isMobile: boolean }) {
             )}
           </div>
           <div className="flex justify-between gap-2 mb-2">
-            {service.featured && <span className="bg-yellow-500/30 px-2 py-1 rounded-full text-yellow-200 text-xs">Featured</span>}
-            {service.status && <span className="bg-blue-500/30 px-2 py-1 rounded-full text-blue-200 text-xs">{service.status}</span>}
+            {service.featured && <span className="bg-yellow-500/30 px-2 py-1 rounded-full text-yellow-200 text-xs">Negociável</span>}
+            {service.status && <span className="bg-blue-500/30 px-2 py-1 rounded-full text-blue-200 text-xs">Politica de cancelamento</span>}
           </div>
           <button className="mt-2 w-full text-center bg-[var(--primary)]/80 hover:bg-[var(--primary)] py-2 rounded-xl font-medium text-white shadow-lg shadow-[var(--primary)]/20">
             Ver detalhes
