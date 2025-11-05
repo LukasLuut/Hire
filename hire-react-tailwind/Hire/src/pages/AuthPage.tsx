@@ -2,9 +2,47 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import bgImage from "../assets/bg-login.png";
 import hirePng from "../assets/Hire..png"
+import { userAPI } from "../api/UserAPI";
+
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({
+    nome: "",
+    cpf: "",
+    email: "",
+    senha: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); // evita reload da página
+
+    try {
+      // Chama a função que faz o registro
+      await handleRegistrar(formData);
+      alert("Usuário registrado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao registrar usuário:", error);
+      alert("Ocorreu um erro ao registrar o usuário.");
+    }
+  };
+
+  const handleRegistrar = async (data: {
+      nome: string,
+      cpf: string,
+      email: string,
+      senha: string
+      }) => { 
+          return await userAPI.create({
+            name: data.nome, 
+            email: data.email, 
+            cpf: data.cpf, 
+            password: data.senha})  
+  }
 
   return (
     <div
@@ -139,30 +177,43 @@ export default function AuthPage() {
                 >
                   Crie sua conta
                 </h2>
-                <form className="space-y-4">
+                <form className="space-y-4" onSubmit={handleSubmit}>
                   <input
                     type="text"
+                    name="nome"
+                    required
                     placeholder="Nome completo"
                     className="w-full p-3 rounded-lg placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 text-sm md:text-base text-[var(--text)] border-b-1 border-[var(--border)]"
-                   
+                    onChange={handleChange}
+                    value={formData.nome}
                   />
                    <input
                     type="text"
+                    name="cpf"
+                    required
                     placeholder="CPF"
                     className="w-full p-3 rounded-lg placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 text-sm md:text-base text-[var(--text)] border-b-1 border-[var(--border)]"
-                   
+                    onChange={handleChange}
+                    value={formData.cpf}
+
                   />
                   <input
                     type="email"
+                    name="email"
+                    required
                     placeholder="Email"
                     className="w-full p-3 rounded-lg placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 text-sm md:text-base text-[var(--text)] border-b-1 border-[var(--border)]"
-                   
+                    onChange={handleChange}
+                    value={formData.email}
                   />
                   <input
                     type="password"
+                    name="senha"
+                    required
                     placeholder="Senha"
                     className="w-full p-3 rounded-lg placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 text-sm md:text-base text-[var(--text)] border-b-1 border-[var(--border)]"
-                   
+                    onChange={handleChange}
+                    value={formData.senha}
                   />
                   <button
                     type="submit"

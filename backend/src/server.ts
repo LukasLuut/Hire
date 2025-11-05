@@ -2,6 +2,7 @@ import "reflect-metadata";
 import express, { Application } from "express";
 import { AppDataSource } from "./config/data-source";
 import router from "./routes/index";
+import cors from "cors";
 
 const app: Application = express();
 const PORTA: number = 8080;
@@ -13,6 +14,7 @@ app.use(express.json());
 AppDataSource.initialize()
     .then(() => {
         console.log("📦 Banco conectado com sucesso");
+        app.use(cors())
         app.use(router);
 
         app.listen(PORTA, () => {
