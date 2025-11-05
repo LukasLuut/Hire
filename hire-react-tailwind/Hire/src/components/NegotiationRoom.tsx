@@ -1,11 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  User,
-  FileText,
-  CreditCard,
-  Calendar,
-  MessageSquare,
   CheckCircle,
   XCircle,
   PenTool,
@@ -16,19 +11,9 @@ import {
 /*
   NegotiationFlow.tsx
   -------------------
-  - Um componente completo que simula o fluxo de contratação colaborativa
-    (estilo 1a: elegante/minimal e tom 2a: realista/profissional).
+  - Um componente completo do fluxo de contratação 
   - Contém 4 etapas: Preview -> Negociação -> Resumo -> Confirmação.
-  - Mock de dados embutido; pronto para integrar no seu projeto React + Tailwind v4.
-
-  Como usar:
-  - Coloque este arquivo em src/components/NegotiationFlow.tsx
-  - Certifique-se de ter tailwind e framer-motion instalados.
-  - Import: import NegotiationFlow from './components/NegotiationFlow'
-
-  Observações de design:
-  - Usa classes Tailwind e variáveis CSS do seu tema (ex.: --bg, --bg-light, --text).
-  - O visual foca em cards com vidro fosco, tipografia refinada e micro-animações.
+ 
 */
 
 type Party = {
@@ -92,7 +77,7 @@ export default function NegotiationFlow() {
     { key: "payment", title: "Pagamento", value: "50% adiantamento · 50% na entrega", status: "agreed" },
   ]);
 
-  const [input, setInput] = useState("");
+  
   const [editing, setEditing] = useState<{ key: string | null; value: string } | null>(null);
   const [signed, setSigned] = useState<{ provider: boolean; client: boolean }>({ provider: false, client: false });
 
@@ -123,60 +108,10 @@ export default function NegotiationFlow() {
   }
 
   return (
-    <div className="flex flex-col h-screen pt-20 text-[--text] bg-[--bg-dark]">
-      {/* Top bar */}
-      <header className="px-6 py-4 border-b border-[--bg-light] bg-[--bg-dark] flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="px-3 py-2 rounded-lg bg-[--bg-light]/30 backdrop-blur-md border border-[--bg-light]/40">
-            <FileText className="w-5 h-5 text-[--text]" />
-          </div>
-          <div>
-            <div className="text-sm text-[--text-muted]">Negociação</div>
-            <div className="font-semibold text-lg">{mockService.title}</div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="text-right text-sm">
-            <div className="text-[--text-muted]">Progresso</div>
-            <div className="font-medium">{progress}%</div>
-          </div>
-          <div className="w-48 h-3 bg-[--bg-light] rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600" style={{ width: `${progress}%` }} />
-          </div>
-        </div>
-      </header>
-
-      {/* Main grid */}
+    <div className="flex flex-col h-screen pt-20 text-[var(--text)] bg-[var(--bg-dark)]">
+     {/* Main grid */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left column: participants & service card */}
-        <aside className="w-80 p-6 border-r border-[--bg-light] bg-[--bg-dark]/30 flex flex-col gap-6">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg bg-[--bg-light]/30 border border-[--bg-light]/30 flex items-center justify-center">
-                <User className="w-6 h-6" />
-              </div>
-              <div>
-                <div className="font-semibold">{provider.name}</div>
-                <div className="text-xs text-[--text-muted]">{provider.title} • {provider.rating}★</div>
-              </div>
-            </div>
-
-            <div className="rounded-xl p-4 bg-[--bg-light]/20 border border-[--bg-light]/30">
-              <div className="font-medium">Visão rápida</div>
-              <div className="text-sm text-[--text-muted] mt-2">{mockService.short}</div>
-              <div className="mt-3 flex items-center justify-between">
-                <div className="text-sm text-[--text-muted]">Preço base</div>
-                <div className="font-semibold">{mockService.basePrice}</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-auto text-xs text-[--text-muted]">
-            <div className="font-medium">Segurança</div>
-            <div className="mt-1">Contratos gerados e histórico de alterações. Assinatura eletrônica simples.</div>
-          </div>
-        </aside>
+      
 
         {/* Center column: steps */}
         <main className="flex-1 p-6 overflow-auto">
@@ -232,14 +167,23 @@ export default function NegotiationFlow() {
         </main>
 
         {/* Right column: live summary / actions */}
-        <aside className="w-96 p-6 border-l border-[--bg-light] bg-[--bg-dark]/20 flex flex-col gap-6">
-          <div className="rounded-2xl p-4 bg-[--bg-light]/10 border border-[--bg-light]/20 backdrop-blur-md">
+        <aside className="w-96 p-6 border-l border-[var(--bg-light)] bg-[var(--bg-dark)]/20 flex flex-col gap-6">
+           {/* Barra de Progresso  */}
+        <div className="flex items-center justify-center gap-4">
+          <div className="w-48 h-3 bg-[var(--bg-light)] rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600" style={{ width: `${progress}%` }} />
+          </div>
+        </div>
+          <div className="rounded-2xl p-4 bg-[var(--bg-light)]/10 border border-[var(--bg-light)]/20 backdrop-blur-md">
+            
             <div className="flex items-start justify-between">
+              
               <div>
-                <div className="text-sm text-[--text-muted]">Resumo ao vivo</div>
+                
+                <div className="text-sm text-[var(--text-muted)]">Resumo ao vivo</div>
                 <div className="font-semibold text-lg mt-1">Resumo do Acordo</div>
               </div>
-              <div className="text-xs text-[--text-muted]">{messages.length} mensagens</div>
+              <div className="text-xs text-[var(--text-muted)]">{messages.length} mensagens</div>
             </div>
 
             <div className="mt-4 space-y-3">
@@ -247,10 +191,10 @@ export default function NegotiationFlow() {
                 <div key={c.key} className="flex items-center justify-between gap-3">
                   <div>
                     <div className="text-sm font-medium">{c.title}</div>
-                    <div className="text-xs text-[--text-muted]">{c.value}</div>
+                    <div className="text-xs text-[var(--text-muted)]">{c.value}</div>
                   </div>
                   <div className="text-right">
-                    <div className={`text-xs font-medium ${c.status === "agreed" ? "text-green-400" : c.status === "proposed" ? "text-amber-400" : "text-[--text-muted]"}`}>
+                    <div className={`text-xs font-medium ${c.status === "agreed" ? "text-green-400" : c.status === "proposed" ? "text-amber-400" : "text-[var(--text-muted)]"}`}>
                       {c.status}
                     </div>
                   </div>
@@ -259,23 +203,23 @@ export default function NegotiationFlow() {
             </div>
 
             <div className="mt-4 flex gap-2">
-              <button onClick={() => setStep(1)} className="flex-1 px-4 py-2 rounded-lg border border-[--bg-light]/30 text-sm">Abrir negociação</button>
-              <button onClick={() => setStep(2)} disabled={!canProceedToSummary()} className={`px-4 py-2 rounded-lg text-sm font-medium ${canProceedToSummary() ? "bg-blue-600 text-white" : "bg-[--bg-light]/10 text-[--text-muted] cursor-not-allowed"}`}>
+              <button onClick={() => setStep(1)} className="flex-1 px-4 py-2 rounded-lg border border-[var(--bg-light)]/30 text-sm">Abrir negociação</button>
+              <button onClick={() => setStep(2)} disabled={!canProceedToSummary()} className={`px-4 py-2 rounded-lg text-sm font-medium ${canProceedToSummary() ? "bg-blue-600 text-white" : "bg-[var(--bg-light)]/10 text-[var(--text-muted)] cursor-not-allowed"}`}>
                 Ver resumo
               </button>
             </div>
           </div>
 
-          <div className="rounded-xl p-4 bg-[--bg-light]/6 border border-[--bg-light]/20">
-            <div className="text-sm text-[--text-muted]">Ações rápidas</div>
+          <div className="rounded-xl p-4 bg-[var(--bg-light)]/10   border border-[var(--bg-light)]/20">
+            <div className="text-sm text-[var(--text-muted)]">Ações rápidas</div>
             <div className="mt-3 flex flex-col gap-2">
-              <button className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[--bg-light]/10 hover:bg-[--bg-light]/20"> <PenTool className="w-4 h-4" /> Propor alteração</button>
-              <button className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[--bg-light]/10 hover:bg-[--bg-light]/20"> <ShieldCheck className="w-4 h-4" /> Solicitar garantia</button>
-              <button className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[--bg-light]/10 hover:bg-[--bg-light]/20"> <Upload className="w-4 h-4" /> Adicionar anexo</button>
+              <button className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--bg-light)]/10 hover:bg-[var(--bg-light)]/20"> <PenTool className="w-4 h-4" /> Propor alteração</button>
+              <button className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--bg-light)]/10 hover:bg-[var(--bg-light)]/20"> <ShieldCheck className="w-4 h-4" /> Solicitar garantia</button>
+              <button className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--bg-light)]/10 hover:bg-[var(--bg-light)]/20"> <Upload className="w-4 h-4" /> Adicionar anexo</button>
             </div>
           </div>
 
-          <div className="mt-auto text-xs text-[--text-muted]">Histórico e logs estão disponíveis após confirmação.</div>
+          <div className="mt-auto text-xs text-[var(--text-muted)]">Histórico e logs estão disponíveis após confirmação.</div>
         </aside>
       </div>
 
@@ -284,21 +228,21 @@ export default function NegotiationFlow() {
         {editing && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-40 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/40" onClick={() => setEditing(null)} />
-            <motion.div initial={{ scale: 0.98 }} animate={{ scale: 1 }} exit={{ scale: 0.98 }} className="relative z-50 w-[min(720px,92%)] p-6 rounded-2xl bg-[--bg-light] border border-[--bg-light]/20">
+            <motion.div initial={{ scale: 0.98 }} animate={{ scale: 1 }} exit={{ scale: 0.98 }} className="relative z-50 w-[min(720px,92%)] p-6 rounded-2xl bg-[var(--bg-light)] border border-[var(--bg-light)]/20">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-semibold">Editar: {editing.key}</div>
-                  <div className="text-xs text-[--text-muted]">Altere o valor e proponha para o outro aceitar.</div>
+                  <div className="text-xs text-[var(--text-muted)]">Altere o valor e proponha para o outro aceitar.</div>
                 </div>
-                <button onClick={() => setEditing(null)} className="text-[--text-muted]"><XCircle /></button>
+                <button onClick={() => setEditing(null)} className="text-[var(--text-muted)]"><XCircle /></button>
               </div>
 
               <div className="mt-4">
-                <textarea className="w-full h-28 p-3 rounded-lg bg-[--bg] text-[--text] border border-[--bg-light]/20" value={editing.value} onChange={(e) => setEditing({ ...editing, value: e.target.value })} />
+                <textarea className="w-full h-28 p-3 rounded-lg bg-[var(--bg)] text-[var(--text)] border border-[var(--bg-light)]/20" value={editing.value} onChange={(e) => setEditing({ ...editing, value: e.target.value })} />
               </div>
 
               <div className="mt-4 flex justify-end gap-2">
-                <button onClick={() => setEditing(null)} className="px-4 py-2 rounded-lg border border-[--bg-light]/20">Cancelar</button>
+                <button onClick={() => setEditing(null)} className="px-4 py-2 rounded-lg border border-[var(--bg-light)]/20">Cancelar</button>
                 <button onClick={() => { if (editing) proposeChange(editing.key!, editing.value, "client"); setEditing(null); }} className="px-4 py-2 rounded-lg bg-blue-600 text-white">Propor alteração</button>
               </div>
             </motion.div>
@@ -314,35 +258,35 @@ export default function NegotiationFlow() {
 function Step1ServicePreview({ service, onNext }: { service: typeof mockService; onNext: () => void }) {
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="rounded-2xl p-6 bg-[--bg-light]/6 border border-[--bg-light]/20 backdrop-blur-md">
+      <div className="rounded-2xl p-6 bg-[var(--bg-light)]/10  border border-[var(--bg-light)]/20 backdrop-blur-md">
         <div className="flex items-start justify-between gap-6">
           <div>
-            <div className="text-xs text-[--text-muted]">Serviço publicado por</div>
+            <div className="text-xs text-[var(--text-muted)]">Serviço publicado por</div>
             <div className="font-semibold text-2xl mt-1">{service.title}</div>
-            <div className="text-sm text-[--text-muted] mt-2">{service.short}</div>
+            <div className="text-sm text-[var(--text-muted)] mt-2">{service.short}</div>
 
             <div className="mt-4 flex items-center gap-4">
               <div className="text-sm">
-                <div className="text-[--text-muted]">Prazo base</div>
+                <div className="text-[var(--text-muted)]">Prazo base</div>
                 <div className="font-medium">{service.baseDays} dias úteis</div>
               </div>
 
               <div className="text-sm">
-                <div className="text-[--text-muted]">Preço</div>
+                <div className="text-[var(--text-muted)]">Preço</div>
                 <div className="font-medium">{service.basePrice}</div>
               </div>
             </div>
           </div>
 
           <div className="flex flex-col items-end gap-3">
-            <div className="text-xs text-[--text-muted]">Avaliação</div>
+            <div className="text-xs text-[var(--text-muted)]">Avaliação</div>
             <div className="font-semibold">{service.provider.rating}★</div>
             <button onClick={onNext} className="mt-4 px-5 py-2 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-medium">Contratar / Negociar</button>
           </div>
         </div>
       </div>
 
-      <div className="mt-6 text-sm text-[--text-muted]">Você está prestes a iniciar uma negociação. O prestador poderá aceitar ou propor alterações — tudo ficará registrado.</div>
+      <div className="mt-6 text-sm text-[var(--text-muted)]">Você está prestes a iniciar uma negociação. O prestador poderá aceitar ou propor alterações — tudo ficará registrado.</div>
     </div>
   );
 }
@@ -364,58 +308,58 @@ function Step2Negotiation({ messages, onSend, provider, client, cards, proposeCh
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <div className="text-sm text-[--text-muted]">Negociação — </div>
+          <div className="text-sm text-[var(--text-muted)]">Negociação — </div>
           <div className="font-semibold text-xl">Converse e ajuste os termos</div>
         </div>
-        <div className="text-sm text-[--text-muted]">Ambas as partes podem propor e aceitar mudanças</div>
+        <div className="text-sm text-[var(--text-muted)]">Ambas as partes podem propor e aceitar mudanças</div>
       </div>
 
       <div className="grid grid-cols-12 gap-6">
         {/* Chat */}
         <div className="col-span-8">
-          <div className="rounded-xl p-4 bg-[--bg-light]/6 border border-[--bg-light]/20 h-[60vh] overflow-auto flex flex-col">
+          <div className="rounded-xl p-4 bg-[var(--bg-light)]/10   border border-[var(--bg-light)]/20 h-[60vh] overflow-auto flex flex-col">
             <div className="flex-1 space-y-3">
               {messages.map((m) => (
                 <div key={m.id} className={`flex ${m.sender === 'client' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[70%] p-3 rounded-2xl ${m.sender === 'client' ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white' : 'bg-[--bg-light] text-[--text]'}`}>
+                  <div className={`max-w-[70%] p-3 rounded-2xl ${m.sender === 'client' ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white' : 'bg-[var(--bg-light)] text-[var(--text)]'}`}>
                     <div className="text-sm">{m.text}</div>
-                    <div className="text-[10px] text-[--text-muted] mt-1 text-right">{m.time}</div>
+                    <div className="text-[10px] text-[var(--text-muted)] mt-1 text-right">{m.time}</div>
                   </div>
                 </div>
               ))}
             </div>
 
             <div className="mt-4 flex gap-2">
-              <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Escreva uma mensagem ou proponha algo..." className="flex-1 px-4 py-2 rounded-lg bg-[--bg] text-[--text] border border-[--bg-light]/20" />
+              <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Escreva uma mensagem ou proponha algo..." className="flex-1 px-4 py-2 rounded-lg bg-[var(--bg)] text-[var(--text)] border border-[var(--bg-light)]/20" />
               <button onClick={() => { if (text.trim()) { onSend(text.trim()); setText(''); } }} className="px-4 py-2 rounded-lg bg-blue-600 text-white">Enviar</button>
             </div>
           </div>
 
           <div className="mt-4 flex gap-2">
-            <button onClick={onBack} className="px-4 py-2 rounded-lg border border-[--bg-light]/20">Voltar</button>
+            <button onClick={onBack} className="px-4 py-2 rounded-lg border border-[var(--bg-light)]/20">Voltar</button>
             <button onClick={onNext} className="px-4 py-2 rounded-lg bg-blue-600 text-white">Resumo</button>
           </div>
         </div>
 
         {/* Cards */}
         <div className="col-span-4">
-          <div className="rounded-xl p-4 bg-[--bg-light]/6 border border-[--bg-light]/20">
+          <div className="rounded-xl p-4 bg-[var(--bg-light)]/10   border border-[var(--bg-light)]/20">
             <div className="font-medium">Itens do acordo</div>
             <div className="mt-3 space-y-3">
               {cards.map((c) => (
-                <div key={c.key} className="p-3 rounded-lg bg-[--bg] border border-[--bg-light]/10">
+                <div key={c.key} className="p-3 rounded-lg bg-[var(--bg)] border border-[var(--bg-light)]/10">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <div className="text-sm font-medium">{c.title}</div>
-                      <div className="text-xs text-[--text-muted]">{c.value}</div>
+                      <div className="text-xs text-[var(--text-muted)]">{c.value}</div>
                     </div>
                     <div className="text-right">
-                      <div className={`text-xs font-medium ${c.status === 'agreed' ? 'text-green-400' : c.status === 'proposed' ? 'text-amber-400' : 'text-[--text-muted]'}`}>{c.status}</div>
+                      <div className={`text-xs font-medium ${c.status === 'agreed' ? 'text-green-400' : c.status === 'proposed' ? 'text-amber-400' : 'text-[var(--text-muted)]'}`}>{c.status}</div>
                     </div>
                   </div>
 
                   <div className="mt-3 flex gap-2">
-                    <button onClick={() => proposeChange(c.key, c.value + ' (ajuste)', 'client')} className="flex-1 px-3 py-2 rounded-md border border-[--bg-light]/10 text-sm">Propor</button>
+                    <button onClick={() => proposeChange(c.key, c.value + ' (ajuste)', 'client')} className="flex-1 px-3 py-2 rounded-md border border-[var(--bg-light)]/10 text-sm">Propor</button>
                     <button onClick={() => acceptCard(c.key)} className="px-3 py-2 rounded-md bg-green-600 text-white text-sm">Aceitar</button>
                   </div>
                 </div>
@@ -437,26 +381,26 @@ function Step3AgreementSummary({ cards, onEdit, allAgreed, onBack, onNext }: {
 }) {
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="rounded-2xl p-6 bg-[--bg-light]/6 border border-[--bg-light]/20 backdrop-blur-md">
+      <div className="rounded-2xl p-6 bg-[var(--bg-light)]/10  border border-[var(--bg-light)]/20 backdrop-blur-md">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-sm text-[--text-muted]">Resumo do acordo</div>
+            <div className="text-sm text-[var(--text-muted)]">Resumo do acordo</div>
             <div className="font-semibold text-2xl mt-1">Revisão final dos termos</div>
           </div>
-          <div className="text-xs text-[--text-muted]">Status: {allAgreed ? 'Tudo acordado' : 'Aguardando ajustes'}</div>
+          <div className="text-xs text-[var(--text-muted)]">Status: {allAgreed ? 'Tudo acordado' : 'Aguardando ajustes'}</div>
         </div>
 
         <div className="mt-6 space-y-4">
           {cards.map((c) => (
-            <div key={c.key} className="p-4 rounded-lg bg-[--bg] border border-[--bg-light]/10 flex items-start justify-between">
+            <div key={c.key} className="p-4 rounded-lg bg-[var(--bg)] border border-[var(--bg-light)]/10 flex items-start justify-between">
               <div>
                 <div className="text-sm font-medium">{c.title}</div>
-                <div className="text-xs text-[--text-muted] mt-1">{c.value}</div>
+                <div className="text-xs text-[var(--text-muted)] mt-1">{c.value}</div>
               </div>
               <div className="flex flex-col items-end gap-2">
-                <div className={`text-xs font-medium ${c.status === 'agreed' ? 'text-green-400' : c.status === 'proposed' ? 'text-amber-400' : 'text-[--text-muted]'}`}>{c.status}</div>
+                <div className={`text-xs font-medium ${c.status === 'agreed' ? 'text-green-400' : c.status === 'proposed' ? 'text-amber-400' : 'text-[var(--text-muted)]'}`}>{c.status}</div>
                 <div className="flex gap-2">
-                  <button onClick={() => onEdit(c.key)} className="text-sm px-3 py-1 rounded-md border border-[--bg-light]/10">Editar</button>
+                  <button onClick={() => onEdit(c.key)} className="text-sm px-3 py-1 rounded-md border border-[var(--bg-light)]/10">Editar</button>
                 </div>
               </div>
             </div>
@@ -464,9 +408,9 @@ function Step3AgreementSummary({ cards, onEdit, allAgreed, onBack, onNext }: {
         </div>
 
         <div className="mt-6 flex justify-between">
-          <button onClick={onBack} className="px-4 py-2 rounded-lg border border-[--bg-light]/20">Voltar</button>
+          <button onClick={onBack} className="px-4 py-2 rounded-lg border border-[var(--bg-light)]/20">Voltar</button>
           <div>
-            <button onClick={onNext} disabled={!allAgreed} className={`px-4 py-2 rounded-lg ${allAgreed ? 'bg-blue-600 text-white' : 'bg-[--bg-light]/10 text-[--text-muted] cursor-not-allowed'}`}>Prosseguir para assinatura</button>
+            <button onClick={onNext} disabled={!allAgreed} className={`px-4 py-2 rounded-lg ${allAgreed ? 'bg-blue-600 text-white' : 'bg-[var(--bg-light)]/10 text-[var(--text-muted)] cursor-not-allowed'}`}>Prosseguir para assinatura</button>
           </div>
         </div>
       </div>
@@ -477,24 +421,24 @@ function Step3AgreementSummary({ cards, onEdit, allAgreed, onBack, onNext }: {
 function Step4Confirmation({ cards, signed, onSign, onBack }: { cards: AgreementCard[]; signed: { provider: boolean; client: boolean }; onSign: (role: 'provider' | 'client') => void; onBack: () => void }) {
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="rounded-2xl p-6 bg-[--bg-light]/6 border border-[--bg-light]/20 backdrop-blur-md">
+      <div className="rounded-2xl p-6 bg-[var(--bg-light)]/10  border border-[var(--bg-light)]/20 backdrop-blur-md">
         <div className="flex items-start justify-between gap-6">
           <div>
-            <div className="text-sm text-[--text-muted]">Confirmação</div>
+            <div className="text-sm text-[var(--text-muted)]">Confirmação</div>
             <div className="font-semibold text-2xl mt-1">Assinatura e confirmação final</div>
-            <div className="text-sm text-[--text-muted] mt-3">Revise o acordo e assine digitalmente para concluir.</div>
+            <div className="text-sm text-[var(--text-muted)] mt-3">Revise o acordo e assine digitalmente para concluir.</div>
           </div>
 
           <div className="text-right">
-            <div className="text-sm text-[--text-muted]">Progresso</div>
+            <div className="text-sm text-[var(--text-muted)]">Progresso</div>
             <div className="font-semibold text-lg mt-1">{signed.client && signed.provider ? 'Assinado' : 'Pendente'}</div>
           </div>
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-4">
-          <div className="col-span-1 p-4 rounded-lg bg-[--bg] border border-[--bg-light]/10">
+          <div className="col-span-1 p-4 rounded-lg bg-[var(--bg)] border border-[var(--bg-light)]/10">
             <div className="font-medium">Resumo do acordo</div>
-            <div className="mt-3 space-y-2 text-sm text-[--text-muted]">
+            <div className="mt-3 space-y-2 text-sm text-[var(--text-muted)]">
               {cards.map(c => (
                 <div key={c.key} className="flex justify-between">
                   <div>{c.title}</div>
@@ -504,14 +448,14 @@ function Step4Confirmation({ cards, signed, onSign, onBack }: { cards: Agreement
             </div>
           </div>
 
-          <div className="col-span-1 p-4 rounded-lg bg-[--bg] border border-[--bg-light]/10 flex flex-col justify-between">
+          <div className="col-span-1 p-4 rounded-lg bg-[var(--bg)] border border-[var(--bg-light)]/10 flex flex-col justify-between">
             <div>
-              <div className="text-sm text-[--text-muted]">Assinaturas</div>
+              <div className="text-sm text-[var(--text-muted)]">Assinaturas</div>
               <div className="mt-3 space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium">Prestador</div>
-                    <div className="text-xs text-[--text-muted]">Alexandre Reis</div>
+                    <div className="text-xs text-[var(--text-muted)]">Alexandre Reis</div>
                   </div>
                   <div>
                     {signed.provider ? <div className="text-green-400 font-medium flex items-center gap-2"><CheckCircle /> Assinado</div> : <button onClick={() => onSign('provider')} className="px-3 py-2 rounded-md bg-blue-600 text-white">Assinar</button>}
@@ -521,7 +465,7 @@ function Step4Confirmation({ cards, signed, onSign, onBack }: { cards: Agreement
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium">Cliente</div>
-                    <div className="text-xs text-[--text-muted]">Lucas William</div>
+                    <div className="text-xs text-[var(--text-muted)]">Lucas William</div>
                   </div>
                   <div>
                     {signed.client ? <div className="text-green-400 font-medium flex items-center gap-2"><CheckCircle /> Assinado</div> : <button onClick={() => onSign('client')} className="px-3 py-2 rounded-md bg-blue-600 text-white">Assinar</button>}
@@ -531,9 +475,9 @@ function Step4Confirmation({ cards, signed, onSign, onBack }: { cards: Agreement
             </div>
 
             <div className="mt-6 flex justify-between">
-              <button onClick={onBack} className="px-4 py-2 rounded-lg border border-[--bg-light]/20">Voltar</button>
+              <button onClick={onBack} className="px-4 py-2 rounded-lg border border-[var(--bg-light)]/20">Voltar</button>
               <div>
-                <button disabled={!(signed.client && signed.provider)} className={`px-4 py-2 rounded-lg ${signed.client && signed.provider ? 'bg-green-600 text-white' : 'bg-[--bg-light]/10 text-[--text-muted] cursor-not-allowed'}`}>Finalizar contrato</button>
+                <button disabled={!(signed.client && signed.provider)} className={`px-4 py-2 rounded-lg ${signed.client && signed.provider ? 'bg-green-600 text-white' : 'bg-[var(--bg-light)]/10 text-[var(--text-muted)] cursor-not-allowed'}`}>Finalizar contrato</button>
               </div>
             </div>
           </div>

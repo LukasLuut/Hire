@@ -14,7 +14,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import ServiceGalleryMagazine from "../components/ServiceGallery";
+import ServiceGalleryMagazine from "../components/ServiceGallery/ServiceGallery/ServiceGallery";
 import { Star, Edit3 } from "lucide-react";
 import { ServiceCreationWizardModal } from "../components/ServiceCreator/ServiceCreationWizardModal";
 
@@ -203,7 +203,7 @@ export default function ProfilePage() {
       {/* ===============================================================
        * SEÇÃO DE GALERIA DE SERVIÇOS
        * =============================================================== */}
-      <section className="p-8 md:px-20">
+      <section className="py-8 md:px-20">
         <ServiceGalleryMagazine />
       </section>
 

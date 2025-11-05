@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Clock, Tag as TagIcon, Heart, HandCoins } from "lucide-react";
+import ServiceDetailModal from "../ServiceDetail/ServiceDetail";
 
 /* --------------------------------------------------------------------------
  * Interface do Serviço
@@ -22,24 +23,8 @@ interface Service {
 /* --------------------------------------------------------------------------
  * Componente PostCard com Partículas de Like
  * -------------------------------------------------------------------------- */
-export default function PostCard() {
-  const service: Service = {
-    id: 1,
-    title: "Design de Logotipo Profissional",
-    description: "Criação de identidade visual completa, com variações de logotipo, tipografia e paleta de cores alinhadas à sua marca.",
-    category: "Design",
-    subcategory: "Branding",
-    price: "R$ 650,00",
-    duration: "5 dias úteis",
-    featured: true,
-    status: "Ativo",
-    likes: 12,
-    images: [
-         "./img/Danger.png",
-        "./img/zumbi.gif",
-        "./img/Matinho.png",
-    ],
-  };
+export default function PostCard({ service }: { service: Service }) {
+ 
 
   const [index, setIndex] = useState(0);
   const total = service.images.length;
@@ -55,6 +40,7 @@ export default function PostCard() {
   // -------------------------- Swipe --------------------------
   const next = () => setIndex((i) => (i + 1) % total);
   const prev = () => setIndex((i) => (i - 1 + total) % total);
+  const [open, setOpen]=useState(false);
 
   const onTouchStart = (e: React.TouchEvent) => touchStartX.current = e.touches[0].clientX;
   const onTouchEnd = (e: React.TouchEvent) => {
@@ -99,10 +85,14 @@ export default function PostCard() {
     }, 500);
   };
 
+    const handleDetail =()=>{
+      setOpen(true);
+    };
+
   return (
-    <div className="pt-25  px-5">
+    <div className="pt-5 ">
     <div
-      className={`relative bg-[var(--bg)] shadow-lg shadow-[#00000077] mx-auto w-[90vw] h-[85vh] md:w-[20vw] md:h-[60vh] rounded-2xl overflow-hidden`}
+      className={`relative bg-[var(--bg)] shadow-lg shadow-[#00000077] mx-auto w-[80vw] h-[80vh] md:w-[20vw] md:h-[60vh] rounded-2xl overflow-hidden`}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
@@ -209,12 +199,19 @@ export default function PostCard() {
             {service.featured && <span className="bg-yellow-500/30 px-2 py-1 rounded-full text-yellow-200 text-xs">Negociável</span>}
             {service.status && <span className="bg-blue-500/30 px-2 py-1 rounded-full text-blue-200 text-xs">Politica de cancelamento</span>}
           </div>
-          <button className="mt-2 w-full text-center bg-[var(--primary)]/80 hover:bg-[var(--primary)] py-2 rounded-xl font-medium text-white shadow-lg shadow-[var(--primary)]/20">
+          <button 
+          onClick={handleDetail}
+          className="mt-2 w-full text-center bg-[var(--primary)]/80 hover:bg-[var(--primary)] py-2 rounded-xl font-medium text-white shadow-lg shadow-[var(--primary)]/20">
             Ver detalhes
           </button>
         </div>
       </div>
     </div>
+    <ServiceDetailModal 
+    service={service}
+    isOpen={open}
+    onClose={()=>{setOpen(false)}}
+    />
 </div>
 
   );

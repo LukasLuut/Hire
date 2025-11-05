@@ -14,7 +14,7 @@ import NegotiationRoom from "./components/NegotiationRoom.tsx";
 import ScheduleConfigurator from "./components/Schedule.tsx";
 import {ServiceCreationWizardModal} from "./components/ServiceCreator/ServiceCreationWizardModal.tsx"
 import ServiceDashboard from "./components/ServiceEditor/ServiceEditor.tsx";
-import  PostCard from "./components/Post.tsx";
+import  PostCard from "./components/ServiceGallery/Service/Service.tsx";
 import ServiceDashboardSophisticated from "./pages/DashboardClient.tsx";
 
 
@@ -44,7 +44,7 @@ function ThemeWrapper() {
       <Navbar theme={theme} setTheme={setTheme} />
 
       {/* Conteúdo principal */}
-      <ServiceDashboard />
+      <ProfilePage />
     </>
   );
 }

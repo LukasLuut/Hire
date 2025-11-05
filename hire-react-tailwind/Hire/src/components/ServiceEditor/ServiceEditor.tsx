@@ -344,9 +344,7 @@ export default function ServiceDashboard() {
 
         {/* ----------------------------------------------------------------------
          * Preview do serviço
-         * ----------------------------------------------------------------------
-         * Modal no mobile, animação tipo slide usando framer-motion
-         * ---------------------------------------------------------------------- */}
+         * ----------------------------------------------------------------------*/}
       <AnimatePresence initial={false} mode="wait">
   {(mobileSlide === "preview" || !isMobile) && (
     <motion.div
