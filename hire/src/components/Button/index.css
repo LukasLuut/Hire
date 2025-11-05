@@ -1,0 +1,32 @@
+
+
+.body-btn{
+    background-color: #021024;
+    width: 318px;
+    height: 52px;
+    border-radius: 50px;
+    border: solid #052659 3px;
+    display: flex;
+    justify-content: space-between;
+    
+    
+}
+
+.body-btn2{
+    width: 60%;
+    height: 100%;
+    background-color: #C1E8FF;
+    border-radius: 50px;
+    border: solid #5783B3 2px;
+}
+
+.body-btn3{
+    display: flex;
+    justify-content: center;
+    align-items: center;   
+    width: 100%;
+}
+
+.btn3-txt{
+    color: #84a2b3;
+}
