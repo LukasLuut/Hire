@@ -1,11 +1,7 @@
 export const userAPI = {
 
-  create: async (data: {
-    name: string;
-    email: string;
-    cpf: string;
-    password: string;
-  }) => {
+  create: async (data: UserAPI) => {
+
     const response = await fetch("http://localhost:8080/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -27,3 +23,10 @@ export const userAPI = {
     return body;
   },
 };
+
+export interface UserAPI {
+      name: string,
+      cpf: string,
+      email: string,
+      password: string
+  }

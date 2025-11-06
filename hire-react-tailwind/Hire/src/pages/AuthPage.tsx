@@ -2,16 +2,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import bgImage from "../assets/bg-login.png";
 import hirePng from "../assets/Hire..png"
-import { userAPI } from "../api/UserAPI";
+import { userAPI, type UserAPI } from "../api/UserAPI";
 
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
-    nome: "",
+    name: "",
     cpf: "",
     email: "",
-    senha: "",
+    password: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,18 +31,23 @@ export default function AuthPage() {
     }
   };
 
-  const handleRegistrar = async (data: {
-      nome: string,
-      cpf: string,
-      email: string,
-      senha: string
-      }) => { 
-          return await userAPI.create({
-            name: data.nome, 
-            email: data.email, 
-            cpf: data.cpf, 
-            password: data.senha})  
+  const handleRegistrar = async (data: UserAPI) => {
+    return await userAPI.create({
+      name: data.name,
+      email: data.email,
+      cpf: data.cpf,
+      password: data.password
+    })
   }
+
+  const formatCPF = (cpf: string) => {
+    // Só aplica a máscara se o CPF tiver mais de 3 caracteres
+    return cpf
+      .replace(/\D/g, "") // Remove tudo que não for número
+      .replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
+      .slice(0, 14); // Limita o tamanho para 14 caracteres (formato xxx.xxx.xxx-xx)
+  };
+
 
   return (
     <div
@@ -62,7 +67,7 @@ export default function AuthPage() {
           className="absolute inset-0 z-0"
           style={{
             backgroundColor: "color-mix(in oklch, var(--bg-dark), transparent 90%)",
-           
+
           }}
         />
 
@@ -124,11 +129,11 @@ export default function AuthPage() {
                   damping: 18,
                 }}
                 className="w-full rounded-2xl p-6 md:p-8 bg-[var(--bg-dark)]/50 backdrop-blur-sm shadow-lg border-b-1 border-[var(--border)]"
-                
+
               >
                 <h2
                   className="text-2xl text-[var(--text)] md:text-3xl font-semibold mb-6 text-center"
-                  
+
                 >
                   Bem-vindo de volta
                 </h2>
@@ -137,13 +142,13 @@ export default function AuthPage() {
                     type="email"
                     placeholder="Email"
                     className="w-full p-3 rounded-lg placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 text-sm md:text-base text-[var(--text)] border-b-1 border-[var(--border)]"
-                   
+
                   />
                   <input
                     type="password"
                     placeholder="Senha"
                     className="w-full p-3 rounded-lg placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 text-sm md:text-base text-[var(--text)] border-b-1 border-[var(--border)]"
-                   
+
                   />
                   <button
                     type="submit"
@@ -168,34 +173,35 @@ export default function AuthPage() {
                 className="w-full rounded-2xl border-b-1  border-[var(--border)] p-6 md:p-8 backdrop-blur-md shadow-lg"
                 style={{
                   backgroundColor: "color-mix(in oklch, var(--bg-dark), transparent 50%)",
-                  
+
                 }}
               >
                 <h2
                   className="text-2xl md:text-3xl font-semibold mb-6 text-center text-[var(--text)]"
-                  
+
                 >
                   Crie sua conta
                 </h2>
                 <form className="space-y-4" onSubmit={handleSubmit}>
                   <input
                     type="text"
-                    name="nome"
+                    name="name"
                     required
                     placeholder="Nome completo"
                     className="w-full p-3 rounded-lg placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 text-sm md:text-base text-[var(--text)] border-b-1 border-[var(--border)]"
                     onChange={handleChange}
-                    value={formData.nome}
+                    value={formData.name}
                   />
-                   <input
+                  <input
                     type="text"
                     name="cpf"
                     required
                     placeholder="CPF"
                     className="w-full p-3 rounded-lg placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 text-sm md:text-base text-[var(--text)] border-b-1 border-[var(--border)]"
                     onChange={handleChange}
-                    value={formData.cpf}
-
+                    value={formatCPF(formData.cpf)}
+                    inputMode="numeric"
+                    pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
                   />
                   <input
                     type="email"
@@ -208,12 +214,12 @@ export default function AuthPage() {
                   />
                   <input
                     type="password"
-                    name="senha"
+                    name="password"
                     required
                     placeholder="Senha"
                     className="w-full p-3 rounded-lg placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 text-sm md:text-base text-[var(--text)] border-b-1 border-[var(--border)]"
                     onChange={handleChange}
-                    value={formData.senha}
+                    value={formData.password}
                   />
                   <button
                     type="submit"
@@ -232,7 +238,7 @@ export default function AuthPage() {
         </div>
 
         {/* Efeitos orgânicos de luz */}
-       
+
       </div>
     </div>
   );
