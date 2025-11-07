@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import bgImage from "../assets/bg-login.png";
 import hirePng from "../assets/Hire..png"
-import { userAPI, type UserAPI } from "../api/UserAPI";
+import { userAPI, type UserAPI, type UserLoginAPI } from "../api/UserAPI";
 
 
 export default function AuthPage() {
@@ -13,6 +13,24 @@ export default function AuthPage() {
     email: "",
     password: "",
   });
+  const [formLoginData, setFormLoginData] = useState({ 
+    email: "",
+    password: "",
+  });
+
+  const cleanForm = () => {
+    setFormData({
+      name: "",
+      cpf: "",
+      email: "",
+      password: "",
+    });
+
+    setFormLoginData({
+      "email": "",
+      "password": ""
+    })
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -23,11 +41,21 @@ export default function AuthPage() {
 
     try {
       // Chama a função que faz o registro
-      await handleRegistrar(formData);
-      alert("Usuário registrado com sucesso!");
-    } catch (error) {
-      console.error("Erro ao registrar usuário:", error);
-      alert("Ocorreu um erro ao registrar o usuário.");
+      if (isLogin) {
+        await handleLogin(formLoginData)
+        alert("")
+
+      } else {
+
+        await handleRegistrar(formData);
+        alert("Usuário registrado com sucesso!");
+        setIsLogin(true);
+        cleanForm();
+
+      }
+    } catch (error: any) {
+      console.error(isLogin ? "Usuário não encontrado: " : "Erro ao registrar usuário:", error);
+      alert(error.message || "Erro na requisição!");
     }
   };
 
@@ -40,13 +68,28 @@ export default function AuthPage() {
     })
   }
 
-  const formatCPF = (cpf: string) => {
-    // Só aplica a máscara se o CPF tiver mais de 3 caracteres
-    return cpf
-      .replace(/\D/g, "") // Remove tudo que não for número
-      .replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
-      .slice(0, 14); // Limita o tamanho para 14 caracteres (formato xxx.xxx.xxx-xx)
+  const handleLogin = async (data: UserLoginAPI) => {
+    return await userAPI.login({
+      email: data.email,
+      password: data.password
+    })
+  }
+
+  const formatCPF = (value: string) => {
+  // Remove tudo que não é número e adiciona máscara
+    const onlyNums = value.replace(/\D/g, "");
+    return onlyNums
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+};
+
+// Atualiza e formata o CPF no estado
+  const handleChangeCPF = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCPF(e.target.value);
+    setFormData((prev) => ({ ...prev, cpf: formatted }));
   };
+
 
 
   return (
@@ -198,10 +241,11 @@ export default function AuthPage() {
                     required
                     placeholder="CPF"
                     className="w-full p-3 rounded-lg placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 text-sm md:text-base text-[var(--text)] border-b-1 border-[var(--border)]"
-                    onChange={handleChange}
+                    onChange={handleChangeCPF}
                     value={formatCPF(formData.cpf)}
                     inputMode="numeric"
                     pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
+                    maxLength={14}
                   />
                   <input
                     type="email"

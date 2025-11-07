@@ -5,7 +5,7 @@ import router from "./routes/index";
 import cors from "cors";
 
 const app: Application = express();
-const PORTA: number = 3000;
+const PORTA: number = 8080;
 
 app.use(express.json());
 /*
