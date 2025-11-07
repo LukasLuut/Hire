@@ -15,8 +15,11 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import ServiceGalleryMagazine from "../components/ServiceGallery/ServiceGallery/ServiceGallery";
-import { Star, Edit3 } from "lucide-react";
+import { Star, Edit3, MessageSquare } from "lucide-react";
 import { ServiceCreationWizardModal } from "../components/ServiceCreator/ServiceCreationWizardModal";
+import ServiceNegotiationModal from "../components/Negotiation/ServiceNegotiationModal";
+import ServiceResponseModal from "../components/Negotiation/ServiceResponseModal";
+import ServiceFormalizerModal from "../components/Negotiation/ServiceFormalizerModal";
 
 /* --------------------------------------------------------------------------
  * MOCKS DE DADOS
@@ -49,6 +52,9 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [open, setOpen] = useState(false);
+  const [openContratar, setOpenContratar]=useState(false)
+  const [isOpenResponse, setIsOpenResponse]=useState(false)
+  const [isOpenChat, setIsOpenChat]=useState(false)
 
 
   /* ------------------------------------------------------------------------
@@ -91,6 +97,13 @@ export default function ProfilePage() {
   const handleProfileChange = (field: keyof typeof mockProfile, value: string) => {
     if (profile) setProfile({ ...profile, [field]: value });
   };
+
+  /* ------------------------------------------------------------------------
+   * FUNÇÃO PARA ABERTURA DO MODAL DE CONTRATAÇÃO
+   * ------------------------------------------------------------------------ */
+  const handleContratar = () =>{
+    setOpenContratar(true);
+  }
 
   /* ------------------------------------------------------------------------
    * ESTADO DE CARREGAMENTO (Tela de loading)
@@ -182,10 +195,14 @@ export default function ProfilePage() {
 
           {/* BOTÕES DE AÇÃO */}
           <div className="flex gap-4 mt-2">
-            <button className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:brightness-110 transition">
+            <button 
+            onClick={handleContratar}
+            className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:brightness-110 transition">
               Contratar
             </button>
-            <button className="px-4 py-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-light)] transition">
+            <button 
+            onClick={()=>{setIsOpenResponse(true)}}
+            className="px-4 py-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-light)] transition">
               Mensagem
             </button>
              {/* BOTÃO DO MODAL DE CRIAÇÃO DE SERVIÇO */}
@@ -194,11 +211,34 @@ export default function ProfilePage() {
             className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:brightness-110 transition">
               + Serviço
             </button>
+             <button 
+            onClick={()=>{setIsOpenChat(true)}}
+            className="px-4 py-2 border flex gap-2 items-center border-[var(--border)] rounded-lg hover:bg-[var(--bg-light)] transition">
+              <MessageSquare size={20} /> Chat
+            </button>
           </div>
         </div>
       </section>
+      {/* ===============================================================
+       * SEÇÃO DO CHAT
+       * =============================================================== */}      
+      <ServiceFormalizerModal service={undefined} isOpen={isOpenChat} onClose={() => setIsOpenChat(false)}/>
 
+       {/* ===============================================================
+       * SEÇÃO DE CRIAÇÃO DE SERVIÇOS
+       * =============================================================== */}      
       <ServiceCreationWizardModal  isOpen={open} onClose={() => setOpen(false)}/>
+
+
+       {/* ===============================================================
+       * SEÇÃO DE CRIAÇÃO DE SERVIÇOS
+       * =============================================================== */} 
+      <ServiceResponseModal isOpen={isOpenResponse} onClose={()=>{setIsOpenResponse(false)}}/>
+
+       {/* ===============================================================
+       * SEÇÃO DE CRIAÇÃO DE ORÇAMENTO
+       * =============================================================== */} 
+      <ServiceNegotiationModal isOpen= {openContratar} onClose={()=>{setOpenContratar(false)}} />
 
       {/* ===============================================================
        * SEÇÃO DE GALERIA DE SERVIÇOS
