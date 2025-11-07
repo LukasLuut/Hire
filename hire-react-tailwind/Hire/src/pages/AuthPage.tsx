@@ -1,8 +1,11 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import bgImage from "../assets/bg-login.png";
 import hirePng from "../assets/Hire..png"
 import { userAPI, type UserAPI, type UserLoginAPI } from "../api/UserAPI";
+import { useNavigate } from 'react-router-dom';
+
+
 
 
 export default function AuthPage() {
@@ -17,6 +20,11 @@ export default function AuthPage() {
     email: "",
     password: "",
   });
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    localStorage.removeItem("token");
+  }, [])
 
   const cleanForm = () => {
     setFormData({
@@ -36,14 +44,20 @@ export default function AuthPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleChangeLogin = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormLoginData({ ...formLoginData, [e.target.name]: e.target.value });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // evita reload da página
 
     try {
       // Chama a função que faz o registro
       if (isLogin) {
-        await handleLogin(formLoginData)
-        alert("")
+        const body: any = await handleLogin(formLoginData);
+        localStorage.setItem("token", body.token);
+        const user = body.user;
+        navigate("/profile", { state: { user } });
 
       } else {
 
@@ -55,7 +69,7 @@ export default function AuthPage() {
       }
     } catch (error: any) {
       console.error(isLogin ? "Usuário não encontrado: " : "Erro ao registrar usuário:", error);
-      alert(error.message || "Erro na requisição!");
+      isLogin ? alert("Email/Senha inválido") : alert(error.message || "Erro na requisição!");
     }
   };
 
@@ -180,18 +194,23 @@ export default function AuthPage() {
                 >
                   Bem-vindo de volta
                 </h2>
-                <form className="space-y-4">
+                <form className="space-y-4" onSubmit={handleSubmit}>
                   <input
                     type="email"
                     placeholder="Email"
+                    name="email"
                     className="w-full p-3 rounded-lg placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 text-sm md:text-base text-[var(--text)] border-b-1 border-[var(--border)]"
-
+                    required
+                    onChange={handleChangeLogin}
+                    value={formLoginData.email}
                   />
                   <input
                     type="password"
                     placeholder="Senha"
+                    name="password"
                     className="w-full p-3 rounded-lg placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 text-sm md:text-base text-[var(--text)] border-b-1 border-[var(--border)]"
-
+                    onChange={handleChangeLogin}
+                    value={formLoginData.password}
                   />
                   <button
                     type="submit"

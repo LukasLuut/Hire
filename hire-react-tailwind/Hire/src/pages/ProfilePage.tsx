@@ -20,11 +20,14 @@ import { ServiceCreationWizardModal } from "../components/ServiceCreator/Service
 import ServiceNegotiationModal from "../components/Negotiation/ServiceNegotiationModal";
 import ServiceResponseModal from "../components/Negotiation/ServiceResponseModal";
 import ServiceFormalizerModal from "../components/Negotiation/ServiceFormalizerModal";
+import { useLocation, useNavigate } from "react-router-dom";
 
 /* --------------------------------------------------------------------------
  * MOCKS DE DADOS
  * Usados enquanto não há backend (ou caso a API falhe).
  * -------------------------------------------------------------------------- */
+
+
 const mockReviews = [
   { id: 1, name: "João Silva", rating: 5, comment: "Excelente trabalho, muito profissional!" },
   { id: 2, name: "Maria Oliveira", rating: 4, comment: "Ótima comunicação e entrega dentro do prazo." },
@@ -32,7 +35,7 @@ const mockReviews = [
 ];
 
 const mockProfile = {
-  name: "Vitor Reis",
+  name: "user.name",
   bio: "Especialista em desenvolvimento de aplicativos e interfaces web modernas. Mais de 5 anos de experiência criando soluções digitais para clientes de diversos setores.",
   image: "https://api.dicebear.com/9.x/miniavs/svg?seed=vitorreis.svg",
   rating: 4.8,
@@ -46,7 +49,9 @@ export default function ProfilePage() {
   /* ------------------------------------------------------------------------
    * ESTADOS
    * ------------------------------------------------------------------------ */
- 
+
+
+
   const [profile, setProfile] = useState<typeof mockProfile | null>(null);
   const [reviews, setReviews] = useState<typeof mockReviews | null>(null);
   const [loading, setLoading] = useState(true);
@@ -55,6 +60,10 @@ export default function ProfilePage() {
   const [openContratar, setOpenContratar]=useState(false)
   const [isOpenResponse, setIsOpenResponse]=useState(false)
   const [isOpenChat, setIsOpenChat]=useState(false)
+  const location = useLocation();
+  const user = location.state?.user;
+  const navigate = useNavigate();
+
 
 
   /* ------------------------------------------------------------------------
@@ -63,6 +72,13 @@ export default function ProfilePage() {
    * - Caso falhe, usa os dados mockados
    * ------------------------------------------------------------------------ */
   useEffect(() => {
+
+    const token = localStorage.getItem("token");
+
+    if(!token) {
+      navigate('/auth')
+    }
+    
     const fetchData = async () => {
       try {
         // Exemplo de como seria uma chamada real (ainda desativada):
@@ -72,6 +88,7 @@ export default function ProfilePage() {
         // ]);
 
         // Caso não haja resposta, usamos os mocks:
+        mockProfile.name = user.name
         const profileData = mockProfile;
         const reviewsData = mockReviews;
 

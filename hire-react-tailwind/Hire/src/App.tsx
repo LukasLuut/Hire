@@ -39,7 +39,7 @@ export default function App() {
       <Navbar theme={theme} setTheme={setTheme} />
       <Routes>
         {/* Página inicial */}
-        <Route path="/" element={<ProfilePage/>} />
+        <Route path="/" element={<AuthPage />} />
 
         {/* Rotas principais */}
         <Route path="/profile" element={<ProfilePage />} />
