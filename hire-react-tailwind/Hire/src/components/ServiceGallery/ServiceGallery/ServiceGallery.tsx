@@ -141,7 +141,7 @@ export default function ServiceGalleryZoom() {
         {/* ------------------------------------------------------------------
          * CABEÇALHO
          * ------------------------------------------------------------------ */}
-        <h1 className="text-5xl font-bold text-center mb-6 pb-3 border-b-2 border-[var(--text)]/50">
+        <h1 className="text-6xl font-bold text-center pt-15 mb-15 border-t-2 border-[var(--text)]/20">
           Galeria de Serviços
         </h1>
 

@@ -159,3 +159,19 @@ body.light {
         .preserve-3d {
           transform-style: preserve-3d;
         }
+
+
+        /* --------------------------------------------------------------------------
+ * Estilo personalizado da Scrollbar
+ * -------------------------------------------------------------------------- */
+
+/* Navegadores baseados em WebKit (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 0px;                /* largura da barra vertical */
+  height: 8px;               /* altura da barra horizontal */
+}
+
+
+
+
+  

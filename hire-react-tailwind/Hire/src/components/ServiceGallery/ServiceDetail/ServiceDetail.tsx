@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import ServiceNegotiationModal from "../../Negotiation/ServiceNegotiationModal";
 
 /* --------------------------------------------------------------------------
  * Tipos
@@ -24,6 +25,7 @@ interface Service {
   requiresScheduling?: boolean;
   cancellationNotice?: string;
   images: string[];
+  provider:string
 }
 
 interface ServiceDetailProps {
@@ -45,6 +47,7 @@ export default function ServiceDetail({
   const [direction, setDirection] = useState(0);
   const [liked, setLiked] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
+  const [Open, setOpen]=useState(false)
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -89,6 +92,10 @@ export default function ServiceDetail({
     center: { x: 0, opacity: 1 },
     exit: (dir: number) => ({ x: dir > 0 ? -200 : 200, opacity: 0 }),
   };
+
+  const handleNegociar =()=>{
+    setOpen(true);
+  }
 
   return (
     <AnimatePresence>
@@ -229,7 +236,9 @@ export default function ServiceDetail({
 
               {/* ----------------------- Ações ----------------------- */}
               <div className="flex gap-3 mt-4">
-                <button className="flex-1 flex items-center justify-center gap-2 bg-[var(--primary)] text-white font-semibold py-3 rounded-xl shadow-md hover:scale-[1.02] hover:shadow-lg transition-all">
+                <button 
+                onClick={handleNegociar}
+                className="flex-1 flex items-center justify-center gap-2 bg-[var(--primary)] text-white font-semibold py-3 rounded-xl shadow-md hover:scale-[1.02] hover:shadow-lg transition-all">
                   <Handshake size={18} />
                   Contratar / Negociar
                 </button>
@@ -249,6 +258,8 @@ export default function ServiceDetail({
             onClose={() => setImageModalOpen(false)}
             startIndex={currentIndex}
           />
+
+        
         </motion.div>
       )}
     </AnimatePresence>
