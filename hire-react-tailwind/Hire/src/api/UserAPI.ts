@@ -2,7 +2,7 @@ import { apiRequest } from "./ApiClient";
 
 export const userAPI = {
   create: async (data: UserAPI) => {
-    apiRequest("/auth/register", {
+    return await apiRequest("/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -10,6 +10,7 @@ export const userAPI = {
         email: data.email,
         cpf_cnpj: data.cpf,
         password: data.password,
+        acceptedTerms: data.acceptedTerms
       }),
     });
   },
@@ -32,6 +33,7 @@ export interface UserAPI {
   cpf: string;
   email: string;
   password: string;
+  acceptedTerms: boolean
 }
 
 export interface UserLoginAPI {

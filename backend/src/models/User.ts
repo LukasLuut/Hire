@@ -35,6 +35,12 @@ export class User {
   @Column({ select: false })
   password: string;
 
+  @Column({ type: 'boolean' })
+  acceptedTerms: boolean;
+
+  @Column({ type: 'date', nullable: true})
+  acceptedAt: Date;
+
   @OneToOne(() => Address, (address) => address.user, { cascade: true })
   @JoinColumn()
   address: Address;

@@ -4,17 +4,20 @@ import bgImage from "../assets/bg-login.png";
 import hirePng from "../assets/Hire..png"
 import { userAPI, type UserAPI, type UserLoginAPI } from "../api/UserAPI";
 import { useNavigate } from 'react-router-dom';
+import UseTerms from "../components/Terms/UseTerms";
 
 
 
 
 export default function AuthPage() {
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
     cpf: "",
     email: "",
     password: "",
+    acceptedTerms: false
   });
   const [formLoginData, setFormLoginData] = useState({ 
     email: "",
@@ -32,6 +35,7 @@ export default function AuthPage() {
       cpf: "",
       email: "",
       password: "",
+      acceptedTerms: false
     });
 
     setFormLoginData({
@@ -61,6 +65,11 @@ export default function AuthPage() {
 
       } else {
 
+        if (!formData.acceptedTerms) {
+          alert("Você precisa aceitar os termos antes de continuar.");
+          return;
+        }
+
         await handleRegistrar(formData);
         alert("Usuário registrado com sucesso!");
         setIsLogin(true);
@@ -69,7 +78,7 @@ export default function AuthPage() {
       }
     } catch (error: any) {
       console.error(isLogin ? "Usuário não encontrado: " : "Erro ao registrar usuário:", error);
-      isLogin ? alert("Email/Senha inválido") : alert(error.message || "Erro na requisição!");
+      isLogin ? alert("Email e/ou senha inválido(s)") : alert(error.message || "Erro na requisição!");
     }
   };
 
@@ -78,7 +87,8 @@ export default function AuthPage() {
       name: data.name,
       email: data.email,
       cpf: data.cpf,
-      password: data.password
+      password: data.password,
+      acceptedTerms: data.acceptedTerms
     })
   }
 
@@ -284,6 +294,28 @@ export default function AuthPage() {
                     onChange={handleChange}
                     value={formData.password}
                   />
+                  <label className="flex items-start gap-2 text-sm text-[var(--text-muted)]">
+                    <input
+                      type="checkbox"
+                      name="acceptedTerms"
+                      checked={formData.acceptedTerms}
+                      onChange={(e) =>
+                        setFormData({ ...formData, acceptedTerms: e.target.checked })
+                      }
+                      
+                      className="mt-1 accent-[var(--primary)]"
+                    />
+                    <span>
+                      Li e concordo com a{" "}
+                      <button
+                      type="button"
+                      onClick={() => setIsPrivacyOpen(true)}
+                      className="text-[var(--primary)] hover:underline"
+                      >
+                        Política de Privacidade e Termos de Uso
+                      </button>.
+                    </span>
+                  </label>
                   <button
                     type="submit"
                     className="w-full py-3 rounded-lg font-semibold transition text-sm md:text-base"
@@ -303,6 +335,9 @@ export default function AuthPage() {
         {/* Efeitos orgânicos de luz */}
 
       </div>
+      {isPrivacyOpen && (
+                <UseTerms setIsPrivacyOpen={setIsPrivacyOpen}/>  
+              )}
     </div>
   );
 }

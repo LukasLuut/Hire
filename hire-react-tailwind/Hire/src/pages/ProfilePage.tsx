@@ -21,6 +21,7 @@ import ServiceNegotiationModal from "../components/Negotiation/ServiceNegotiatio
 import ServiceResponseModal from "../components/Negotiation/ServiceResponseModal";
 import ServiceFormalizerModal from "../components/Negotiation/ServiceFormalizerModal";
 import { useLocation, useNavigate } from "react-router-dom";
+import { getFirstAndLastName } from "../utils/nameUtils"
 
 /* --------------------------------------------------------------------------
  * MOCKS DE DADOS
@@ -61,8 +62,10 @@ export default function ProfilePage() {
   const [isOpenResponse, setIsOpenResponse]=useState(false)
   const [isOpenChat, setIsOpenChat]=useState(false)
   const location = useLocation();
-  const user = location.state?.user;
   const navigate = useNavigate();
+
+  // Todas as informações do usuário
+  const user = location.state?.user;
 
 
 
@@ -88,7 +91,7 @@ export default function ProfilePage() {
         // ]);
 
         // Caso não haja resposta, usamos os mocks:
-        mockProfile.name = user.name
+        mockProfile.name = getFirstAndLastName(user.name)
         const profileData = mockProfile;
         const reviewsData = mockReviews;
 

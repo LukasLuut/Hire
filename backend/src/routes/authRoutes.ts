@@ -9,6 +9,6 @@ const router = Router()
 const controller = new AuthController()
 
 router.post('/register', validateDTO(CreateUserDTO), controller.register.bind(controller))
-router.post('/login', validateDTO(LoginUserDTO), controller.login.bind(controller))
+router.post('/login', controller.login.bind(controller))
 
 export default router

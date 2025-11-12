@@ -9,6 +9,7 @@ export class UserService {
     email: string;
     password: string;
     cpf_cnpj: string;
+    acceptedTerms: boolean;
   }) {
     const exists = await this.repo.findOne({ where: { email: data.email } });
 
@@ -18,7 +19,7 @@ export class UserService {
 
     data.cpf_cnpj = cpf;
 
-    const user = this.repo.create(data);
+    const user = this.repo.create({ ...data, acceptedAt: new Date() });
     await this.repo.save(user);
 
     const clone: any = { ...user };
