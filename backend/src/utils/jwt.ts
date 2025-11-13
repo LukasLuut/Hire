@@ -2,7 +2,9 @@ import jwt from 'jsonwebtoken'
 
 interface Payload {
   id: number
+  name: string
   email: string
+  about: string
 }
 
 export const generateToken = (payload: Payload) => {

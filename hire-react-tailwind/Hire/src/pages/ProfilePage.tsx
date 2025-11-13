@@ -22,6 +22,7 @@ import ServiceResponseModal from "../components/Negotiation/ServiceResponseModal
 import ServiceFormalizerModal from "../components/Negotiation/ServiceFormalizerModal";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getFirstAndLastName } from "../utils/nameUtils"
+import { userAPI } from "../api/UserAPI";
 
 /* --------------------------------------------------------------------------
  * MOCKS DE DADOS
@@ -36,8 +37,8 @@ const mockReviews = [
 ];
 
 const mockProfile = {
-  name: "user.name",
-  bio: "Especialista em desenvolvimento de aplicativos e interfaces web modernas. Mais de 5 anos de experiência criando soluções digitais para clientes de diversos setores.",
+  name: "João Silva",
+  bio: "Cliente especializado em encher a porra do saco",
   image: "https://api.dicebear.com/9.x/miniavs/svg?seed=vitorreis.svg",
   rating: 4.8,
   reviewsCount: 24,
@@ -50,9 +51,6 @@ export default function ProfilePage() {
   /* ------------------------------------------------------------------------
    * ESTADOS
    * ------------------------------------------------------------------------ */
-
-
-
   const [profile, setProfile] = useState<typeof mockProfile | null>(null);
   const [reviews, setReviews] = useState<typeof mockReviews | null>(null);
   const [loading, setLoading] = useState(true);
@@ -63,9 +61,10 @@ export default function ProfilePage() {
   const [isOpenChat, setIsOpenChat]=useState(false)
   const location = useLocation();
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   // Todas as informações do usuário
-  const user = location.state?.user;
+  const [user, setUser] = useState(location.state?.user)
 
 
 
@@ -76,22 +75,16 @@ export default function ProfilePage() {
    * ------------------------------------------------------------------------ */
   useEffect(() => {
 
-    const token = localStorage.getItem("token");
-
     if(!token) {
       navigate('/auth')
     }
     
     const fetchData = async () => {
       try {
-        // Exemplo de como seria uma chamada real (ainda desativada):
-        // const [profileRes, reviewsRes] = await Promise.all([
-        //   axios.get("/api/profile"),
-        //   axios.get("/api/reviews"),
-        // ]);
+        mockProfile.name = getFirstAndLastName(user.name);
+        
+        if(user.about) mockProfile.bio = user.about;
 
-        // Caso não haja resposta, usamos os mocks:
-        mockProfile.name = getFirstAndLastName(user.name)
         const profileData = mockProfile;
         const reviewsData = mockReviews;
 
@@ -107,7 +100,7 @@ export default function ProfilePage() {
     };
 
     fetchData();
-  }, []);
+  }, [user]);
 
   /* ------------------------------------------------------------------------
    * FUNÇÕES DE EDIÇÃO
@@ -123,6 +116,19 @@ export default function ProfilePage() {
    * ------------------------------------------------------------------------ */
   const handleContratar = () =>{
     setOpenContratar(true);
+  }
+
+  const handleUpdate = async () => {
+    const token = localStorage.getItem("token")
+    if(!token) return;
+    
+    try {
+      return await userAPI.update({name: user.name, about: user.about}, token)
+      
+    } catch (err: any) {
+      alert("ererrrererererererere")
+      console.error(err)
+    }
   }
 
   /* ------------------------------------------------------------------------
@@ -204,13 +210,20 @@ export default function ProfilePage() {
             <h2 className="text-xl font-semibold mb-2">Sobre</h2>
             {isEditing ? (
               <textarea
-                value={profile?.bio}
-                onChange={(e) => handleProfileChange("bio", e.target.value)}
+                value={user.about}
+                onChange={(e) => setUser({ ...user, about: e.target.value })}
                 className="md:w-2xl w-xs bg-[var(--bg-light)] border border-[var(--primary)] rounded-lg p-2 text-[var(--text)] resize-none h-32"
               />
             ) : (
               <p className="text-[var(--text-muted)] max-w-2xl">{profile?.bio}</p>
             )}
+            { isEditing && 
+              <button 
+            onClick={ handleUpdate }
+            className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:brightness-110 transition">
+              Salvar
+            </button>
+            } 
           </section>
 
           {/* BOTÕES DE AÇÃO */}

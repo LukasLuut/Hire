@@ -28,6 +28,9 @@ export class UserController {
 
     update = async (req: Request, res: Response) => {
       try {
+            console.log("BODY recebido:", req.body);
+            console.log("USER autenticado:", (req as any).user);
+
             const user = await userService.update((req as any).user.id, req.body)
             const clone: any = { ...user }
             delete clone.password

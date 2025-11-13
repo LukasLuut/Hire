@@ -41,6 +41,9 @@ export class User {
   @Column({ type: 'date', nullable: true})
   acceptedAt: Date;
 
+  @Column({ length: 400, nullable: true})
+  about: string;
+
   @OneToOne(() => Address, (address) => address.user, { cascade: true })
   @JoinColumn()
   address: Address;

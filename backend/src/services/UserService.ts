@@ -10,6 +10,7 @@ export class UserService {
     password: string;
     cpf_cnpj: string;
     acceptedTerms: boolean;
+    about?: string;
   }) {
     const exists = await this.repo.findOne({ where: { email: data.email } });
 
@@ -60,7 +61,7 @@ export class UserService {
     const { password, ...rest } = data;
     Object.assign(user, rest);
 
-    return await this.repo.save(user);
+    return this.repo.save(user);
   }
 
   async remove(id: number) {
@@ -76,7 +77,7 @@ export class UserService {
   async findByEmail(email: string) {
     return this.repo.findOne({
       where: { email },
-      select: ["id", "name", "email", "password", "cpf_cnpj", "address"],
+      select: ["id", "name", "email", "password", "cpf_cnpj", "address", "about"],
     });
   }
 }

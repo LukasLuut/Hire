@@ -5,18 +5,22 @@ import { verifyToken } from '../utils/jwt'
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   // Pega o header de autorização da requisição
   const authHeader = req.headers.authorization
+  console.log("Authorization header:", authHeader);
 
   // Se não houver header ou ele não começar com "Bearer ", retorna erro 401 (não autorizado)
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  if (typeof authHeader !== 'string' || !authHeader.startsWith('Bearer ')) {
+    console.log("❌ Sem token ou formato incorreto");
     return res.status(401).json({ message: 'Token não fornecido' })
   }
 
   // Extrai o token do header (remove o "Bearer " antes)
   const token = authHeader.split(' ')[1]
+  console.log("Token extraído:", token);
 
   // Verifica se o token é válido chamando a função verifyToken
   // Retorna o payload decodificado se válido, ou null se inválido/expirado
   const decoded = verifyToken(token)
+  console.log("Decoded:", decoded);
 
   // Se o token for inválido, retorna erro 401
   if (!decoded) {
