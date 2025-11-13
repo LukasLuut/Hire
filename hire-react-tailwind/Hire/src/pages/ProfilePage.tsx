@@ -20,6 +20,8 @@ import { ServiceCreationWizardModal } from "../components/ServiceCreator/Service
 import ServiceNegotiationModal from "../components/Negotiation/ServiceNegotiationModal";
 import ServiceResponseModal from "../components/Negotiation/ServiceResponseModal";
 import ServiceFormalizerModal from "../components/Negotiation/ServiceFormalizerModal";
+import ProviderRegistration from "../components/ProviderRegistration/ProviderRegistration";
+import ProviderRegistrationContainer from "../components/ProviderRegistration/ProviderRegistration/Principal/ProviderRegistrationContainer";
 
 /* --------------------------------------------------------------------------
  * MOCKS DE DADOS
@@ -197,23 +199,23 @@ export default function ProfilePage() {
           <div className="flex gap-4 mt-2">
             <button 
             onClick={handleContratar}
-            className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:brightness-110 transition">
+            className="px-2 md:px-4  py-2 bg-[var(--primary)] text-white rounded-lg hover:brightness-110 transition">
               Contratar
             </button>
             <button 
             onClick={()=>{setIsOpenResponse(true)}}
-            className="px-4 py-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-light)] transition">
+            className="px-2 md:px-4 py-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-light)] transition">
               Mensagem
             </button>
              {/* BOTÃO DO MODAL DE CRIAÇÃO DE SERVIÇO */}
             <button 
             onClick={()=>{setOpen(true)}}
-            className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:brightness-110 transition">
-              + Serviço
+            className="px-2 md:px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:brightness-110 transition">
+               Serviço +
             </button>
              <button 
             onClick={()=>{setIsOpenChat(true)}}
-            className="px-4 py-2 border flex gap-2 items-center border-[var(--border)] rounded-lg hover:bg-[var(--bg-light)] transition">
+            className="px-2 md:px-4 py-2 border flex gap-2 items-center border-[var(--border)] rounded-lg hover:bg-[var(--bg-light)] transition">
               <MessageSquare size={20} /> Chat
             </button>
           </div>
@@ -222,7 +224,13 @@ export default function ProfilePage() {
       {/* ===============================================================
        * SEÇÃO DO CHAT
        * =============================================================== */}      
-      <ServiceFormalizerModal service={undefined} isOpen={isOpenChat} onClose={() => setIsOpenChat(false)}/>
+      {/* <ServiceFormalizerModal service={undefined} isOpen={isOpenChat} onClose={() => setIsOpenChat(false)}/> */}
+
+        {/* ===============================================================
+       * SEÇÃO DO CHAT
+       * =============================================================== */}
+       {isOpenChat?( <ProviderRegistrationContainer />):(<p></p>)}
+      
 
        {/* ===============================================================
        * SEÇÃO DE CRIAÇÃO DE SERVIÇOS
@@ -231,7 +239,7 @@ export default function ProfilePage() {
 
 
        {/* ===============================================================
-       * SEÇÃO DE CRIAÇÃO DE SERVIÇOS
+       * SEÇÃO DE RESPOSTA DE SERVIÇOS
        * =============================================================== */} 
       <ServiceResponseModal isOpen={isOpenResponse} onClose={()=>{setIsOpenResponse(false)}}/>
 
