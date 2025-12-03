@@ -54,11 +54,19 @@ export class UserService {
 
     if (!user) throw new Error("Usuário não encontrado");
 
+
+      console.log("Dados recebidos para atualização:", data);
+
+
     if (data.password) {
       user.password = data.password;
     }
 
     const { password, ...rest } = data;
+
+    console.log("Campos a serem atualizados (sem senha):", rest);
+
+    
     Object.assign(user, rest);
 
     return this.repo.save(user);

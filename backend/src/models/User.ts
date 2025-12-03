@@ -38,10 +38,10 @@ export class User {
   @Column({ type: 'boolean' })
   acceptedTerms: boolean;
 
-  @Column({ type: 'date', nullable: true})
+  @Column({ type: 'date', nullable: true })
   acceptedAt: Date;
 
-  @Column({ length: 400, nullable: true})
+  @Column({ length: 400, nullable: true })
   about: string;
 
   @OneToOne(() => Address, (address) => address.user, { cascade: true })
@@ -59,14 +59,26 @@ export class User {
 
   @BeforeInsert()
   @BeforeUpdate()
-  async hashPassword() {
+  /* async hashPassword() {
     if (!this.password.startsWith("$2")) {
       const rounds = Number(process.env.BCRYPT_SALT_ROUNDS);
 
       this.password = await bcrypt.hash(this.password, rounds);
     }
-  }
+  } */
 
+async hashPassword() {
+  if (!this.password) return;
+
+  const bcryptHashRegex = /^\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}$/;
+
+  const isAlreadyHashed = bcryptHashRegex.test(this.password);
+
+  if (!isAlreadyHashed) {
+    const rounds = Number(process.env.BCRYPT_SALT_ROUNDS);
+    this.password = await bcrypt.hash(this.password, rounds);
+  }
+}
   async validatePassword(plain: string): Promise<boolean> {
     return await bcrypt.compare(plain, this.password);
   }

@@ -31,7 +31,7 @@ export class AuthController {
       // ===============================
       // Aqui estamos criando um token que contém o id e o email do usuário
       // Esse token será enviado ao cliente e usado para autenticação em outras rotas
-      const token = generateToken({ id: user.id, email: user.email })
+      const token = generateToken({ id: user.id, name: user.name, email: user.email, about: user.about })
       // O token é um código seguro que representa o usuário logado.
       // Exemplo de token:
       // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhbGljZUBtYWlsLmNvbSIsImlhdCI6MTY5Mjk2MDAwMCwiZXhwIjoxNjkyOTY4MDAwfQ.RANDOMHASH

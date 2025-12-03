@@ -15,11 +15,11 @@ AppDataSource.initialize()
   .then(() => {
     console.log("📦 Banco conectado com sucesso");
     app.use(
-      cors({
+      cors(/* {
         origin: "http://localhost:5173", // ou a origem do teu frontend
         methods: ["GET", "POST", "PUT", "DELETE"],
         allowedHeaders: ["Content-Type", "Authorization"], // 🔥 ESSA LINHA É ESSENCIAL
-      })
+      } */)
     );
     app.use(router);
 
