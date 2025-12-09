@@ -179,7 +179,7 @@ function PreferenceCard({
     <motion.div
       whileHover={{ scale: 1.01 }}
       transition={{ duration: 0.2 }}
-      className="p-4 rounded-2xl bg-[var(--surface)] border border-[var(--border)] shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-between gap-4"
+      className="p-4 rounded-2xl bg-[var(--bg)] border border-[var(--border)] shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-between gap-4"
     >
       <div className="flex items-start gap-3">
         {icon}

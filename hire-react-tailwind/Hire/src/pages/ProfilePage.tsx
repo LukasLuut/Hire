@@ -23,6 +23,7 @@ import ServiceFormalizerModal from "../components/Negotiation/ServiceFormalizerM
 import ProviderRegistration from "../components/ProviderRegistration/ProviderRegistration";
 import ProviderRegistrationContainer from "../components/ProviderRegistration/ProviderRegistration/Principal/ProviderRegistrationContainer";
 import NegotiationRoom from "../components/Negotiation/NegotiationRoom";
+import ServiceEditor from "../components/ServiceEditor/ServiceEditor";
 
 /* --------------------------------------------------------------------------
  * MOCKS DE DADOS
@@ -233,7 +234,7 @@ export default function ProfilePage() {
        {/* ===============================================================
        * SEÇÃO DE CRIAÇÃO DE SERVIÇOS
        * =============================================================== */}      
-      <ServiceCreationWizardModal  isOpen={open} onClose={() => setOpen(false)}/>
+        {open?(<ServiceEditor  />):(<p></p>)}
 
        {/* ===============================================================
        * SEÇÃO DE RESPOSTA DE SERVIÇOS
@@ -249,7 +250,7 @@ export default function ProfilePage() {
        * SEÇÃO DE REGISTRO E GALERIA DE SERVIÇOS
        * =============================================================== */}
         {isClient ?(
-          <div className="flex flex-col items-center justify-center min-h-50 bg-[var(--bg-dark)] text-[var(--text)]">
+          <div className="flex flex-col items-center justify-center min-h-50 bg-[var(--bg-dark)] border-b-1  border-[var(--border)] text-[var(--text)]">
             {!registration?(
               <button className="bg-[var(--primary)] rounded-xl w-55 h-15 mt-6 text-lg text-white animate-bounce "
                 onClick={()=>setRegistration(true) }>
@@ -268,7 +269,8 @@ export default function ProfilePage() {
       {/* ===============================================================
        * SEÇÃO DE AVALIAÇÕES
        * =============================================================== */}
-      <section className="p-8 md:px-20">
+      {!isClient&&(
+          <section className="p-8 md:px-20">
         <h2 className="text-2xl font-bold mb-6">Avaliações</h2>
 
         {/* Caso ainda não haja avaliações */}
@@ -300,6 +302,8 @@ export default function ProfilePage() {
           </div>
         )}
       </section>
+      )}
+      
     </div>
   );
 }

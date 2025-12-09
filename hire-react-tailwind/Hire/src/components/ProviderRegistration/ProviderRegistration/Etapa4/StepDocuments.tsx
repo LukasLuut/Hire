@@ -110,7 +110,7 @@ function FileUploadCard({
   multiple?: boolean;
 }) {
   return (
-    <label className="group cursor-pointer border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-2 hover:shadow-md transition-all bg-[var(--surface-elevated)]">
+    <label className="group cursor-pointer border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-2 hover:shadow-md transition-all bg-[var(--bg)]">
       <div className="flex items-center gap-2">
         <div className="p-2 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)]">
           {icon}
@@ -122,7 +122,7 @@ function FileUploadCard({
         </div>
       </div>
 
-      <span className="text-xs text-[var(--text-muted)] mt-2">
+      <span className="text-xs  text-[var(--text-muted)] mt-2">
         {multiple
           ? files?.length
             ? `${files.length} arquivo(s) selecionado(s)`
@@ -160,7 +160,7 @@ function Badge({ icon, active }: { icon: React.ReactNode; active: boolean }) {
       className={`flex items-center justify-center w-12 h-12 rounded-lg border transition-all ${
         active
           ? "border-[var(--primary)] bg-[var(--primary)]/10"
-          : "border-[var(--border)] bg-[var(--surface)]"
+          : "border-[var(--border)] bg-[var(--bg)]"
       }`}
     >
       <div

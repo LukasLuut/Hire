@@ -118,7 +118,7 @@ export default function StepAddress({
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-2xl p-4 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 bg-[var(--bg)] border border-[var(--border)] rounded-2xl p-4 shadow-sm">
         <Toggle
           checked={form.hasPhysicalLocation}
           onChange={(v) => update("hasPhysicalLocation", v)}
@@ -139,7 +139,7 @@ export default function StepAddress({
             transition={{ duration: 0.25 }}
             className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-md overflow-hidden"
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
+            <div className="grid  grid-cols-1 md:grid-cols-2 gap-4 p-6">
               <Input label="CEP" value={cep} placeholder="00000-000" onChange={setCep} onBlur={handleBlur} />
               <Input label="Rua / Número" value={street} placeholder="Rua, número" onChange={setStreet} onBlur={handleBlur} />
               <Input label="Bairro" value={neighborhood} placeholder="Bairro" onChange={setNeighborhood} onBlur={handleBlur} />
@@ -168,7 +168,7 @@ export default function StepAddress({
                   <p className="text-xs text-[var(--text-muted)] mb-2">
                     O mapa mostra sua cidade atual. Você pode mover o marcador para ajustar.
                   </p>
-                  <div ref={mapContainerRef} className="w-full h-56 rounded-xl border border-[var(--border)] overflow-hidden"></div>
+                  <div ref={mapContainerRef} className="w-full h-56 rounded-xl border bg-[var(--bg)] border-[var(--border)] overflow-hidden"></div>
                 </>
               )}
             </div>
@@ -180,12 +180,12 @@ export default function StepAddress({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
             transition={{ duration: 0.25 }}
-            className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-md p-6 max-w-sm"
+            className="bg-[var(--bg)] flex flex-col border border-[var(--border)] rounded-2xl shadow-md p-6 max-w-sm"
           >
             <label className="text-sm text-[var(--text-muted)]">Raio de atuação (km)</label>
             <input
               type="number"
-              className="input w-full mt-2"
+              className="input w-20 rounded-md px-3 bg-[var(--bg-light)] mt-2"
               value={form.serviceRadiusKm || ""}
               onChange={(e) => update("serviceRadiusKm", Number(e.target.value))}
               placeholder="Ex: 20"
@@ -221,7 +221,7 @@ function Input({
         onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur}
         placeholder={placeholder}
-        className="input bg-[var(--surface-elevated)] border border-[var(--border)] rounded-xl text-[var(--text)] placeholder:text-[var(--text-muted)] px-3 py-2 focus:border-[var(--primary)] transition-all duration-200"
+        className="input bg-[var(--bg)] border border-[var(--border)] rounded-xl text-[var(--text)] placeholder:text-[var(--text-muted)] px-3 py-2 focus:border-[var(--primary)] transition-all duration-200"
       />
     </div>
   );
