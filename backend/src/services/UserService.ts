@@ -53,10 +53,7 @@ export class UserService {
     const user = await this.repo.findOne({ where: { id } });
 
     if (!user) throw new Error("Usuário não encontrado");
-
-
       console.log("Dados recebidos para atualização:", data);
-
 
     if (data.password) {
       user.password = data.password;
@@ -66,7 +63,6 @@ export class UserService {
 
     console.log("Campos a serem atualizados (sem senha):", rest);
 
-    
     Object.assign(user, rest);
 
     return this.repo.save(user);

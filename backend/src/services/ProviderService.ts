@@ -40,28 +40,30 @@ export class ProviderService {
   }
 
   async remove(id: number) {
-    const provider = await this.providerRepository.findOne({ where: {
-      user: {
-        id: id
+    const provider = await this.providerRepository.findOne({
+      where: {
+        user: {
+          id: id
+        }
       }
-    }});
+    });
 
     if (!provider) throw new Error("Provedor não encontrado");
-    
+
 
     await this.providerRepository.remove(provider);
     return { message: "Provedor removido" };
   }
 
-    async list() {
-      const users = await this.providerRepository.find();
+  async list() {
+    const users = await this.providerRepository.find();
 
-      return users.map((u) => {
-        const clone: any = { ...u };
-        delete clone.password;
-        return clone;
-      });
-    }
+    return users.map((u) => {
+      const clone: any = { ...u };
+      delete clone.password;
+      return clone;
+    });
+  }
 
   //   async findById(id: number) {
   //     const user = await this.providerRepository.findOne({ where: { id } });
@@ -73,15 +75,17 @@ export class ProviderService {
   //     return clone;
   //   }
 
-    async update(id: number, data: Partial<ServiceProvider>) {
-      const user = await this.userRepository.findOne({ where: { id: id}, relations: {provider: true}})
-      if(!user) throw new Error("Usuário não encontrado")
+  async update(id: number, data: Partial<ServiceProvider>) {
+    const user = await this.userRepository.findOne({ where: { id: id }, relations: { provider: true } })
+    if (!user) throw new Error("Usuário não encontrado")
 
-      const provider = await this.providerRepository.findOne({ where: {user: { id: id}}, relations: {user: true}});
-      if (!provider) throw new Error("Provedor não encontrado");
+    const provider = await this.providerRepository.findOne({ where: { user: { id: id } }, relations: { user: true } });
+    if (!provider) throw new Error("Provedor não encontrado");
 
-      return await this.providerRepository.save(provider);
-    }
+    Object.assign(provider, data);
+
+    return await this.providerRepository.save(provider);
+  }
 
   //   async remove(id: number) {
   //     const user = await this.providerRepository.findOne({ where: { id } });

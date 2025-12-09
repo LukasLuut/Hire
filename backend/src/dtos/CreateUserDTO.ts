@@ -1,5 +1,5 @@
 // src/dtos/CreateUserDTO.ts
-import { IsEmail, IsNotEmpty, Matches, MaxLength, MinLength } from "class-validator";
+import { Equals, IsBoolean, IsEmail, IsNotEmpty, Matches, MaxLength, MinLength } from "class-validator";
 
 export class CreateUserDTO {
   @IsNotEmpty({ message: "O nome é obrigatório" })
@@ -18,7 +18,11 @@ export class CreateUserDTO {
   @Matches(/(?=.*[@$!%*?&])/, { message: "Senha deve conter pelo menos um caractere especial (@$!%*?&)" })
   password: string;
 
-  @IsNotEmpty({ message: "O CPF é obrigatório"})
-  @Matches(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, { message: "CPF Inválido"})
+  @IsNotEmpty({ message: "O CPF é obrigatório" })
+  @Matches(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, { message: "CPF Inválido" })
   cpf_cnpj: string;
+
+  @IsBoolean()
+  @Equals(true, { message: "Termos de contrato devem ser aceitos"})
+  acceptedTerms: boolean;
 }
