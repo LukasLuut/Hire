@@ -3,8 +3,7 @@
 // Etapa 1 — Identidade & Conta (UI refinada + UX aprimorada)
 
 import React from "react";
-import type { ProviderForm } from "../helpers/types-and-helpers";
-import type { FileOrNull } from "../helpers/types-and-helpers";
+import type { ProviderForm, FileOrNull } from "../helpers/types-and-helpers";
 import { Camera, Upload } from "lucide-react";
 
 export default function StepIdentity({
@@ -40,7 +39,7 @@ export default function StepIdentity({
         {/* Upload com preview */}
         <div className="flex flex-col md:flex-row items-center gap-8 mb-8 border-b border-[var(--border)] pb-8">
           <div className="relative group">
-            <div className="w-28 h-28 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-dashed border-[var(--border)] bg-[var(--bg)] flex items-center justify-center group-hover:border-[var(--primary)] transition-all">
+            <div className="w-28 h-28 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-dashed border-[var(--primary)] bg-[var(--bg)] flex items-center justify-center transition-all">
               {profilePreviewUrl ? (
                 <img
                   src={profilePreviewUrl}

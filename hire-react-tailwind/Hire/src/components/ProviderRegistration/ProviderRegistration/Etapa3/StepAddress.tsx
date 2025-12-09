@@ -31,75 +31,9 @@ export default function StepAddress({
   // Limpa CEP
   const cleanCep = (c: string) => c.replace(/\D/g, "");
 
-  // Geolocalização automática
-  useEffect(() => {
-    if (!form.hasPhysicalLocation || !navigator.geolocation) return;
-    setLoadingLocation(true);
 
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        setPosition([latitude, longitude]);
-        setLoadingLocation(false);
-      },
-      () => setLoadingLocation(false),
-      { enableHighAccuracy: true, timeout: 8000 }
-    );
-  }, [form.hasPhysicalLocation]);
 
-  // Inicializa mapa
-  useEffect(() => {
-    if (!form.hasPhysicalLocation || mapRef.current || !mapContainerRef.current) return;
-
-    const map = L.map(mapContainerRef.current, {
-      center: position,
-      zoom: 14,
-      zoomControl: false,
-      attributionControl: false,
-    });
-    mapRef.current = map;
-
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(map);
-
-    const marker = L.marker(position, {
-      draggable: true,
-      icon: L.divIcon({
-        html: `<div class='relative -translate-x-1/2 -translate-y-full'>
-          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='#3b82f6' class='w-6 h-6 drop-shadow-md animate-bounce'>
-            <path d='M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7z'/>
-          </svg>
-        </div>`,
-        iconSize: [30, 30],
-        iconAnchor: [15, 30],
-      }),
-    }).addTo(map);
-
-    markerRef.current = marker;
-
-    marker.on("dragend", () => {
-      const { lat, lng } = marker.getLatLng();
-      setPosition([lat, lng]);
-      update("address", { ...(form.address || {}), lat, lng });
-    });
-
-    setTimeout(() => map.invalidateSize(), 400);
-
-    return () => {
-      map.remove();
-      mapRef.current = null;
-      markerRef.current = null;
-    };
-  }, [form.hasPhysicalLocation]);
-
-  // Atualiza posição do mapa
-  useEffect(() => {
-    if (mapRef.current && markerRef.current) {
-      mapRef.current.setView(position, 14);
-      markerRef.current.setLatLng(position);
-    }
-  }, [position]);
-
-  // CEP automático sem loop infinito
+  // CEP automático
   useEffect(() => {
     const numericCep = cleanCep(cep);
     if (numericCep.length !== 8) return;
@@ -137,7 +71,7 @@ export default function StepAddress({
           });
         }
 
-        // Geocoding do mapa
+        // Inicio do mapa, revisar ainda
         const query = `${data.logradouro || ""}, ${data.bairro || ""}, ${data.localidade || ""}, ${data.uf || ""}, Brasil`;
         fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
           .then((res) => res.json())

@@ -8,8 +8,82 @@ import React, { useState } from "react";
 /* -----------------------------
    Tipos principais do formulário
    ----------------------------- */
+interface Service {
+  id: number;
+  title: string;
+  description: string;
+  category?: string;
+  subcategory?: string;
+  price?: string;
+  duration?: string;
+  featured?: boolean;
+  status?: string;
+  images: string[];
+  likes?: number;
+}
+
+export interface Client {
+  id: string;
+  name: string;
+  email: string;
+
+  // telefone sempre padronizado no projeto
+  phone?: string;
+
+  // endereço segue o mesmo padrão usado no StepAddress
+  address?: {
+    street: string;
+    number?: string;
+    neighborhood?: string;
+    city: string;
+    state: string;
+    cep?: string;
+    complement?: string;
+    lat?: number;
+    lng?: number;
+  };
+
+  // favoritos (prestadores salvos)
+  favorites?: string[]; // IDs de prestadores
+
+  // pedidos feitos como cliente
+  orders?: string[];
+
+  // status de verificação (mesma lógica do prestador)
+  verification?: {
+    emailVerified: boolean;
+    phoneVerified: boolean;
+    documentVerified?: boolean;
+  };
+
+  // indica se ele já ativou o modo prestador
+  isProvider: boolean;
+
+  createdAt: string;
+  updatedAt?: string;
+}
+
+
 export type FileOrNull = File | null ;
 
+// Tipagens corrigidas para evitar erro de indexação e any implícito
+export type DayKey =
+  | "monday"
+  | "tuesday"
+  | "wednesday"
+  | "thursday"
+  | "friday"
+  | "saturday"
+  | "sunday";
+
+export type DayAvailability = {
+  start: string;
+  end: string;
+};
+
+export type Availability = Record<DayKey, DayAvailability | null>;
+
+// Interface ProviderForm atualizada
 export interface ProviderForm {
   name: string;
   cpfCnpj: string;
@@ -23,8 +97,10 @@ export interface ProviderForm {
   subcategories: string[];
   experienceLevel: "iniciante" | "intermediario" | "especialista" | "";
   portfolio: File[];
-  priceRange: string;
-  avgDuration: string;
+  portfolioPreviews?: string[];
+
+  availability: Availability;
+
   inPerson: boolean;
   online: boolean;
   onlineLink: string;
@@ -37,7 +113,6 @@ export interface ProviderForm {
     neighborhood?: string;
     city?: string;
     state?: string;
-    /** coordenadas do mapa (opcional) */
     lat?: number;
     lng?: number;
   } | null;
@@ -54,6 +129,8 @@ export interface ProviderForm {
   showPrices: boolean;
   status: "available" | "paused";
 }
+
+
 
 
 /* -----------------------------

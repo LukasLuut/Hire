@@ -1,12 +1,13 @@
-// StepProfessional.tsx
-// ---------------------
-// Etapa 2 — Profissional & Serviços (refinado, fluido e sem flicker)
+
+
+// StepProfessional.tsx — versão completa com sistema de disponibilidade inteligente
+// ---------------------------------------------------------------------------------
 
 import React from "react";
 import { motion } from "framer-motion";
-import type { ProviderForm } from "../helpers/types-and-helpers";
+import type { Availability, DayKey, ProviderForm } from "../helpers/types-and-helpers";
 import { TagInput, Toggle } from "../helpers/types-and-helpers";
-import { Upload, Briefcase, Clock, Layers } from "lucide-react";
+import { Upload, Layers, Briefcase } from "lucide-react";
 
 export default function StepProfessional({
   form,
@@ -23,15 +24,33 @@ export default function StepProfessional({
   removeSubcategory: (t: string) => void;
   portfolioPreviews: string[];
 }) {
+  const days: [DayKey, string][] = [
+  ["monday", "Seg"],
+  ["tuesday", "Ter"],
+  ["wednesday", "Qua"],
+  ["thursday", "Qui"],
+  ["friday", "Sex"],
+  ["saturday", "Sáb"],
+  ["sunday", "Dom"],
+];
+
+  const mapLong = {
+    monday: "Segunda-feira",
+    tuesday: "Terça-feira",
+    wednesday: "Quarta-feira",
+    thursday: "Quinta-feira",
+    friday: "Sexta-feira",
+    saturday: "Sábado",
+    sunday: "Domingo",
+  } as const;
+
   return (
     <motion.div
       layout
       className="flex flex-col gap-8"
-      transition={{ layout: { duration: 0.3, ease: 'easeInOut' } }}
+      transition={{ layout: { duration: 0.3, ease: "easeInOut" } }}
     >
-      {/* =====================
-          Cabeçalho da etapa
-      ===================== */}
+      {/* Cabeçalho */}
       <div>
         <h2 className="text-3xl font-semibold text-[var(--primary)] mb-1">
           Profissional & Serviços
@@ -41,12 +60,9 @@ export default function StepProfessional({
         </p>
       </div>
 
-      {/* =====================
-          Card principal
-      ===================== */}
       <div className="bg-[var(--bg-light)] border border-[var(--border)] rounded-2xl shadow-sm p-6 flex flex-col gap-6">
-
-        {/* ===== Linha 1 — Nome e Categoria ===== */}
+        
+        {/* Nome e categoria */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="flex flex-col">
             <label className="text-sm font-medium text-[var(--text-muted)] mb-1">
@@ -79,7 +95,7 @@ export default function StepProfessional({
           </div>
         </div>
 
-        {/* ===== Subcategorias ===== */}
+        {/* Subcategorias */}
         <div>
           <label className="text-sm font-medium text-[var(--text-muted)] mb-1">
             Subcategorias / Serviços
@@ -94,64 +110,94 @@ export default function StepProfessional({
           </p>
         </div>
 
-        {/* ===== Experiência / Preço / Duração ===== */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div className="flex flex-col">
-            <label className="text-sm font-medium text-[var(--text-muted)] mb-1">
-              Nível de experiência
-            </label>
-            <select
-              className="input p-2  rounded-lg border-[var(--border)] bg-[var(--bg)] focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/30 transition-all"
-              value={form.experienceLevel}
-              onChange={(e) =>
-                update("experienceLevel", e.target.value as any)
-              }
-            >
-              <option value="">Selecione</option>
-              <option value="iniciante">Iniciante</option>
-              <option value="intermediario">Intermediário</option>
-              <option value="especialista">Especialista</option>
-            </select>
+        {/* Disponibilidade (Substitui preços e duração) */}
+        <div className="flex flex-col gap-4">
+          <label className="text-sm font-medium text-[var(--text-muted)]">
+            Dias e horários de atendimento
+          </label>
+
+          {/* Botões de dias */}
+          <div className="flex flex-wrap gap-2">
+            {days.map(([key, label]) => {
+              const active = !!form.availability[key];
+              return (
+                <button
+                  key={key}
+                  onClick={() =>
+                    update("availability", {
+                      ...form.availability,
+                      [key]: active ? null : { start: "09:00", end: "18:00" },
+                    })
+                  }
+                  className={
+                    "px-3 py-1 rounded-lg text-sm border transition-all " +
+                    (active
+                      ? "bg-[var(--primary)] text-white border-[var(--primary)]"
+                      : "bg-[var(--bg)] border-[var(--border)] text-[var(--text-muted)]")
+                  }
+                >
+                  {label}
+                </button>
+              );
+            })}
           </div>
 
-          <div className="flex flex-col">
-            <label className="text-sm font-medium text-[var(--text-muted)] mb-1">
-              Faixa de preço
-            </label>
-            <div className="relative">
-              <Briefcase
-                size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"
-              />
-              <input
-                className="input p-2 pl-9 max-w-53 rounded-lg border-[var(--border)] bg-[var(--bg)] focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/30 transition-all"
-                value={form.priceRange}
-                onChange={(e) => update("priceRange", e.target.value)}
-                placeholder="Ex: R$ 100 - R$ 500"
-              />
-            </div>
-          </div>
+          {/* Horários detalhados */}
+          <motion.div layout className="flex flex-col gap-3">
+            {(Object.entries(form.availability) as [DayKey, Availability[DayKey]][]).map(
+              ([day, hours]) => {
+              if (!hours) return null;
+              return (
+                <motion.div
+                  key={day}
+                  layout
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="p-3 rounded-xl border border-[var(--border)] bg-[var(--bg-light)] flex flex-col gap-2"
+                >
+                  <span className="font-medium text-sm capitalize">{mapLong[day]}</span>
 
-          <div className="flex flex-col">
-            <label className="text-sm font-medium text-[var(--text-muted)] mb-1">
-              Duração média
-            </label>
-            <div className="relative">
-              <Clock
-                size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"
-              />
-              <input
-                className="input p-2 pl-9 max-w-45 rounded-lg border-[var(--border)] bg-[var(--bg)] focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/30 transition-all"
-                value={form.avgDuration}
-                onChange={(e) => update("avgDuration", e.target.value)}
-                placeholder="Ex: 01:30"
-              />
-            </div>
-          </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* Início */}
+                    <div className="flex flex-col">
+                      <label className="text-xs text-[var(--text-muted)]">Início</label>
+                      <input
+                        type="time"
+                        value={hours.start}
+                        onChange={(e) =>
+                          update("availability", {
+                            ...form.availability,
+                            [day]: { ...hours, start: e.target.value },
+                          })
+                        }
+                        className="input p-2 rounded-lg border-[var(--border)] bg-[var(--bg)]"
+                      />
+                    </div>
+
+                    {/* Fim */}
+                    <div className="flex flex-col">
+                      <label className="text-xs text-[var(--text-muted)]">Fim</label>
+                      <input
+                        type="time"
+                        value={hours.end}
+                        onChange={(e) =>
+                          update("availability", {
+                            ...form.availability,
+                            [day]: { ...hours, end: e.target.value },
+                          })
+                        }
+                        className="input p-2 rounded-lg border-[var(--border)] bg-[var(--bg)]"
+                      />
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
         </div>
 
-        {/* ===== Modos de Atendimento ===== */}
+        {/* Modos de atendimento */}
         <div className="flex flex-col md:flex-row md:items-center gap-4">
           <Toggle
             checked={form.inPerson}
@@ -165,7 +211,7 @@ export default function StepProfessional({
           />
         </div>
 
-        {/* ===== Campo condicional — Link online ===== */}
+        {/* Link online condicional */}
         <motion.div
           layout
           initial={false}
@@ -188,7 +234,7 @@ export default function StepProfessional({
           )}
         </motion.div>
 
-        {/* ===== Portfólio ===== */}
+        {/* Portfólio */}
         <div>
           <label className="text-sm font-medium text-[var(--text-muted)] mb-2">
             Portfólio (imagens / PDFs)
@@ -204,9 +250,7 @@ export default function StepProfessional({
                 className="hidden"
               />
             </label>
-            <p className="text-xs text-[var(--text-muted)]">
-              PNG, JPG, PDF — até 10 arquivos.
-            </p>
+            <p className="text-xs text-[var(--text-muted)]">PNG, JPG, PDF — até 10 arquivos.</p>
           </div>
 
           <motion.div layout className="flex flex-wrap gap-3">
@@ -219,11 +263,7 @@ export default function StepProfessional({
                 transition={{ duration: 0.2 }}
                 className="relative w-24 h-24 rounded-lg overflow-hidden border border-[var(--border)] bg-[var(--bg)] shadow-sm"
               >
-                <img
-                  src={url}
-                  alt={`portfolio-${i}`}
-                  className="w-full h-full object-cover"
-                />
+                <img src={url} alt={`portfolio-${i}`} className="w-full h-full object-cover" />
               </motion.div>
             ))}
           </motion.div>

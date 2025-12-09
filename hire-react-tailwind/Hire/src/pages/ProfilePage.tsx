@@ -22,6 +22,7 @@ import ServiceResponseModal from "../components/Negotiation/ServiceResponseModal
 import ServiceFormalizerModal from "../components/Negotiation/ServiceFormalizerModal";
 import ProviderRegistration from "../components/ProviderRegistration/ProviderRegistration";
 import ProviderRegistrationContainer from "../components/ProviderRegistration/ProviderRegistration/Principal/ProviderRegistrationContainer";
+import NegotiationRoom from "../components/Negotiation/NegotiationRoom";
 
 /* --------------------------------------------------------------------------
  * MOCKS DE DADOS
@@ -57,6 +58,8 @@ export default function ProfilePage() {
   const [openContratar, setOpenContratar]=useState(false)
   const [isOpenResponse, setIsOpenResponse]=useState(false)
   const [isOpenChat, setIsOpenChat]=useState(false)
+  const [isClient, setIsClient]=useState(true)
+  const [registration, setRegistration]=useState(false)
 
 
   /* ------------------------------------------------------------------------
@@ -123,9 +126,10 @@ export default function ProfilePage() {
       </div>
     );
   }
+ 
 
   /* ------------------------------------------------------------------------
-   * RENDERIZAÇÃO PRINCIPAL
+   * RENDERIZAÇÃO PARA PRESTADOR (COM GALERIA DE SERVIÇOS)
    * ------------------------------------------------------------------------ */
   return (
     <div className="min-h-screen pt-15 sm:pt-20 bg-[var(--bg-dark)] text-[var(--text)] transition-colors duration-300">
@@ -224,19 +228,12 @@ export default function ProfilePage() {
       {/* ===============================================================
        * SEÇÃO DO CHAT
        * =============================================================== */}      
-      {/* <ServiceFormalizerModal service={undefined} isOpen={isOpenChat} onClose={() => setIsOpenChat(false)}/> */}
-
-        {/* ===============================================================
-       * SEÇÃO DO CHAT
-       * =============================================================== */}
-       {isOpenChat?( <ProviderRegistrationContainer />):(<p></p>)}
-      
+      <ServiceFormalizerModal service={undefined} isOpen={isOpenChat} onClose={() => setIsOpenChat(false)}/>
 
        {/* ===============================================================
        * SEÇÃO DE CRIAÇÃO DE SERVIÇOS
        * =============================================================== */}      
       <ServiceCreationWizardModal  isOpen={open} onClose={() => setOpen(false)}/>
-
 
        {/* ===============================================================
        * SEÇÃO DE RESPOSTA DE SERVIÇOS
@@ -248,12 +245,25 @@ export default function ProfilePage() {
        * =============================================================== */} 
       <ServiceNegotiationModal isOpen= {openContratar} onClose={()=>{setOpenContratar(false)}} />
 
-      {/* ===============================================================
-       * SEÇÃO DE GALERIA DE SERVIÇOS
+        {/* ===============================================================
+       * SEÇÃO DE REGISTRO E GALERIA DE SERVIÇOS
        * =============================================================== */}
-      <section className="py-8 md:px-20">
-        <ServiceGalleryMagazine />
-      </section>
+        {isClient ?(
+          <div className="flex flex-col items-center justify-center min-h-50 bg-[var(--bg-dark)] text-[var(--text)]">
+            {!registration?(
+              <button className="bg-[var(--primary)] rounded-xl w-55 h-15 mt-6 text-lg text-white animate-bounce "
+                onClick={()=>setRegistration(true) }>
+                Cadastre sua empresa
+              </button>
+            ):(<ProviderRegistrationContainer />)}
+            
+          </div>
+        ):(
+          <section className="py-8 md:px-20">
+            <ServiceGalleryMagazine />
+          </section>
+        )}
+      
 
       {/* ===============================================================
        * SEÇÃO DE AVALIAÇÕES

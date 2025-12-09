@@ -6,6 +6,8 @@ import type { ProviderForm } from "../helpers/types-and-helpers";
 import { ShieldCheck, FileText } from "lucide-react";
 import { motion } from "framer-motion";
 import { LinkList } from "../helpers/types-and-helpers";
+import { toFiles } from "../helpers/file-helpers";
+
 
 export default function StepDocuments({
   form,
@@ -39,6 +41,7 @@ export default function StepDocuments({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
         {/* Documento de Identificação */}
         <FileUploadCard
           label="Documento de identificação"
@@ -55,17 +58,24 @@ export default function StepDocuments({
           icon={<FileText className="w-5 h-5" />}
           multiple
           files={form.certifications}
-          onChange={(files) => onCertifications(files as File[] | null)}
+          onChange={(files) =>
+            onCertifications(Array.isArray(files) ? (files as File[]) : null)
+          }
         />
 
         {/* Links profissionais */}
         <div className="md:col-span-2 flex flex-col gap-2">
-          <label className="text-sm font-medium text-[var(--text-muted)]">Links profissionais</label>
+          <label className="text-sm font-medium text-[var(--text-muted)]">
+            Links profissionais
+          </label>
+
           <div className="mt-2">
             <LinkList
               links={form.links}
               onAdd={(url) => update("links", [...form.links, url])}
-              onRemove={(url) => update("links", form.links.filter((l) => l !== url))}
+              onRemove={(url) =>
+                update("links", form.links.filter((l) => l !== url))
+              }
             />
           </div>
         </div>
@@ -79,6 +89,7 @@ export default function StepDocuments({
     </motion.div>
   );
 }
+
 
 // Card de upload de arquivos
 function FileUploadCard({
@@ -101,12 +112,16 @@ function FileUploadCard({
   return (
     <label className="group cursor-pointer border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-2 hover:shadow-md transition-all bg-[var(--surface-elevated)]">
       <div className="flex items-center gap-2">
-        <div className="p-2 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)]">{icon}</div>
+        <div className="p-2 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)]">
+          {icon}
+        </div>
+
         <div className="flex flex-col">
           <span className="text-sm font-medium text-[var(--text)]">{label}</span>
           <span className="text-xs text-[var(--text-muted)]">{description}</span>
         </div>
       </div>
+
       <span className="text-xs text-[var(--text-muted)] mt-2">
         {multiple
           ? files?.length
@@ -116,17 +131,24 @@ function FileUploadCard({
           ? file.name
           : "Clique para selecionar um arquivo"}
       </span>
+
       <input
         type="file"
         className="hidden"
-        onChange={(e) =>
-          multiple ? onChange(Array.from(e.target.files || [])) : onChange(e.target.files?.[0] ?? null)
-        }
         multiple={multiple}
+        onChange={(e) => {
+          if (multiple) {
+            const fileList = toFiles(e.target.files);
+            onChange(fileList.length ? fileList : null);
+          } else {
+            onChange(e.target.files?.[0] ?? null);
+          }
+        }}
       />
     </label>
   );
 }
+
 
 // Badge de status
 function Badge({ icon, active }: { icon: React.ReactNode; active: boolean }) {
@@ -136,10 +158,18 @@ function Badge({ icon, active }: { icon: React.ReactNode; active: boolean }) {
       animate={{ scale: 1, opacity: 1 }}
       transition={{ duration: 0.3 }}
       className={`flex items-center justify-center w-12 h-12 rounded-lg border transition-all ${
-        active ? "border-[var(--primary)] bg-[var(--primary)]/10" : "border-[var(--border)] bg-[var(--surface)]"
+        active
+          ? "border-[var(--primary)] bg-[var(--primary)]/10"
+          : "border-[var(--border)] bg-[var(--surface)]"
       }`}
     >
-      <div className={`text-[var(--primary)] ${active ? "" : "text-[var(--text-muted)]"}`}>{icon}</div>
+      <div
+        className={`${
+          active ? "text-[var(--primary)]" : "text-[var(--text-muted)]"
+        }`}
+      >
+        {icon}
+      </div>
     </motion.div>
   );
 }

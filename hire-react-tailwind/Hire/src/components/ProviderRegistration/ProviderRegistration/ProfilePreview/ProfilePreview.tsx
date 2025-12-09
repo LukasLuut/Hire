@@ -1,15 +1,15 @@
-// ProfilePreview.tsx — versão final aprimorada e tipada
+// ProfilePreview.tsx — versão aprimorada com mais informações
 // ------------------------------------------------------
 
 import React from "react";
-import type { ProviderForm } from "../helpers/types-and-helpers";
+import type { ProviderForm, DayKey, Availability } from "../helpers/types-and-helpers";
 import {
   ShieldCheck,
   FileText,
   MapPin,
-  Clock,
-  DollarSign,
   Briefcase,
+  Map,
+  Globe,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -20,6 +20,20 @@ export default function ProfilePreview({
   form: ProviderForm;
   profilePreviewUrl: string | null;
 }) {
+  const availability = form.availability;
+
+  const days: [DayKey, string][] = [
+    ["monday", "Segunda"],
+    ["tuesday", "Terça"],
+    ["wednesday", "Quarta"],
+    ["thursday", "Quinta"],
+    ["friday", "Sexta"],
+    ["saturday", "Sábado"],
+    ["sunday", "Domingo"],
+  ];
+
+  const availabilityList = days.filter(([key]) => availability?.[key]);
+
   return (
     <motion.div
       key="profile-preview"
@@ -27,17 +41,13 @@ export default function ProfilePreview({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 shadow-md sticky top-20 flex flex-col gap-5 hover:shadow-lg hover:-translate-y-[2px] transition-all duration-300"
+      className="bg-[var(--bg-light)] border border-[var(--border)] rounded-2xl p-5 shadow-md sticky top-20 flex flex-col gap-5 hover:shadow-lg hover:-translate-y-[2px] transition-all duration-300"
     >
       {/* Header */}
       <div className="flex items-center gap-4">
-        <div className="w-16 h-16 rounded-xl overflow-hidden bg-[var(--bg)] border border-[var(--border)] flex items-center justify-center">
+        <div className="w-16 h-16 rounded-full overflow-hidden bg-[var(--bg)] border border-[var(--primary)] flex items-center justify-center">
           {profilePreviewUrl ? (
-            <img
-              src={profilePreviewUrl}
-              alt="Foto do perfil"
-              className="w-full h-full object-cover"
-            />
+            <img src={profilePreviewUrl} alt="Foto do perfil" className="w-full h-full object-cover" />
           ) : (
             <div className="text-[var(--text-muted)] text-sm">Foto</div>
           )}
@@ -59,19 +69,7 @@ export default function ProfilePreview({
         {form.shortDescription || "Sua descrição curta aparecerá aqui..."}
       </p>
 
-      {/* Infos rápidas */}
-      <div className="grid grid-cols-2 gap-3 text-center">
-        <InfoCard
-          icon={<DollarSign />}
-          label="Preço"
-          value={form.priceRange || "—"}
-        />
-        <InfoCard
-          icon={<Clock />}
-          label="Duração"
-          value={form.avgDuration || "—"}
-        />
-      </div>
+    
 
       {/* Subcategorias */}
       <div className="flex flex-wrap gap-2">
@@ -85,34 +83,61 @@ export default function ProfilePreview({
             </span>
           ))
         ) : (
-          <span className="text-xs text-[var(--text-muted)]">
-            Nenhum serviço adicionado
-          </span>
+          <span className="text-xs text-[var(--text-muted)]">Nenhum serviço adicionado</span>
         )}
       </div>
+
+      {/* Modelo de atendimento */}
+      <div className="grid grid-cols-2 gap-3 text-center mt-2">
+        <InfoCard icon={<Globe />} label="Atende online" value={form.online ? "Sim" : "Não"} />
+        <InfoCard icon={<Map />} label="Presencial" value={form.inPerson ? "Sim" : "Não"} />
+      </div>
+
+      
+
+      {/* Horários disponíveis */}
+      <div className="flex flex-col gap-2 mt-4">
+        <div className="text-sm font-medium text-[var(--highlight)]">Disponibilidade semanal</div>
+
+        {availabilityList.length > 0 ? (
+          availabilityList.map(([key, label]) => {
+            const slot = availability?.[key];
+            if (!slot) return null;
+            return (
+              <div key={key} className="text-xs text-[var(--text)] flex justify-between bg-[var(--bg)] border border-[var(--border)] px-3 py-2 rounded-lg">
+                <span className="font-medium">{label}</span>
+                <span>
+                  {slot.start} — {slot.end}
+                </span>
+              </div>
+            );
+          })
+        ) : (
+          <div className="text-xs text-[var(--text-muted)]">Nenhuma disponibilidade informada</div>
+        )}
+      </div>
+      
 
       {/* Status */}
       <div className="flex flex-col gap-2 text-sm mt-2">
         <StatusLine
           icon={<ShieldCheck />}
-          text={
-            form.idDocument ? "Identidade verificada" : "Verificação pendente"
-          }
+          text={form.idDocument ? "Identidade verificada" : "Verificação pendente"}
           highlight={!!form.idDocument}
         />
+        
         <StatusLine
           icon={<FileText />}
           text={
             form.certifications.length > 0
-              ? `${form.certifications.length} certificado${
-                  form.certifications.length > 1 ? "s" : ""
-                }`
+              ? `${form.certifications.length} certificado${form.certifications.length > 1 ? "s" : ""}`
               : "Nenhum certificado"
           }
           highlight={form.certifications.length > 0}
         />
+        {/* Localização */}
         {form.address?.city && (
-          <StatusLine icon={<MapPin />} text={form.address.city} highlight />
+          <StatusLine icon={<MapPin />} text={`${form.address.city} - ${form.address.state ?? ""}`} highlight />
         )}
       </div>
     </motion.div>
@@ -131,7 +156,7 @@ function InfoCard({
   value: string;
 }) {
   return (
-    <div className="bg-[var(--surface-elevated)] border border-[var(--border)] rounded-xl p-3 flex flex-col items-center justify-center hover:shadow-sm hover:scale-[1.02] transition-all duration-200">
+    <div className="bg-[var(--bg)] border border-[var(--border)] rounded-xl p-3 flex flex-col items-center justify-center hover:shadow-sm hover:scale-[1.02] transition-all duration-200">
       <div className="flex items-center gap-1 text-[var(--text-muted)] mb-1">
         {React.cloneElement(icon, {
           className: "w-4 h-4 text-[var(--primary)]",
@@ -160,11 +185,7 @@ function StatusLine({
         })}
       </div>
       <span
-        className={`text-[var(--text)] ${
-          highlight
-            ? "font-medium text-[var(--highlight)]"
-            : "text-[var(--text-muted)]"
-        }`}
+        className={`text-[var(--text)] ${highlight ? "font-medium text-[var(--highlight)]" : "text-[var(--text-muted)]"}`}
       >
         {text}
       </span>
