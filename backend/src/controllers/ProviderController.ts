@@ -35,7 +35,7 @@ export class ProviderController {
     list = async (req: Request, res: Response) => {
         try {
             const providers = await providerService.list();
-            res.json(providers)
+            res.json(providers);
         }
         catch(err: any) {
             res.status(400).json({ message: err.message})

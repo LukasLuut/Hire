@@ -43,4 +43,14 @@ export class CategoryController {
                 res.status(404).json({ message: e.message })
             }
         }
+
+    getById = async (req: Request, res: Response) => {
+        try {
+            const { id } = req.params;
+            const category = await categoryService.getById(Number(id));
+            res.json(category);
+        } catch (e: any) {
+            res.status(400).json({ message: e.message})
+        }
+    }
 }

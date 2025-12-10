@@ -6,6 +6,7 @@ const controller = new CategoryController()
 
 categoryRouter.post('/', controller.create.bind(controller));
 categoryRouter.get('/', controller.list.bind(controller));
+categoryRouter.get('/:id', controller.getById.bind(controller));
 categoryRouter.put('/:id', controller.update.bind(controller));
 categoryRouter.delete('/:id', controller.delete.bind(controller));
 
