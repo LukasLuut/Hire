@@ -31,22 +31,31 @@ export class PaymentService {
         return await this.paymentRepository.find({ relations: { provider: true, hire: true}});
     }
 
-    // async update(id: number, data: Partial<Category>) {
-    //     const category = await this.paymentRepository.findOne({ where: { id } });
+    async update(id: number, data: Partial<Category>) {
+        const payment = await this.paymentRepository.findOne({ where: { id } });
 
-    //     if (!category) throw new Error("Categoria não encontrada");
-    //     const { ...rest } = data
-    //     Object.assign(category, rest);
-    //     return await this.paymentRepository.save(category);
-    // }
+        if (!payment) throw new Error("Pagamento não encontrado");
+        const { ...rest } = data
+        Object.assign(payment, rest);
+        return await this.paymentRepository.save(payment);
+    }
 
-    // async remove(id: number) {
-    //     const category = await this.paymentRepository.findOne({ where: { id } });
+    async remove(id: number) {
+        const payment = await this.paymentRepository.findOne({ where: { id } });
 
-    //     if (!category) throw new Error("Categoria não encontrada")
+        if (!payment) throw new Error("Pagamento não encontrado")
 
-    //     await this.paymentRepository.remove(category);
+        await this.paymentRepository.remove(payment);
 
-    //     return { message: "Categoria removida com sucesso" }
-    // }
+        return { message: "Pagamento removido com sucesso" }
+    }
+
+    async getById(id: number) {
+        const payment = await this.paymentRepository.findOne({ where: { id }, relations: { provider: true, hire: true} });
+
+        if(!payment) throw new Error("Pagamento não encontrado");
+
+        return payment;
+
+    }
 }

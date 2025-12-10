@@ -7,7 +7,9 @@ const service = new UserService()
 export class AuthController {
   async register(req: Request, res: Response) {
     try {
-      const user = await service.create(req.body)
+      const acceptedAt: Date = new Date();
+      const body = {...req.body, acceptedAt}
+      const user = await service.create(body)
       res.status(201).json(user)
     } catch (e: any) {
       res.status(400).json({ message: e.message })

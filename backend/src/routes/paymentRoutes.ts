@@ -6,8 +6,9 @@ const controller = new PaymentController()
 
 paymentRouter.post('/', controller.create.bind(controller));
 paymentRouter.get('/', controller.list.bind(controller));
-// paymentRouter.put('/:id', controller.update.bind(controller));
-// paymentRouter.delete('/:id', controller.delete.bind(controller));
+paymentRouter.put('/:id', controller.update.bind(controller));
+paymentRouter.delete('/:id', controller.delete.bind(controller));
+paymentRouter.get('/:id', controller.getById.bind(controller));
 
 export default paymentRouter
 

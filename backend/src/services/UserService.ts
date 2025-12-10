@@ -10,17 +10,22 @@ export class UserService {
     password: string;
     cpf_cnpj: string;
     acceptedTerms: boolean;
+    acceptedAt: Date;
     about?: string;
   }) {
     const exists = await this.repo.findOne({ where: { email: data.email } });
 
+    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+    console.log(data.acceptedAt)
+    
     if (exists) throw new Error("Usuário já existente");
 
     const cpf = data.cpf_cnpj.replace(/[.-]/g, "");
 
     data.cpf_cnpj = cpf;
 
-    const user = this.repo.create({ ...data, acceptedAt: new Date() });
+    const user = this.repo.create(data);
     await this.repo.save(user);
 
     const clone: any = { ...user };

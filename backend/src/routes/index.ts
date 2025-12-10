@@ -7,6 +7,7 @@ import providerRouter from './providerRoutes'
 import serviceRouter from './serviceRoutes'
 import hireRouter from './hireRoutes'
 import paymentRouter from './paymentRoutes'
+import contractRouter from './contractRoutes'
 
 const router = Router()
 
@@ -17,5 +18,6 @@ router.use('/providers', providerRouter);
 router.use('/services', serviceRouter);
 router.use('/hires', hireRouter);
 router.use('/payments', paymentRouter);
+router.use('/contracts', contractRouter);
 
 export default router

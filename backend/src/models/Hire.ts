@@ -17,6 +17,7 @@ export enum StatusEnum {
   PENDENTE = "PENDENTE",
   EM_ANDAMENTO = "EM ANDAMENTO",
   CONCLUIDO = "CONCLUIDO",
+  CANCELADO = "CANCELADO"
 }
 
 @Entity("hires")
@@ -24,7 +25,7 @@ export class Hire {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: "date" })
+  @Column({ type: "date"})
   firstContact: Date;
 
   @Column({ type: "double" })

@@ -12,25 +12,24 @@ const addressService = new AddressService();
 export class UserController {
 
     list = async (req: Request, res: Response) => {
-    const users = await userService.findAll();
-    return res.json(users);
-  }
+        const users = await userService.findAll();
+        return res.json(users);
+    }
 
     create = async (req: Request, res: Response) => {
-    try {
-        const user = await userService.create(req.body);
-        res.status(201).json(user);
-    } 
-    catch(err: any) {
-      res.status(400).json({message: err.message})
+        try {
+            const acceptedAt: Date = new Date();
+            const body = { ...req.body, acceptedAt }
+            const user = await userService.create(body);
+            res.status(201).json(user);
+        }
+        catch (err: any) {
+            res.status(400).json({ message: err.message })
+        }
     }
-  }
 
     update = async (req: Request, res: Response) => {
-      try {
-            console.log("BODY recebido:", req.body);
-            console.log("USER autenticado:", (req as any).user);
-
+        try {
             const user = await userService.update((req as any).user.id, req.body)
             const clone: any = { ...user }
             delete clone.password
@@ -63,8 +62,8 @@ export class UserController {
         try {
             const address = await addressService.create((req as any).user.id, req.body)
             res.json(address)
-        } catch(e: any) {
-            res.status(400).json({ message: e.message})
+        } catch (e: any) {
+            res.status(400).json({ message: e.message })
         }
     }
 

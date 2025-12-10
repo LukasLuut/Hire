@@ -14,7 +14,7 @@ app.use(express.json());
 */
 AppDataSource.initialize()
   .then(() => {
-    console.log("📦 Banco conectado com sucesso");
+    console.log("Database connected successfully");
     app.use(
       cors(/* {
         origin: "http://localhost:5173", // ou a origem do teu frontend
@@ -26,7 +26,7 @@ AppDataSource.initialize()
     app.use(router);
 
     app.listen(PORTA, () => {
-      console.log(`🚀 Servidor rodando na porta ${PORTA}`);
+      console.log(`Server running in port: ${PORTA}`);
     });
   })
-  .catch((err) => console.error("❌ Erro ao conectar no banco:", err));
+  .catch((err) => console.error("Error connecting to the database: ", err));

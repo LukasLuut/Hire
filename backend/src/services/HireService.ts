@@ -25,21 +25,21 @@ export class HireService {
     }
 
     async update(id: number, data: Partial<Hire>) {
-        const category = await this.hireRepository.findOne({ where: { id } });
+        const hire = await this.hireRepository.findOne({ where: { id } });
 
-        if (!category) throw new Error("Categoria não encontrada");
+        if (!hire) throw new Error("Serviço não encontrado");
         const { ...rest } = data
-        Object.assign(category, rest);
-        return await this.hireRepository.save(category);
+        Object.assign(hire, rest);
+        return await this.hireRepository.save(hire);
     }
 
     async remove(id: number) {
-        const category = await this.hireRepository.findOne({ where: { id } });
+        const hire = await this.hireRepository.findOne({ where: { id } });
 
-        if (!category) throw new Error("Categoria não encontrada")
+        if (!hire) throw new Error("Serviço não encontrado")
 
-        await this.hireRepository.remove(category);
+        await this.hireRepository.remove(hire);
 
-        return { message: "Categoria removida com sucesso" }
+        return { message: "Serviço removido com sucesso" }
     }
 }

@@ -1,5 +1,4 @@
 import { AppDataSource } from "../config/data-source";
-import { Category } from "../models/Category";
 import { Service } from "../models/Service";
 
 interface ServiceInterface {
@@ -47,21 +46,21 @@ export class ServiceService {
   }
 
   async update(id: number, data: Partial<Service>) {
-    const category = await this.serviceRepository.findOne({ where: { id } });
+    const service = await this.serviceRepository.findOne({ where: { id } });
 
-    if (!category) throw new Error("Categoria não encontrada");
+    if (!service) throw new Error("Serviço não encontrado");
     const { ...rest } = data;
-    Object.assign(category, rest);
-    return await this.serviceRepository.save(category);
+    Object.assign(service, rest);
+    return await this.serviceRepository.save(service);
   }
 
   async remove(id: number) {
-    const category = await this.serviceRepository.findOne({ where: { id } });
+    const service = await this.serviceRepository.findOne({ where: { id } });
 
-    if (!category) throw new Error("Categoria não encontrada");
+    if (!service) throw new Error("Serviço não encontrado");
 
-    await this.serviceRepository.remove(category);
+    await this.serviceRepository.remove(service);
 
-    return { message: "Categoria removida com sucesso" };
+    return { message: "Serviço removido com sucesso" };
   }
 }
