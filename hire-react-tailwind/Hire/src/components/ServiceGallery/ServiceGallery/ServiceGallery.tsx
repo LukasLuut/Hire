@@ -43,7 +43,7 @@ const services = [
     price: "R$350",
     duration: "1 dia",
     rating: 4.5,
-    images: ["https://images.pexels.com/photos/585419/pexels-photo-585419.jpeg", "/img/prototipo2.jpg"],
+    images: ["https://images.pexels.com/photos/585419/pexels-photo-585419.jpeg"],
   },
   {
     id: 3,
