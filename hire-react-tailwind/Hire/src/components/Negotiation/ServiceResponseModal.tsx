@@ -43,7 +43,7 @@ export default function ServiceResponseModal({
   serviceDescription: 'FAZER UM MEXE AQUI E ALI POR UM PREÇO CAMARADA',
   budget: '20 pila',
   date: 'Hoje',
-  notes: 'Não esquece o oitão',
+  notes: 'Não esquece o dinheiro',
   files:[img]
   
 }

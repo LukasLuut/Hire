@@ -95,7 +95,7 @@ export interface ProviderForm {
   companyName: string;
   category: string;
   subcategories: string[];
-  experienceLevel: "iniciante" | "intermediario" | "especialista" | "";
+  experienceLevel?: "iniciante" | "intermediario" | "especialista" | "";
   portfolio: File[];
   portfolioPreviews?: string[];
 
