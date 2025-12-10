@@ -2,17 +2,28 @@ import { AppDataSource } from "../config/data-source";
 import { Category } from "../models/Category";
 import { Service } from "../models/Service";
 
+interface ServiceInterface {
+    title: string, 
+    description_service: string, 
+    negotiable: boolean, 
+    duration: string, 
+    price: number, 
+    providerId: string, 
+    categoryId: string
+}
+
 export class ServiceService {
     private serviceRepository = AppDataSource.getRepository(Service);
 
-    async create(data: { title: string, description_service: string, negotiable: boolean, duration: string, providerId: string, categoryId: string }) {
-        const { title, description_service, negotiable, duration, providerId, categoryId } = data;
+    async create(data: ServiceInterface) {
+        const { title, description_service, negotiable, duration, providerId, categoryId, price } = data;
 
          const category = this.serviceRepository.create({
             title,
             description_service,
             negotiable,
             duration,
+            price,
             provider: { id: Number(providerId) },
             category: { id: Number(categoryId) }
          });

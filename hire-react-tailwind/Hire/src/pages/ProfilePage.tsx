@@ -20,6 +20,10 @@ import { ServiceCreationWizardModal } from "../components/ServiceCreator/Service
 import ServiceNegotiationModal from "../components/Negotiation/ServiceNegotiationModal";
 import ServiceResponseModal from "../components/Negotiation/ServiceResponseModal";
 import ServiceFormalizerModal from "../components/Negotiation/ServiceFormalizerModal";
+import ProviderRegistration from "../components/ProviderRegistration/ProviderRegistration";
+import ProviderRegistrationContainer from "../components/ProviderRegistration/ProviderRegistration/Principal/ProviderRegistrationContainer";
+import NegotiationRoom from "../components/Negotiation/NegotiationRoom";
+import ServiceEditor from "../components/ServiceEditor/ServiceEditor";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getFirstAndLastName } from "../utils/nameUtils"
 import { userAPI } from "../api/UserAPI";
@@ -59,6 +63,8 @@ export default function ProfilePage() {
   const [openContratar, setOpenContratar]=useState(false)
   const [isOpenResponse, setIsOpenResponse]=useState(false)
   const [isOpenChat, setIsOpenChat]=useState(false)
+  const [isClient, setIsClient]=useState(true)
+  const [registration, setRegistration]=useState(false)
   const location = useLocation();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -147,9 +153,10 @@ export default function ProfilePage() {
       </div>
     );
   }
+ 
 
   /* ------------------------------------------------------------------------
-   * RENDERIZAÇÃO PRINCIPAL
+   * RENDERIZAÇÃO PARA PRESTADOR (COM GALERIA DE SERVIÇOS)
    * ------------------------------------------------------------------------ */
   return (
     <div className="min-h-screen pt-15 sm:pt-20 bg-[var(--bg-dark)] text-[var(--text)] transition-colors duration-300">
@@ -230,23 +237,23 @@ export default function ProfilePage() {
           <div className="flex gap-4 mt-2">
             <button 
             onClick={handleContratar}
-            className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:brightness-110 transition">
+            className="px-2 md:px-4  py-2 bg-[var(--primary)] text-white rounded-lg hover:brightness-110 transition">
               Contratar
             </button>
             <button 
             onClick={()=>{setIsOpenResponse(true)}}
-            className="px-4 py-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-light)] transition">
+            className="px-2 md:px-4 py-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-light)] transition">
               Mensagem
             </button>
              {/* BOTÃO DO MODAL DE CRIAÇÃO DE SERVIÇO */}
             <button 
             onClick={()=>{setOpen(true)}}
-            className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:brightness-110 transition">
-              + Serviço
+            className="px-2 md:px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:brightness-110 transition">
+               Serviço +
             </button>
              <button 
             onClick={()=>{setIsOpenChat(true)}}
-            className="px-4 py-2 border flex gap-2 items-center border-[var(--border)] rounded-lg hover:bg-[var(--bg-light)] transition">
+            className="px-2 md:px-4 py-2 border flex gap-2 items-center border-[var(--border)] rounded-lg hover:bg-[var(--bg-light)] transition">
               <MessageSquare size={20} /> Chat
             </button>
           </div>
@@ -260,11 +267,10 @@ export default function ProfilePage() {
        {/* ===============================================================
        * SEÇÃO DE CRIAÇÃO DE SERVIÇOS
        * =============================================================== */}      
-      <ServiceCreationWizardModal  isOpen={open} onClose={() => setOpen(false)}/>
-
+        {open?(<ServiceEditor  />):(<p></p>)}
 
        {/* ===============================================================
-       * SEÇÃO DE CRIAÇÃO DE SERVIÇOS
+       * SEÇÃO DE RESPOSTA DE SERVIÇOS
        * =============================================================== */} 
       <ServiceResponseModal isOpen={isOpenResponse} onClose={()=>{setIsOpenResponse(false)}}/>
 
@@ -273,17 +279,31 @@ export default function ProfilePage() {
        * =============================================================== */} 
       <ServiceNegotiationModal isOpen= {openContratar} onClose={()=>{setOpenContratar(false)}} />
 
-      {/* ===============================================================
-       * SEÇÃO DE GALERIA DE SERVIÇOS
+        {/* ===============================================================
+       * SEÇÃO DE REGISTRO E GALERIA DE SERVIÇOS
        * =============================================================== */}
-      <section className="py-8 md:px-20">
-        <ServiceGalleryMagazine />
-      </section>
+        {isClient ?(
+          <div className="flex flex-col items-center justify-center min-h-50 bg-[var(--bg-dark)] border-b-1  border-[var(--border)] text-[var(--text)]">
+            {!registration?(
+              <button className="bg-[var(--primary)] rounded-xl w-55 h-15 mt-6 text-lg text-white animate-bounce "
+                onClick={()=>setRegistration(true) }>
+                Cadastre sua empresa
+              </button>
+            ):(<ProviderRegistrationContainer />)}
+            
+          </div>
+        ):(
+          <section className="py-8 md:px-20">
+            <ServiceGalleryMagazine />
+          </section>
+        )}
+      
 
       {/* ===============================================================
        * SEÇÃO DE AVALIAÇÕES
        * =============================================================== */}
-      <section className="p-8 md:px-20">
+      {!isClient&&(
+          <section className="p-8 md:px-20">
         <h2 className="text-2xl font-bold mb-6">Avaliações</h2>
 
         {/* Caso ainda não haja avaliações */}
@@ -315,6 +335,8 @@ export default function ProfilePage() {
           </div>
         )}
       </section>
+      )}
+      
     </div>
   );
 }

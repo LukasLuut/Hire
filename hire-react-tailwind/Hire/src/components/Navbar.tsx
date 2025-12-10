@@ -5,7 +5,7 @@ import { Menu, X, Sun, Moon } from "lucide-react";
 export default function Navbar({ theme, setTheme }: { theme: string; setTheme: (t: string) => void }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const links = ["Home", "Serviços", "Perfil", "Contato"];
+  const links = ["Home", "Serviços", "Perfil"];
 
   return (
     <nav className="fixed w-full z-50 bg-[var(--bg-dark)]/70 backdrop-blur-md border-b border-[var(--border)]">

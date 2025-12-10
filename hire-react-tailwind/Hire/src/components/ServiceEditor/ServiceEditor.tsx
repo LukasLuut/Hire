@@ -130,7 +130,7 @@ export default function ServiceDashboard() {
    * Renderização principal
    * -------------------------------------------------------------------------- */
   return (
-    <div className="min-h-screen md:pt-15 pt-17 overflow-hidden bg-[var(--bg)] text-[var(--text)] flex flex-col md:flex-row transition-all duration-500 items-center justify-center">
+    <div className="min-h-screen md:pt-15 pt-17 overflow-hidden bg-[var(--bg-dark)] text-[var(--text)] flex flex-col md:flex-row transition-all duration-500 items-center justify-center">
       <div className="flex-1 relative flex overflow-hidden w-full max-w-[1024px]">
 
         {/* ----------------------------------------------------------------------
@@ -154,7 +154,8 @@ export default function ServiceDashboard() {
               onDragEnd={handleDragEnd}
             >
               {/* --------------------------- Título e descrição --------------------------- */}
-              <h3 className="text-xl font-bold mb-4">Editar Serviço</h3>
+              <h3 className="text-4xl text-[var(--primary)] font-bold mb-3">Criador de Serviço</h3>
+              <h3 className="text-sm text-[var(--text-muted)] ml-1 mb-6">Monte sua vitrine digital e transforme seu trabalho em oportunidades reais.</h3>
               <div className="flex flex-col gap-4">
                 <label className="flex flex-col">
                   <span className="text-[var(--text-muted)] text-sm mb-1">

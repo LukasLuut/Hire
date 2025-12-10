@@ -19,12 +19,24 @@ export class Service {
 
   @Column({ length: 250, nullable: false })
   description_service: string;
-  
+
   @Column()
   negotiable: boolean;
 
-  @Column({ length: 100, nullable: false})
-  duration: string
+  @Column({ nullable: false })
+  price: number;
+
+  @Column({ length: 100, nullable: false })
+  duration: string;
+
+  @Column({ length: 200, default: "Has no subcategory" })
+  subcategory?: string;
+
+  @Column({ default: false })
+  requiresScheduling?: boolean;
+
+  @Column({ default: 0 })
+  likesNumber?: number;
 
   @ManyToOne(() => ServiceProvider, (provider) => provider.services)
   provider: ServiceProvider;

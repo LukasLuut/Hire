@@ -25,7 +25,7 @@ interface Service {
   requiresScheduling?: boolean;
   cancellationNotice?: string;
   images: string[];
-  provider:string
+  // provider:string
 }
 
 interface ServiceDetailProps {

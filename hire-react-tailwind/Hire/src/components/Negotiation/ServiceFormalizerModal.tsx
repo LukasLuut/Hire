@@ -260,7 +260,7 @@ export default function ServiceNegotiationModal({
           initial={isMobile ? { y: 50, opacity: 0 } : { scale: 0.9, opacity: 0, y: 50 }}
           animate={isMobile ? { y: 0, opacity: 1 } : { scale: 1, opacity: 1, y: 0 }}
           exit={isMobile ? { y: 50, opacity: 0 } : { scale: 0.9, opacity: 0, y: 50 }}
-          transition={{ duration: 0.28, type: "spring", stiffness: 300 }}
+          transition={{ duration: 0.28, type: "spring", stiffness: 250 }}
           // positioning responsive
           className={`fixed z-60 ${isMobile ? "inset-0 " : "right-6 bottom-6"} `}
         >
@@ -272,7 +272,7 @@ export default function ServiceNegotiationModal({
             onClick={(e) => e.stopPropagation()}
           >
             {/* ------------------------- LEFT / TOP: Tópicos (ícones) ------------------------- */}
-            <div className={`flex ${isMobile ? "flex-row items-center px-4 py-2  overflow-x-auto" : "flex-col w-64 p-4 gap-4"} bg-[var(--bg)] border-r border-[var(--border)]`}>
+            <div className={`flex ${isMobile ? "flex-row items-center px-4 py-2  overflow-x-auto" : "flex-col w-24 p-2 gap-4"} bg-[var(--bg)] border-r border-[var(--border)]`}>
               {/* Close button (mobile) */}
               {isMobile && (
                 <div className="flex justify-between items-center w-full mb-1">
@@ -310,25 +310,16 @@ export default function ServiceNegotiationModal({
 
                         {/* desktop: mostra label e content apenas se expandido / mobile: nunca mostra */}
                         {!isMobile && isExpanded && (
-                        <div className="flex-1 text-left">
+                        <div className="flex-1 absolute max-w-40 h-auto p-3 rounded-xl text-wrap bg-[var(--bg)] -left-39.5 border-1 border-r-0 border-[var(--border)] text-left">
                             <div className="text-sm text-[var(--text)] font-medium">{t.label}</div>
-                            <div className="text-xs text-[var(--text-muted)] truncate">
-                            {t.content || "Não definido"}
+                            <div className="text-xs text-wrap text-[var(--text-muted)] truncate">
+                            {t.tooltip || "Não definido"}
                             </div>
                         </div>
                         )}
                     </button>
 
-                    {/* tooltip on click (appears when expanded) */}
-                    {!isMobile && isExpanded && (
-                        <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="mt-1 text-xs text-[var(--text-muted)]"
-                        >
-                        {t.tooltip}
-                        </motion.div>
-                    )}
+                   
                     </div>
                 );
                 })}

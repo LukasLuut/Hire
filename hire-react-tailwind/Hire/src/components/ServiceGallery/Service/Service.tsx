@@ -13,8 +13,8 @@ interface Service {
   category?: string;
   subcategory?: string;
   price?: string;
+  negotiable?: boolean;
   duration?: string;
-  featured?: boolean;
   status?: string;
   images: string[];
   likes?: number;
@@ -196,7 +196,7 @@ export default function PostCard({ service }: { service: Service }) {
             )}
           </div>
           <div className="flex justify-between gap-2 mb-2">
-            {service.featured && <span className="bg-yellow-500/30 px-2 py-1 rounded-full text-yellow-200 text-xs">Negociável</span>}
+            {service.negotiable && <span className="bg-yellow-500/30 px-2 py-1 rounded-full text-yellow-200 text-xs">Negociável</span>}
             {service.status && <span className="bg-blue-500/30 px-2 py-1 rounded-full text-blue-200 text-xs">Politica de cancelamento</span>}
           </div>
           <button 

@@ -13,6 +13,12 @@ import { User } from "./User";
 import { Payment } from "./Payment";
 import { Contract } from "./Contract";
 
+export enum StatusEnum {
+  PENDENTE = "PENDENTE",
+  EM_ANDAMENTO = "EM ANDAMENTO",
+  CONCLUIDO = "CONCLUIDO",
+}
+
 @Entity("hires")
 export class Hire {
   @PrimaryGeneratedColumn()
@@ -34,6 +40,13 @@ export class Hire {
   // Cliente
   @ManyToOne(() => User, (user) => user.hires)
   user: User;
+
+  @Column({
+    type: "enum",
+    enum: StatusEnum,
+    default: StatusEnum.PENDENTE,
+  })
+  status: StatusEnum;
 
   @ManyToOne(() => ServiceProvider, (provider) => provider.hires)
   provider: ServiceProvider;
