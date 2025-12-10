@@ -3,54 +3,65 @@ import { Category } from "../models/Category";
 import { Service } from "../models/Service";
 
 interface ServiceInterface {
-    title: string, 
-    description_service: string, 
-    negotiable: boolean, 
-    duration: string, 
-    price: number, 
-    providerId: string, 
-    categoryId: string
+  title: string;
+  description_service: string;
+  negotiable: boolean;
+  duration: string;
+  price: number;
+  providerId: string;
+  categoryId: string;
 }
 
 export class ServiceService {
-    private serviceRepository = AppDataSource.getRepository(Service);
+  private serviceRepository = AppDataSource.getRepository(Service);
 
-    async create(data: ServiceInterface) {
-        const { title, description_service, negotiable, duration, providerId, categoryId, price } = data;
+  async create(data: ServiceInterface, file?: Express.Multer.File) {
+    const {
+      title,
+      description_service,
+      negotiable,
+      duration,
+      providerId,
+      categoryId,
+      price,
+    } = data;
 
-         const category = this.serviceRepository.create({
-            title,
-            description_service,
-            negotiable,
-            duration,
-            price,
-            provider: { id: Number(providerId) },
-            category: { id: Number(categoryId) }
-         });
+    const imageUrl = file ? `/uploads/${file.filename}` : null;
 
-        return await this.serviceRepository.save(category);
-    }
+    const service = this.serviceRepository.create({
+      title,
+      description_service,
+      negotiable,
+      duration,
+      price,
+      imageUrl,
+      provider: { id: Number(providerId) },
+      category: { id: Number(categoryId) },
+    });
 
-    async list() {
-        return await this.serviceRepository.find();
-    }
+    return await this.serviceRepository.save(service);
+  }
 
-    async update(id: number, data: Partial<Service>) {
-        const category = await this.serviceRepository.findOne({ where: { id } });
+  async list() {
+    return await this.serviceRepository.find();
+  }
 
-        if (!category) throw new Error("Categoria não encontrada");
-        const { ...rest } = data
-        Object.assign(category, rest);
-        return await this.serviceRepository.save(category);
-    }
+  async update(id: number, data: Partial<Service>) {
+    const category = await this.serviceRepository.findOne({ where: { id } });
 
-    async remove(id: number) {
-        const category = await this.serviceRepository.findOne({ where: { id } });
+    if (!category) throw new Error("Categoria não encontrada");
+    const { ...rest } = data;
+    Object.assign(category, rest);
+    return await this.serviceRepository.save(category);
+  }
 
-        if (!category) throw new Error("Categoria não encontrada")
+  async remove(id: number) {
+    const category = await this.serviceRepository.findOne({ where: { id } });
 
-        await this.serviceRepository.remove(category);
+    if (!category) throw new Error("Categoria não encontrada");
 
-        return { message: "Categoria removida com sucesso" }
-    }
+    await this.serviceRepository.remove(category);
+
+    return { message: "Categoria removida com sucesso" };
+  }
 }

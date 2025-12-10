@@ -3,6 +3,7 @@ import express, { Application } from "express";
 import { AppDataSource } from "./config/data-source";
 import router from "./routes/index";
 import cors from "cors";
+import path from "path";
 
 const app: Application = express();
 const PORTA: number = 8080;
@@ -21,6 +22,7 @@ AppDataSource.initialize()
         allowedHeaders: ["Content-Type", "Authorization"], // 🔥 ESSA LINHA É ESSENCIAL
       } */)
     );
+    app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
     app.use(router);
 
     app.listen(PORTA, () => {

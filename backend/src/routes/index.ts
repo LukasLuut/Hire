@@ -16,6 +16,6 @@ router.use('/categories', categoryRouter);
 router.use('/providers', providerRouter);
 router.use('/services', serviceRouter);
 router.use('/hires', hireRouter);
-router.use('/payments', paymentRouter)
+router.use('/payments', paymentRouter);
 
 export default router

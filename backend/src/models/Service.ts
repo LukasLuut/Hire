@@ -38,6 +38,9 @@ export class Service {
   @Column({ default: 0 })
   likesNumber?: number;
 
+  @Column({ type: "varchar", length: 255, nullable: true })
+  imageUrl?: string | null;
+
   @ManyToOne(() => ServiceProvider, (provider) => provider.services)
   provider: ServiceProvider;
 

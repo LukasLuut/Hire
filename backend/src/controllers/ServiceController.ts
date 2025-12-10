@@ -6,8 +6,8 @@ const serviceService = new ServiceService;
 export class ServiceController {
     create = async (req: Request, res: Response) => {
         try {
-            const category = await serviceService.create(req.body);
-            res.status(201).json(category);
+            const service = await serviceService.create(req.body, req.file);
+            res.status(201).json(service);
         } 
         catch(err: any) {
           res.status(400).json({messages: err.message})
@@ -16,8 +16,8 @@ export class ServiceController {
 
     list = async (req: Request, res: Response) => {
         try {
-            const categories = await serviceService.list();
-            res.json(categories)
+            const services = await serviceService.list();
+            res.json(services)
         }
         catch(err: any) {
             res.status(400).json({ message: err.message})
@@ -27,8 +27,8 @@ export class ServiceController {
     update = async (req: Request, res: Response) => {
           try {
                 const { id } = req.params;
-                const category = await serviceService.update(Number(id), req.body)
-                res.json(category)
+                const service = await serviceService.update(Number(id), req.body)
+                res.json(service)
             } catch (e: any) {
                 res.status(400).json({ message: e.message })
             }
