@@ -13,6 +13,7 @@ import { ServiceCreationWizardModal } from "./components/ServiceCreator/ServiceC
 import ServiceDashboard from "./components/ServiceEditor/ServiceEditor";
 import PostCard from "./components/ServiceGallery/Service/Service";
 import ServiceDashboardSophisticated from "./pages/DashboardClient";
+import { DemoServiceProgressContainer } from "./components/ServiceProgress";
 
 export default function App() {
   const [theme, setTheme] = useState<"dark" | "light">(() => {
@@ -39,7 +40,7 @@ export default function App() {
       <Navbar theme={theme} setTheme={setTheme} />
       <Routes>
         {/* Página inicial */}
-        <Route path="/" element={<ProfilePage/>} />
+        <Route path="/" element={<DemoServiceProgressContainer/>} />
 
         {/* Rotas principais */}
         <Route path="/profile" element={<ProfilePage />} />
