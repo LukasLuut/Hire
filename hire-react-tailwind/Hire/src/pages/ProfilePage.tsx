@@ -12,7 +12,6 @@
  * -------------------------------------------------------------------------- */
 
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { motion } from "framer-motion";
 import ServiceGalleryMagazine from "../components/ServiceGallery/ServiceGallery/ServiceGallery";
 import { Star, Edit3, MessageSquare } from "lucide-react";
@@ -27,6 +26,7 @@ import ServiceEditor from "../components/ServiceEditor/ServiceEditor";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getFirstAndLastName } from "../utils/nameUtils"
 import { userAPI } from "../api/UserAPI";
+import type { User } from "../interfaces/UserInterface"
 
 /* --------------------------------------------------------------------------
  * MOCKS DE DADOS
@@ -57,7 +57,7 @@ export default function ProfilePage() {
    * ------------------------------------------------------------------------ */
   const [profile, setProfile] = useState<typeof mockProfile | null>(null);
   const [reviews, setReviews] = useState<typeof mockReviews | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [open, setOpen] = useState(false);
   const [openContratar, setOpenContratar]=useState(false)
@@ -68,18 +68,33 @@ export default function ProfilePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-
   // Todas as informações do usuário
-  const [user, setUser] = useState(location.state?.user)
-
-
+  const [user, setUser] = useState({name: "", about: ""})
 
   /* ------------------------------------------------------------------------
    * SIMULAÇÃO DE CARREGAMENTO DE DADOS
    * - Tenta buscar dados de uma API (comentado por enquanto)
    * - Caso falhe, usa os dados mockados
    * ------------------------------------------------------------------------ */
+
   useEffect(() => {
+    const aaa = async () => {
+      if(!token) {
+      return;
+    }
+      return await userAPI.getUser(token);
+    }
+    const userB = aaa();
+    if(!userB || typeof(userB) == undefined) {
+      return; 
+    } else {
+      const userC: User = JSON.stringify(userB);
+    }
+
+    
+  }, [])
+
+  /* useEffect(() => {
 
     if(!token) {
       navigate('/auth')
@@ -87,7 +102,6 @@ export default function ProfilePage() {
     
     const fetchData = async () => {
       try {
-        mockProfile.name = getFirstAndLastName(user.name);
         
         if(user.about) mockProfile.bio = user.about;
 
@@ -106,16 +120,14 @@ export default function ProfilePage() {
     };
 
     fetchData();
-  }, [user]);
+  }, [user]); 
 
   /* ------------------------------------------------------------------------
    * FUNÇÕES DE EDIÇÃO
    * ------------------------------------------------------------------------ */
-  const handleEditToggle = () => setIsEditing((prev) => !prev);
-
-  const handleProfileChange = (field: keyof typeof mockProfile, value: string) => {
-    if (profile) setProfile({ ...profile, [field]: value });
-  };
+  const handleEditToggle = () => {setIsEditing((prev) => !prev);
+    handleUpdate();
+  }
 
   /* ------------------------------------------------------------------------
    * FUNÇÃO PARA ABERTURA DO MODAL DE CONTRATAÇÃO
@@ -125,14 +137,16 @@ export default function ProfilePage() {
   }
 
   const handleUpdate = async () => {
+    if(!isEditing) return;
+
     const token = localStorage.getItem("token")
     if(!token) return;
     
     try {
-      return await userAPI.update({name: user.name, about: user.about}, token)
-      
+      const res = await userAPI.update({name: user.name, about: user.about}, token)
+      alert("Informações editadas com sucesso!")
+      return res;
     } catch (err: any) {
-      alert("ererrrererererererere")
       console.error(err)
     }
   }
@@ -154,7 +168,7 @@ export default function ProfilePage() {
     );
   }
  
-
+  console.log(user.about)
   /* ------------------------------------------------------------------------
    * RENDERIZAÇÃO PARA PRESTADOR (COM GALERIA DE SERVIÇOS)
    * ------------------------------------------------------------------------ */
@@ -189,15 +203,17 @@ export default function ProfilePage() {
           <div className="flex items-center gap-4 flex-wrap">
             {isEditing ? (
               <input
-                value={profile?.name}
-                onChange={(e) => handleProfileChange("name", e.target.value)}
+                value={user.name}
+                onChange={(e) => {setUser((prev: any) => ({...prev, name: e.target.value}))
+              location.state.user.name = e.target.value
+              }}
                 className="bg-[var(--bg-light)] border border-[var(--primary)] rounded-lg px-2 py-1 text-2xl"
               />
             ) : (
-              <h1 className="text-4xl font-bold">{profile?.name}</h1>
+              <h1 className="text-4xl font-bold">{user.name}</h1>
             )}
 
-            <div className="flex items-center gap-1 text-yellow-400">
+            {/* <div className="flex items-center gap-1 text-yellow-400">
               <Star size={20} fill="currentColor" />
               <span className="font-semibold">
                 {profile?.rating ? profile.rating.toFixed(1) : "0.0"}
@@ -205,12 +221,12 @@ export default function ProfilePage() {
               <span className="text-[var(--text-muted)] text-sm">
                 ({profile?.reviewsCount} avaliações)
               </span>
-            </div>
+            </div> */}
           </div>
 
-          <p className="pl-2 text-[var(--text-muted)]">
+          {/* <p className="pl-2 text-[var(--text-muted)]">
             Desenvolvedor Web & Designer UI/UX
-          </p>
+          </p> */}
           {/* CAIXA DE EDIÇÃO */}
             {/* BIO / SOBRE */}
           <section className="p-5 pb-10 md:px-5">
@@ -218,11 +234,11 @@ export default function ProfilePage() {
             {isEditing ? (
               <textarea
                 value={user.about}
-                onChange={(e) => setUser({ ...user, about: e.target.value })}
+                onChange={(e) => setUser((prev: any) => ({...prev, about: e.target.value}))}
                 className="md:w-2xl w-xs bg-[var(--bg-light)] border border-[var(--primary)] rounded-lg p-2 text-[var(--text)] resize-none h-32"
               />
             ) : (
-              <p className="text-[var(--text-muted)] max-w-2xl">{profile?.bio}</p>
+              <p className="text-[var(--text-muted)] max-w-2xl">{user.about}</p>
             )}
             { isEditing && 
               <button 

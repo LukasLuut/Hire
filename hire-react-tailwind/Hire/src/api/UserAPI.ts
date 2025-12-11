@@ -1,7 +1,8 @@
+import type { User } from "../interfaces/UserInterface";
 import { apiRequest } from "./ApiClient";
 
 export const userAPI = {
-  
+
   create: async (data: UserAPI) => {
     return await apiRequest("/auth/register", {
       method: "POST",
@@ -14,6 +15,21 @@ export const userAPI = {
         acceptedTerms: data.acceptedTerms,
       }),
     });
+  },
+
+  getUser: async (token: string): Promise<User | null> => {
+    const response: User = await apiRequest("/users/me", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token,
+      },
+    });
+
+    console.log("CCCCCCCCCCCCCCCCCC");
+    console.log(response);
+    if(!response || typeof(response) == undefined) return null;
+    return response;
   },
 
   login: (data: UserLoginAPI) =>
@@ -44,9 +60,7 @@ export const userAPI = {
         about: user.about,
       }),
     })
-
     return response;
-  
   }
 };
 
