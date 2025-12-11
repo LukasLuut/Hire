@@ -168,7 +168,7 @@ export default function StepAddress({
                   <p className="text-xs text-[var(--text-muted)] mb-2">
                     O mapa mostra sua cidade atual. Você pode mover o marcador para ajustar.
                   </p>
-                  <div ref={mapContainerRef} className="w-full h-56 rounded-xl border bg-[var(--bg)] border-[var(--border)] overflow-hidden"></div>
+                  <div ref={mapContainerRef} className="w-full h-56  rounded-xl border bg-[var(--bg)] border-[var(--border)] overflow-hidden"></div>
                 </>
               )}
             </div>
@@ -180,7 +180,7 @@ export default function StepAddress({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
             transition={{ duration: 0.25 }}
-            className="bg-[var(--bg)] flex flex-col border border-[var(--border)] rounded-2xl shadow-md p-6 max-w-sm"
+            className="bg-[var(--bg)] flex  flex-col border border-[var(--border)] rounded-2xl shadow-md p-6 max-w-sm"
           >
             <label className="text-sm text-[var(--text-muted)]">Raio de atuação (km)</label>
             <input
@@ -221,7 +221,7 @@ function Input({
         onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur}
         placeholder={placeholder}
-        className="input bg-[var(--bg)] border border-[var(--border)] rounded-xl text-[var(--text)] placeholder:text-[var(--text-muted)] px-3 py-2 focus:border-[var(--primary)] transition-all duration-200"
+        className="input bg-[var(--bg)]  border border-[var(--border)] rounded-xl text-[var(--text)] placeholder:text-[var(--text-muted)] px-3 py-2 focus:border-[var(--primary)] transition-all duration-200"
       />
     </div>
   );

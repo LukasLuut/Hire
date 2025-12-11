@@ -171,7 +171,7 @@ export default function StepProfessional({
                             [day]: { ...hours, start: e.target.value },
                           })
                         }
-                        className="input p-2 rounded-lg border-[var(--border)] bg-[var(--bg)]"
+                        className="input p-2 time-icon-filter rounded-lg border-[var(--border)] bg-[var(--bg)]"
                       />
                     </div>
 
@@ -187,7 +187,7 @@ export default function StepProfessional({
                             [day]: { ...hours, end: e.target.value },
                           })
                         }
-                        className="input p-2 rounded-lg border-[var(--border)] bg-[var(--bg)]"
+                        className="input p-2 rounded-lg time-icon-filter border-[var(--border)] bg-[var(--bg)]"
                       />
                     </div>
                   </div>

@@ -2,6 +2,7 @@
 
 *{
   transition:Background-color 0.3s ease;
+  
 }
 
 :root {
@@ -171,6 +172,12 @@ body.light {
   height: 8px;               /* altura da barra horizontal */
 }
 
+@layer utilities {
+  .time-icon-filter::-webkit-calendar-picker-indicator {
+    filter: brightness(0) saturate(100%) invert(40%) sepia(97%) saturate(2400%)
+      hue-rotate(202deg) brightness(97%) contrast(101%);
+  }
+}
 
 
 
