@@ -3,7 +3,7 @@ export interface User {
     name: string,
     email: string,
     cpf_cnpj?: string,
-    about?:string,
+    about:string,
     acceptedTerms?: boolean,
     acceptedAt?: Date,
 }

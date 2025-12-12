@@ -2,50 +2,58 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PanInfo } from "framer-motion";
 import { Save, Trash2, PlusCircle } from "lucide-react";
+import { serviceAPI } from "../../api/ServiceAPI";
+import type { Service } from "../../interfaces/ServiceInterface";
 
 /* --------------------------------------------------------------------------
  * Interface de dados do serviço
  * -------------------------------------------------------------------------- */
-interface Service {
-  id: number;
-  title: string;
-  description: string;
-  category?: string;
-  subcategory?: string;
-  price?: string;
-  negotiable?: boolean;
-  duration?: string;
-  requiresScheduling?: boolean;
-  cancellationNotice?: string;
-  acceptedTerms?: boolean;
-  images: string[];
-}
+// interface Service {
+//   id: number;
+//   title: string;
+//   description: string;
+//   category?: string;
+//   subcategory?: string;
+//   price?: string;
+//   negotiable?: boolean;
+//   duration?: string;
+//   requiresScheduling?: boolean;
+//   cancellationNotice?: string;
+//   acceptedTerms?: boolean;
+//   images: string[];
+// }
+
+type Props = {
+  openServiceEditor: () => void; // caso não receba parâmetros
+};
+
 
 /* --------------------------------------------------------------------------
  * Componente principal do painel de serviços
  * -------------------------------------------------------------------------- */
-export default function ServiceDashboard() {
+export default function ServiceDashboard({ openServiceEditor }: Props) {
   /* --------------------------- Estado inicial dos serviços --------------------------- */
-  const [services, setServices] = useState<Service[]>([
+  const [service, setService] = useState<Service>(
     {
-      id: 1,
-      title: "Desenvolvimento Web",
-      description: "Criação de sites modernos, rápidos e responsivos.",
-      price: "R$ 1.500",
-      duration: "7 dias",
-      category: "Tecnologia",
-      subcategory: "Desenvolvimento",
-      negotiable: true,
+      id: 0,
+      title: "",
+      description_service: "",
+      price: 0,
+      duration: "",
+      categoryId: 1,
+      subcategory: "",
+      negotiable: false,
       requiresScheduling: false,
       acceptedTerms: true,
-      images: [
-        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800",
-      ],
+      imageUrl: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800",
+      cancellationNotice: ""
     },
-  ]);
+  );
 
-  /* --------------------------- Controle de seleção e responsividade --------------------------- */
-  const [selectedId] = useState<number>(services[0].id);
+
+
+  /* --------------------------- Controle de selessssssssssssssção e responsividade --------------------------- */
+  const [selectedId] = useState<number>(service.id);
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 768);
 
   // Controle de qual slide está visível no mobile (editor ou preview)
@@ -66,31 +74,33 @@ export default function ServiceDashboard() {
   }, []);
 
   /* --------------------------- Serviço atualmente selecionado --------------------------- */
-  const selectedService = services.find((s) => s.id === selectedId)!;
+  const selectedService: Service = service;
 
   /* --------------------------- Função para atualizar campos do serviço --------------------------- */
   const handleChange = (
-    field: keyof Service,
-    value: string | boolean | undefined | string[]
-  ) => {
-    setServices((prev) =>
-      prev.map((srv) =>
-        srv.id === selectedId ? { ...srv, [field]: value } : srv
-      )
-    );
-  };
+  field: keyof Service,
+  value: string | boolean | undefined | string[]
+) => {
+  setService((prev) => ({
+    ...prev,
+    [field]: value
+  }));
+};
+
 
   /* --------------------------- Funções do editor de imagens --------------------------- */
   const addImage = () => {
     const url = prompt("Insira a URL da imagem");
     if (!url) return;
-    handleChange("images", [...selectedService.images, url]);
+
+    handleChange("imageUrl", url);
   };
 
-  const removeImage = (index: number) => {
-    const newImages = selectedService.images.filter((_, i) => i !== index);
-    handleChange("images", newImages);
+
+  const removeImage = () => {
+  handleChange("imageUrl", "");
   };
+
 
   /* --------------------------- Função de swipe lateral (mobile) --------------------------- */
   const handleDragEnd = (_: any, info: PanInfo) => {
@@ -175,9 +185,9 @@ export default function ServiceDashboard() {
                   </span>
                   <textarea
                     placeholder="Descreva o serviço, incluindo detalhes importantes..."
-                    value={selectedService.description}
+                    value={selectedService.description_service}
                     onChange={(e) =>
-                      handleChange("description", e.target.value)
+                      handleChange("description_service", e.target.value)
                     }
                     rows={4}
                     className="p-2 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-[var(--text)] resize-none"
@@ -191,9 +201,9 @@ export default function ServiceDashboard() {
                     <input
                       placeholder="Ex: Tecnologia, Beleza..."
                       type="text"
-                      value={selectedService.category}
+                      value={selectedService.categoryId}
                       onChange={(e) =>
-                        handleChange("category", e.target.value)
+                        handleChange("categoryId", e.target.value)
                       }
                       className="p-2 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-[var(--text)]"
                     />
@@ -293,24 +303,23 @@ export default function ServiceDashboard() {
                 <div className="mt-4">
                   <h4 className="font-semibold mb-2">Imagens do serviço</h4>
                   <div className="flex gap-2 flex-wrap">
-                    {selectedService.images.map((img, idx) => (
-                      <div
-                        key={idx}
-                        className="relative w-24 h-24 rounded-lg overflow-hidden border border-[var(--border)]"
+                    {selectedService.imageUrl && (
+                    <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-[var(--border)]">
+                      <img
+                        src={selectedService.imageUrl}
+                        alt="Imagem do serviço"
+                        className="w-full h-full object-cover"
+                      />
+
+                      <button
+                        onClick={removeImage}
+                        className="absolute top-1 right-1 bg-[var(--bg-dark)]/70 p-1 rounded-full text-white hover:bg-red-600 transition"
                       >
-                        <img
-                          src={img}
-                          alt={`Imagem ${idx + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                        <button
-                          onClick={() => removeImage(idx)}
-                          className="absolute top-1 right-1 bg-[var(--bg-dark)]/70 p-1 rounded-full text-white hover:bg-red-600 transition"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    ))}
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  )}
+
                     <button
                       onClick={addImage}
                       className="flex items-center justify-center w-24 h-24 rounded-lg border border-[var(--border)] text-[var(--text-muted)] hover:bg-[var(--bg-dark)]/20 transition"
@@ -325,6 +334,13 @@ export default function ServiceDashboard() {
                   <button
                     className="flex items-center justify-center gap-2 bg-[var(--primary)] text-white font-semibold px-4 py-2 rounded-lg hover:brightness-110 transition"
                     onClick={() => {
+                      try {
+                        serviceAPI.create(selectedService);
+                        alert("Serviço criado com sucesso;")
+                        openServiceEditor();
+                      } catch (err: any) {
+                        console.error(err)
+                      }
                       /* Chamada API comentada
                       fetch("/api/save-service", {
                         method: "POST",
@@ -332,7 +348,6 @@ export default function ServiceDashboard() {
                         headers: { "Content-Type": "application/json" },
                       });
                       */
-                      alert("Salvo com sucesso (mock)");
                     }}
                   >
                     <Save size={18} /> Salvar alterações
@@ -362,13 +377,13 @@ export default function ServiceDashboard() {
       onDragEnd={handleDragEnd}
     >
       {/* --------------------------- Imagem principal --------------------------- */}
-      {selectedService.images[0] && (
-        <img
-          src={selectedService.images[0]}
-          alt={selectedService.title}
-          className="w-full h-64 object-cover rounded-lg mb-4"
-        />
-      )}
+    {selectedService.imageUrl && (
+      <img
+        src={selectedService.imageUrl}
+        alt={selectedService.title}
+        className="w-full h-64 object-cover rounded-lg mb-4"
+      />
+    )}
 
       {/* --------------------------- Informações do serviço --------------------------- */}
       <div className="p-4 flex flex-col gap-2">
@@ -377,13 +392,13 @@ export default function ServiceDashboard() {
         </h2>
 
         <p className="text-[var(--text-muted)] line-clamp-3">
-          {selectedService.description}
+          {selectedService.description_service}
         </p>
 
         <div className="grid grid-cols-2 gap-4 mt-2">
           <div>
             <span className="font-semibold text-[var(--text)]">Categoria:</span>{" "}
-            {selectedService.category || "-"}
+            {selectedService.categoryId || "-"}
           </div>
           <div>
             <span className="font-semibold text-[var(--text)]">Subcategoria:</span>{" "}
@@ -417,18 +432,16 @@ export default function ServiceDashboard() {
         </div>
 
         {/* --------------------------- Lista de imagens adicionais --------------------------- */}
-        {selectedService.images.length > 0 && (
+        {selectedService.imageUrl && (
           <div className="flex gap-2 mt-4 overflow-x-auto">
-            {selectedService.images.map((img, idx) => (
-              <img
-                key={idx}
-                src={img}
-                alt={`Imagem ${idx + 1}`}
-                className="w-24 h-24 object-cover rounded-lg border border-[var(--border)]"
-              />
-            ))}
+            <img
+              src={selectedService.imageUrl}
+              alt={selectedService.title}
+              className="w-24 h-24 object-cover rounded-lg border border-[var(--border)]"
+            />
           </div>
         )}
+
       </div>
     </motion.div>
   )}

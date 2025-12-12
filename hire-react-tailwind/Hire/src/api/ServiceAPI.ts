@@ -1,46 +1,71 @@
-import { mockServices } from "../data/mockServices";
+import type { Service } from "../interfaces/ServiceInterface";
+import { apiRequest } from "./ApiClient";
 
-const API_URL = "https://seu-backend/api/services";
 
-// Timeout helper
-const fetchWithTimeout = (url: string, options: RequestInit = {}, timeout = 3000) =>
-  new Promise<Response>((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error("timeout")), timeout);
-    fetch(url, options)
-      .then((res) => {
-        clearTimeout(timer);
-        resolve(res);
-      })
-      .catch((err) => {
-        clearTimeout(timer);
-        reject(err);
-      });
-  });
 
-export const ServiceAPI = {
-  async getServices() {
-    try {
-      const res = await fetchWithTimeout(API_URL);
-      if (!res.ok) throw new Error("Erro na API");
-      return await res.json();
-    } catch (err) {
-      console.warn("Usando mockServices (sem conexão com o backend)");
-      return mockServices;
-    }
+export const serviceAPI = {
+
+  create: async (data: Service) => {
+    return await apiRequest("/services", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: data.title,
+        description_service: data.description_service,
+        negotiable: data.negotiable,
+        price: data.price,
+        duration: data.duration,
+        providerId: 1,
+        categoryId: 1
+      }),
+    });
   },
 
-  async updateService(id: number, data: any) {
-    try {
-      const res = await fetchWithTimeout(`${API_URL}/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Erro ao atualizar");
-      return await res.json();
-    } catch {
-      console.warn("Simulando atualização local (modo mock)");
-      return { ...data, id };
-    }
-  },
+  // getUser: async (token: string): Promise<User | null> => {
+  //   const response: User = await apiRequest("/users/me", {
+  //     method: "GET",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       "Authorization": "Bearer " + token,
+  //     },
+  //   });
+
+  //   console.log("CCCCCCCCCCCCCCCCCC");
+  //   console.log(response);
+  //   if(!response || typeof(response) == undefined) return null;
+  //   return response;
+  // },
+
+  // login: (data: UserLoginAPI) =>
+  //   apiRequest("/auth/login", {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({
+  //       email: data.email,
+  //       password: data.password,
+  //     }),
+  //   }),
+
+  // update: async (
+  //   user: {
+  //     name: string;
+  //     about: string;
+  //   },
+  //   token: string
+  // ) => {
+  //   const response = await apiRequest("/users/me", {
+  //     method: "PUT",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       "Authorization": "Bearer " + token, // ← garante que token é válido
+  //     },
+  //     body: JSON.stringify({
+  //       name: user.name,
+  //       about: user.about,
+  //     }),
+  //   })
+  //   return response;
+  // }
 };
+
+

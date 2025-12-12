@@ -26,7 +26,7 @@ import ServiceEditor from "../components/ServiceEditor/ServiceEditor";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getFirstAndLastName } from "../utils/nameUtils"
 import { userAPI } from "../api/UserAPI";
-import type { User } from "../interfaces/UserInterface"
+import { type User } from "../interfaces/UserInterface"
 
 /* --------------------------------------------------------------------------
  * MOCKS DE DADOS
@@ -69,7 +69,12 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   // Todas as informações do usuário
-  const [user, setUser] = useState({name: "", about: ""})
+  const [user, setUser] = useState<User>({
+    id: 0,
+    name: "",
+    email: "",
+    about: "",
+  })
 
   /* ------------------------------------------------------------------------
    * SIMULAÇÃO DE CARREGAMENTO DE DADOS
@@ -78,49 +83,28 @@ export default function ProfilePage() {
    * ------------------------------------------------------------------------ */
 
   useEffect(() => {
-    const aaa = async () => {
+    const getUser = async () => {
       if(!token) {
       return;
     }
-      return await userAPI.getUser(token);
-    }
-    const userB = aaa();
-    if(!userB || typeof(userB) == undefined) {
-      return; 
-    } else {
-      const userC: User = JSON.stringify(userB);
-    }
 
-    
-  }, [])
+      const profileData = mockProfile;
+      const reviewsData = mockReviews;
 
-  /* useEffect(() => {
+      setProfile(profileData);
+      setReviews(reviewsData);
 
-    if(!token) {
-      navigate('/auth')
-    }
-    
-    const fetchData = async () => {
-      try {
-        
-        if(user.about) mockProfile.bio = user.about;
-
-        const profileData = mockProfile;
-        const reviewsData = mockReviews;
-
-        setProfile(profileData);
-        setReviews(reviewsData);
-      } catch (error) {
-        console.warn("Erro ou timeout, usando mock...");
-        setProfile(mockProfile);
-        setReviews(mockReviews);
-      } finally {
-        setLoading(false);
+      const user: User | null = await userAPI.getUser(token);
+      
+      if(!user) {
+        return;
+      } else {
+        setUser(user);
       }
-    };
+    }
 
-    fetchData();
-  }, [user]); 
+    getUser();  
+  }, []); 
 
   /* ------------------------------------------------------------------------
    * FUNÇÕES DE EDIÇÃO
@@ -143,12 +127,16 @@ export default function ProfilePage() {
     if(!token) return;
     
     try {
-      const res = await userAPI.update({name: user.name, about: user.about}, token)
+      const res = await userAPI.update({name: user?.name, about: user?.about}, token)
       alert("Informações editadas com sucesso!")
       return res;
     } catch (err: any) {
       console.error(err)
     }
+  }
+
+  const openServiceEditor = async () => {
+    setOpen((prev) => !prev)
   }
 
   /* ------------------------------------------------------------------------
@@ -168,7 +156,6 @@ export default function ProfilePage() {
     );
   }
  
-  console.log(user.about)
   /* ------------------------------------------------------------------------
    * RENDERIZAÇÃO PARA PRESTADOR (COM GALERIA DE SERVIÇOS)
    * ------------------------------------------------------------------------ */
@@ -239,14 +226,7 @@ export default function ProfilePage() {
               />
             ) : (
               <p className="text-[var(--text-muted)] max-w-2xl">{user.about}</p>
-            )}
-            { isEditing && 
-              <button 
-            onClick={ handleUpdate }
-            className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:brightness-110 transition">
-              Salvar
-            </button>
-            } 
+            )} 
           </section>
 
           {/* BOTÕES DE AÇÃO */}
@@ -283,7 +263,7 @@ export default function ProfilePage() {
        {/* ===============================================================
        * SEÇÃO DE CRIAÇÃO DE SERVIÇOS
        * =============================================================== */}      
-        {open?(<ServiceEditor  />):(<p></p>)}
+        {open?(<ServiceEditor openServiceEditor={openServiceEditor} />):(<p></p>)}
 
        {/* ===============================================================
        * SEÇÃO DE RESPOSTA DE SERVIÇOS
