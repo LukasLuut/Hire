@@ -3,12 +3,12 @@ export interface Service {
     title: string;
     description_service: string;
     negotiable: boolean;
-    price: number;
+    price: string;
     duration: string;
     providerId?: number;
-    categoryId?: number;
+    categoryId?: number | null;
     subcategory?: string;
-    requiresScheduling?: boolean;
+    requiresScheduling: boolean;
     likesNumber?: number;
     imageUrl?: string;
     acceptedTerms?: boolean;

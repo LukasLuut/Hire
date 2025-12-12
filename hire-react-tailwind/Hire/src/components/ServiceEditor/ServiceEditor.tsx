@@ -4,6 +4,8 @@ import type { PanInfo } from "framer-motion";
 import { Save, Trash2, PlusCircle } from "lucide-react";
 import { serviceAPI } from "../../api/ServiceAPI";
 import type { Service } from "../../interfaces/ServiceInterface";
+import { categoryAPI } from "../../api/CategoryAPI";
+import type { Category } from "../../interfaces/CategoryInterface";
 
 /* --------------------------------------------------------------------------
  * Interface de dados do serviço
@@ -38,9 +40,9 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
       id: 0,
       title: "",
       description_service: "",
-      price: 0,
+      price: "",
       duration: "",
-      categoryId: 1,
+      categoryId: null,
       subcategory: "",
       negotiable: false,
       requiresScheduling: false,
@@ -50,10 +52,13 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
     },
   );
 
+  const [categories, setCategories] = useState<Category[]>([])
+  const [priceRaw, setPriceRaw] = useState(""); // só números
+
+
 
 
   /* --------------------------- Controle de selessssssssssssssção e responsividade --------------------------- */
-  const [selectedId] = useState<number>(service.id);
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 768);
 
   // Controle de qual slide está visível no mobile (editor ou preview)
@@ -79,7 +84,7 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
   /* --------------------------- Função para atualizar campos do serviço --------------------------- */
   const handleChange = (
   field: keyof Service,
-  value: string | boolean | undefined | string[]
+  value: string | boolean | undefined | string[] | number
 ) => {
   setService((prev) => ({
     ...prev,
@@ -136,6 +141,47 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
   const mobileModalClass =
     "absolute top-10 left-4 right-4 bottom-10 bg-[var(--bg-light)] rounded-2xl shadow-lg border border-[var(--border)] p-6 flex flex-col overflow-auto";
 
+
+  useEffect(() => {
+    const getCategory = async () => {
+        const response: Category[] | null = await categoryAPI.getCategory();
+
+        if(!response || response == undefined) return;
+
+        const categoriesClone: Category[] = response.map((e) => {
+          return {
+           id: e.id,
+           name: e.name,
+           description: e.description };
+        })
+        setCategories(categoriesClone);
+    }
+
+    getCategory();
+  }, []);
+
+  useEffect(() => {
+  }, [categories]);
+
+
+  const [priceDigits, setPriceDigits] = useState(""); 
+
+
+  const formatPrice = (digits: string) => {
+  if (!digits) return "";
+  return `R$ ${digits},00`;
+};
+
+
+  const onPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, ""); // pega só números
+    setPriceDigits(digits); // salva números puros
+    handleChange("price", digits); // salva no service também (só números)
+};
+
+
+
+
   /* --------------------------------------------------------------------------
    * Renderização principal
    * -------------------------------------------------------------------------- */
@@ -184,6 +230,7 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
                     Descrição detalhada
                   </span>
                   <textarea
+                    required
                     placeholder="Descreva o serviço, incluindo detalhes importantes..."
                     value={selectedService.description_service}
                     onChange={(e) =>
@@ -198,7 +245,21 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
                 <div className="grid grid-cols-2 gap-4">
                   <label className="flex flex-col">
                     <span className="text-[var(--text-muted)] text-sm mb-1">Categoria</span>
-                    <input
+                    <select
+                      required
+                      value={selectedService.categoryId ? selectedService.categoryId : ""}
+                      onChange={(e) => handleChange("categoryId", Number(e.target.value))}
+                      className="p-2 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-[var(--text)]"
+                    >
+                      <option value="" disabled selected>Selecione uma categoria</option>
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
+
+                    </select>
+                    {/* <input
                       placeholder="Ex: Tecnologia, Beleza..."
                       type="text"
                       value={selectedService.categoryId}
@@ -206,7 +267,7 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
                         handleChange("categoryId", e.target.value)
                       }
                       className="p-2 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-[var(--text)]"
-                    />
+                    /> */}
                   </label>
                   <label className="flex flex-col">
                     <span className="text-[var(--text-muted)] text-sm mb-1">Subcategoria</span>
@@ -229,8 +290,10 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
                     <input
                       placeholder="Ex: R$ 200,00"
                       type="text"
-                      value={selectedService.price}
-                      onChange={(e) => handleChange("price", e.target.value)}
+                      inputMode="numeric"
+                      pattern="\d*"
+                      value={formatPrice(priceDigits)}
+                      onChange={onPriceChange}
                       className="p-2 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-[var(--text)]"
                     />
                   </label>
@@ -334,6 +397,17 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
                   <button
                     className="flex items-center justify-center gap-2 bg-[var(--primary)] text-white font-semibold px-4 py-2 rounded-lg hover:brightness-110 transition"
                     onClick={() => {
+                      if (
+                        !selectedService.categoryId ||
+                        !selectedService.description_service ||
+                        !selectedService.title ||
+                        !selectedService.price ||
+                        !selectedService.subcategory
+                      ) {
+                        alert("Preencha todos os campos obrigatórios.");
+                        return;
+                      }
+
                       try {
                         serviceAPI.create(selectedService);
                         alert("Serviço criado com sucesso;")
@@ -341,13 +415,6 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
                       } catch (err: any) {
                         console.error(err)
                       }
-                      /* Chamada API comentada
-                      fetch("/api/save-service", {
-                        method: "POST",
-                        body: JSON.stringify(selectedService),
-                        headers: { "Content-Type": "application/json" },
-                      });
-                      */
                     }}
                   >
                     <Save size={18} /> Salvar alterações

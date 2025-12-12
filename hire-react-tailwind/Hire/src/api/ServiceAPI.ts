@@ -16,7 +16,9 @@ export const serviceAPI = {
         price: data.price,
         duration: data.duration,
         providerId: 1,
-        categoryId: 1
+        categoryId: data.categoryId,
+        requiresScheduling: data.requiresScheduling,
+        subcategory: data.subcategory
       }),
     });
   },
