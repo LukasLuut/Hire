@@ -5,7 +5,9 @@ interface ServiceInterface {
   title: string;
   description_service: string;
   negotiable: boolean;
+  requiresScheduling: boolean;
   duration: string;
+  subcategory: string;  
   price: number;
   providerId: string;
   categoryId: string;
@@ -19,7 +21,9 @@ export class ServiceService {
       title,
       description_service,
       negotiable,
+      requiresScheduling,
       duration,
+      subcategory,
       providerId,
       categoryId,
       price,
@@ -31,9 +35,11 @@ export class ServiceService {
       title,
       description_service,
       negotiable,
+      requiresScheduling,
       duration,
       price,
       imageUrl,
+      subcategory,
       provider: { id: Number(providerId) },
       category: { id: Number(categoryId) },
     });

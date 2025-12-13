@@ -22,6 +22,9 @@ export class Service {
 
   @Column()
   negotiable: boolean;
+  
+  @Column()
+  requiresScheduling: boolean;
 
   @Column({ nullable: false })
   price: number;
@@ -31,9 +34,6 @@ export class Service {
 
   @Column({ length: 200, default: "Has no subcategory" })
   subcategory?: string;
-
-  @Column({ default: false })
-  requiresScheduling?: boolean;
 
   @Column({ default: 0 })
   likesNumber?: number;
