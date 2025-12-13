@@ -1,7 +1,7 @@
 // ---------------------------------
 // Container principal: gerencia estado, navegação e submit.
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { toFiles } from "../helpers/file-helpers";
@@ -16,10 +16,14 @@ import StepAddress from "../Etapa3/StepAddress";
 import StepDocuments from "../Etapa4/StepDocuments";
 import StepPreferences from "../Etapa5/StepPreferences";
 import ProfilePreview from "../ProfilePreview/ProfilePreview";
+import { addressAPI } from "../../../../api/AddressAPI";
+import type { Address } from "../../../../interfaces/AddressInterface";
 
 export default function ProviderRegistrationContainer() {
   const [step, setStep] = useState<number>(0);
   const totalSteps = 5;
+
+  
 
   const initialForm: ProviderForm = {
   // Identidade
@@ -55,12 +59,12 @@ export default function ProviderRegistrationContainer() {
   // Endereço
   hasPhysicalLocation: true,
   address: {
-    cep: "93120-520",
-    street: "Rua Elsa Dauber Steimer",
-    number: "67",
-    neighborhood: "Scharlau",
-    city: "São Leopoldo",
-    state: "RS",
+    cep: "",
+    street: "",
+    number: "",
+    neighborhood: "",
+    city: "",
+    state: "",
   },
   serviceRadiusKm: 25,
 
@@ -138,15 +142,49 @@ export default function ProviderRegistrationContainer() {
   const removeSubcategory = (t: string) =>
     update("subcategories", form.subcategories.filter((s) => s !== t));
 
+  function validateAddress() {
+    if (!form.address?.cep || form.address.cep.trim() === "" || form.address.cep.length !== 9) { alert("Coloque um CEP válido"); return null}
+    if (!form.address?.street || form.address.street.trim() === "") { alert("Rua é obrigatório"); return null}
+    if (!form.address?.number || form.address.number.trim() === "") { alert("Número é obrigatório"); return null}
+    if (!form.address?.neighborhood || form.address.neighborhood.trim() === "") { alert("Bairro é obrigatório"); return null}
+    if (!form.address?.city || form.address.city.trim() === "") { alert("Cidade é obrigatório"); return null}
+    if (!form.address?.state || form.address.state.trim() === "") { alert("Estado é obrigatório"); return null}
+
+    return true;
+  }
   /* navigation */
-  const next = () => setStep((s) => Math.min(s + 1, totalSteps - 1));
+  const next = () => {
+    if(step == 2) {
+      if (!validateAddress()) return;
+    }
+    setStep((s) => Math.min(s + 1, totalSteps - 1))
+  };
   const prev = () => setStep((s) => Math.max(s - 1, 0));
 
   /* submit */
   const handleFinish = async () => {
+
+    const token = localStorage.getItem("token");
+    if(!token) return;
+
+    const address: Address = {
+      id: 0,
+      num: form.address?.number,
+      street: form.address?.street,
+      neighborhood: form.address?.neighborhood,
+      city: form.address?.city,
+      state: form.address?.state,
+      country: "Brazi",
+      postalCode: form.address?.cep
+    }
+    addressAPI.create(address, token)
     console.log("Submitting: ", form);
     alert("Simulação: formulário enviado. Ver console.");
   };
+
+  useEffect(() => {
+    console.log(form)
+  }, [form])
 
   return (
     <div className="min-h-auto bg-[var(--bg-dark)] text-[var(--text)] p-4 md:p-8">

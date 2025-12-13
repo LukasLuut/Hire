@@ -105,25 +105,10 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
     setImagePreview(URL.createObjectURL(file));
   };
 
-
-
-  const addImage = () => {
-    const url = prompt("Insira a URL da imagem");
-    if (!url) return;
-
-    handleChange("imageUrl", url);
-  };
-
   const removeImage = () => {
     setImageFile(null);
     setImagePreview(null);
   };
-
-
-  // const removeImage = () => {
-  // handleChange("imageUrl", "");
-  // };
-
 
   /* --------------------------- Função de swipe lateral (mobile) --------------------------- */
   const handleDragEnd = (_: any, info: PanInfo) => {
