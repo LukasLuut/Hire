@@ -5,21 +5,10 @@ import { apiRequest } from "./ApiClient";
 
 export const serviceAPI = {
 
-  create: async (data: Service) => {
+  create: async (data: FormData) => {
     return await apiRequest("/services", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: data.title,
-        description_service: data.description_service,
-        negotiable: data.negotiable,
-        price: data.price,
-        duration: data.duration,
-        providerId: 1,
-        categoryId: data.categoryId,
-        requiresScheduling: data.requiresScheduling,
-        subcategory: data.subcategory
-      }),
+      body: data,
     });
   },
 

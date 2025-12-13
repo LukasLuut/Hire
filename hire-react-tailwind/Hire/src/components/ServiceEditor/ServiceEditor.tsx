@@ -53,7 +53,6 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
   );
 
   const [categories, setCategories] = useState<Category[]>([])
-  const [priceRaw, setPriceRaw] = useState(""); // só números
 
 
 
@@ -94,6 +93,20 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
 
 
   /* --------------------------- Funções do editor de imagens --------------------------- */
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+
+
   const addImage = () => {
     const url = prompt("Insira a URL da imagem");
     if (!url) return;
@@ -101,10 +114,15 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
     handleChange("imageUrl", url);
   };
 
-
   const removeImage = () => {
-  handleChange("imageUrl", "");
+    setImageFile(null);
+    setImagePreview(null);
   };
+
+
+  // const removeImage = () => {
+  // handleChange("imageUrl", "");
+  // };
 
 
   /* --------------------------- Função de swipe lateral (mobile) --------------------------- */
@@ -362,7 +380,7 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
                 </div>
 
                 {/* --------------------------- Editor de imagens --------------------------- */}
-                <div className="mt-4">
+                {/* <div className="mt-4">
                   <h4 className="font-semibold mb-2">Imagens do serviço</h4>
                   <div className="flex gap-2 flex-wrap">
                     {selectedService.imageUrl && (
@@ -389,7 +407,48 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
                       <PlusCircle size={24} />
                     </button>
                   </div>
+                </div> */}
+                <div className="mt-4">
+                  <h4 className="font-semibold mb-2">Imagem do serviço</h4>
+
+                  <div className="flex gap-2 flex-wrap">
+                    {imagePreview ? (
+                      <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-[var(--border)]">
+                        <img
+                          src={imagePreview}
+                          alt="Imagem do serviço"
+                          className="w-full h-full object-cover"
+                        />
+
+                        <button
+                          type="button"
+                          onClick={removeImage}
+                          className="absolute top-1 right-1 bg-[var(--bg-dark)]/70 p-1 rounded-full text-white hover:bg-red-600 transition"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <label
+                          htmlFor="imageUpload"
+                          className="flex items-center justify-center w-24 h-24 rounded-lg border border-[var(--border)] text-[var(--text-muted)] cursor-pointer hover:bg-[var(--bg-dark)]/20 transition"
+                        >
+                          <PlusCircle size={24} />
+                        </label>
+
+                        <input
+                          id="imageUpload"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                          className="hidden"
+                        />
+                      </>
+                    )}
+                  </div>
                 </div>
+
 
                 {/* --------------------------- Botão salvar --------------------------- */}
                 <div className="mt-5 flex justify-center">
@@ -407,8 +466,23 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
                         return;
                       }
 
+                      if (!imageFile) return alert("Selecione uma imagem");
+
+                      const formData = new FormData();
+
+                      formData.append("title", selectedService.title);
+                      formData.append("description_service", selectedService.description_service);
+                      formData.append("categoryId", String(selectedService.categoryId));
+                      formData.append("providerId", String(1));
+                      formData.append("price", selectedService.price);
+                      formData.append("duration", selectedService.duration);
+                      formData.append("subcategory", selectedService.subcategory);
+                      formData.append("negotiable", String(selectedService.negotiable));
+                      formData.append("requiresScheduling", String(selectedService.requiresScheduling));
+                      formData.append("image", imageFile);
+
                       try {
-                        serviceAPI.create(selectedService);
+                        serviceAPI.create(formData);
                         alert("Serviço criado com sucesso;")
                         openServiceEditor();
                       } catch (err: any) {
@@ -498,11 +572,11 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
         </div>
 
         {/* --------------------------- Lista de imagens adicionais --------------------------- */}
-        {selectedService.imageUrl && (
+        {imagePreview && (
           <div className="flex gap-2 mt-4 overflow-x-auto">
             <img
-              src={selectedService.imageUrl}
-              alt={selectedService.title}
+              src={imagePreview}
+              alt="Preview da imagem"
               className="w-24 h-24 object-cover rounded-lg border border-[var(--border)]"
             />
           </div>

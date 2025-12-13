@@ -3,18 +3,25 @@ export async function apiRequest<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
+
+  const isFormData = options.body instanceof FormData;
+
   const response = await fetch(`http://localhost:8080${endpoint}`, {
+    ...options,
     headers: {
-      "Content-Type": "application/json",
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...(options.headers || {}),
     },
-    ...options,
   });
 
+
   let body: any = null;
-  try {
+
+  const contentType = response.headers.get("content-type");
+
+  if (contentType?.includes("application/json")) {
     body = await response.json();
-  } catch {}
+  }
 
   if (!response.ok) {
     let message = "Erro na requisição";
