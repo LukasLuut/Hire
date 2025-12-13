@@ -168,17 +168,16 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
 
 
   const formatPrice = (digits: string) => {
-  if (!digits) return "";
-  return `R$ ${digits},00`;
-};
-
+    if (!digits) return "";
+    return `R$ ${digits}`;
+  };
 
   const onPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const digits = e.target.value.replace(/\D/g, ""); // pega só números
-    setPriceDigits(digits); // salva números puros
-    handleChange("price", digits); // salva no service também (só números)
-};
+    const digits = e.target.value.replace(/\D/g, "");
 
+    setPriceDigits(digits);
+    handleChange("price", digits); // salva "123" no service
+  };
 
 
 
