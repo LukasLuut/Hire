@@ -11,9 +11,6 @@ export class AddressService {
 
         const user = await this.userRepository.findOne({ where: { id: userId } });
         if (!user) throw new Error("Usuário não existente");
-
-        console.log("SOCORRO ME AJUDA")
-        console.log(user.name)
         
         const address = this.addressRepository.create(data);
         await this.addressRepository.save(address)
