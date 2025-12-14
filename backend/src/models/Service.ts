@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -41,7 +42,10 @@ export class Service {
   @Column({ type: "varchar", length: 255, nullable: true })
   imageUrl?: string | null;
 
-  @ManyToOne(() => ServiceProvider, (provider) => provider.services)
+  @ManyToOne(() => ServiceProvider, (provider) => provider.services, {
+    onDelete: "CASCADE"
+  })
+  @JoinColumn()
   provider: ServiceProvider;
 
   @ManyToOne(() => Category, (category) => category.services)

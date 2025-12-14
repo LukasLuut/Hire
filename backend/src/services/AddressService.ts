@@ -9,7 +9,7 @@ export class AddressService {
 
     async create(userId: number, data: { num: number, street: string, neighborhood: string, city: string, state: string, country: string, postalCode: string }) {
 
-        const user = await this.userRepository.findOne({ where: { id: userId } });
+        const user = await this.userRepository.findOne({ where: { id: userId }});
         if (!user) throw new Error("Usuário não existente");
         
         const address = this.addressRepository.create(data);

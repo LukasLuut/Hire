@@ -28,6 +28,21 @@ export class ServiceProvider {
   })
   @JoinColumn()
   user: User;
+  
+  @Column()
+  professionalEmail: string;
+
+  @Column() 
+  professionalPhone: string;
+
+  @Column({ length: 255, nullable: true })
+  description?: string
+
+  @Column({ length: 18, nullable: true})
+  cnpj?: string;
+
+  @Column({ type: "varchar", length: 255, nullable: true })
+  profileImageUrl?: string | null;
 
   @OneToMany(() => Contract, (contract) => contract.provider)
   contracts: Contract[];

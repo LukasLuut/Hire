@@ -29,8 +29,6 @@ export const categoryAPI = {
       },
     });
 
-    console.log("TÔ DENTRO DO CATEGORY");
-    console.log(response);
     if(!response || typeof(response) == undefined) return null;
     return response;
   },

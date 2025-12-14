@@ -6,7 +6,7 @@ const providerService = new ProviderService;
 export class ProviderController {
     create = async (req: Request, res: Response) => {
         try {
-            const provider = await providerService.create((req as any).user.id, req.body);
+            const provider = await providerService.create((req as any).user.id, req.body, req.file);
             res.status(201).json(provider);
         } 
         catch(err: any) {

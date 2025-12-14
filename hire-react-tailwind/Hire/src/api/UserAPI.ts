@@ -26,8 +26,6 @@ export const userAPI = {
       },
     });
 
-    console.log("CCCCCCCCCCCCCCCCCC");
-    console.log(response);
     if(!response || typeof(response) == undefined) return null;
     return response;
   },

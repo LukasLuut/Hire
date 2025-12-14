@@ -7,17 +7,18 @@ export class ProviderService {
   private providerRepository = AppDataSource.getRepository(ServiceProvider);
   private userRepository = AppDataSource.getRepository(User);
 
-  async create(
-    idUser: number,
-    data: {
+  async create(idUser: number, data: {
       companyName: string;
-    }
+    }, file?: Express.Multer.File
   ) {
-    const user = await this.userRepository.findOneBy({ id: idUser });
 
+    const profileImageUrl = file ? `/uploads/${file.filename}` : null;
+
+    const user = await this.userRepository.findOne({ where: { id: idUser}, relations: { provider: true }});
     if (!user) throw new Error("Usuário não existente");
+    if(user.provider) throw new Error("Prestador de serviços já existente");
 
-    const newData: any = { ...data, user };
+    const newData: any = { ...data, user, profileImageUrl };
 
     const provider = this.providerRepository.create(newData);
 

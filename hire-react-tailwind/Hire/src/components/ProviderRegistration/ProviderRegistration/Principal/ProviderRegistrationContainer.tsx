@@ -18,6 +18,8 @@ import StepPreferences from "../Etapa5/StepPreferences";
 import ProfilePreview from "../ProfilePreview/ProfilePreview";
 import { addressAPI } from "../../../../api/AddressAPI";
 import type { Address } from "../../../../interfaces/AddressInterface";
+import { providerApi } from "../../../../api/ProviderAPI";
+import { validateFormData } from "../../../../validate/validateFormData";
 
 export default function ProviderRegistrationContainer() {
   const [step, setStep] = useState<number>(0);
@@ -28,9 +30,9 @@ export default function ProviderRegistrationContainer() {
   const initialForm: ProviderForm = {
   // Identidade
   name: "Lucas William",
-  cpfCnpj: "033.046.990-82",
-  email: "lucas.william@Hire.com",
-  phone: "(51) 98765-4321",
+  cnpj: "",
+  professionalEmail: "lucas.william@Hire.com",
+  professionalPhone: "(51) 98765-4321",
   shortDescription:
     "Profissional dedicado com foco em qualidade e atendimento personalizado.",
   profilePhoto: null,
@@ -154,6 +156,12 @@ export default function ProviderRegistrationContainer() {
   }
   /* navigation */
   const next = () => {
+
+    if(!validateFormData(form, step)) {
+      return;
+    }
+    
+
     if(step == 2) {
       if (!validateAddress()) return;
     }
@@ -167,6 +175,19 @@ export default function ProviderRegistrationContainer() {
     const token = localStorage.getItem("token");
     if(!token) return;
 
+    if(!form.profilePhoto) return;
+
+    const formData = new FormData();
+
+    formData.append("companyName", form.name);
+    formData.append("professionalEmail", form.professionalEmail);
+    formData.append("professionalPhone", form.professionalPhone);
+    formData.append("description", form.shortDescription);
+    formData.append("cnpj", form.cnpj);
+    formData.append("image", form.profilePhoto);
+
+    providerApi.create(formData, token);
+
     const address: Address = {
       id: 0,
       num: form.address?.number,
@@ -177,7 +198,8 @@ export default function ProviderRegistrationContainer() {
       country: "Brazi",
       postalCode: form.address?.cep
     }
-    addressAPI.create(address, token)
+   addressAPI.create(address, token);
+
     console.log("Submitting: ", form);
     alert("Simulação: formulário enviado. Ver console.");
   };
