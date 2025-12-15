@@ -90,7 +90,7 @@ export interface ProviderForm {
   professionalEmail: string;
   professionalPhone: string;
   shortDescription: string;
-  profilePhoto: FileOrNull;
+  profilePhoto?: FileOrNull;
 
   companyName: string;
   category: string;
@@ -270,7 +270,7 @@ export function LinkList({
       </div>
 
       <input
-        type="text"
+        type="text" 
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={handleAdd}

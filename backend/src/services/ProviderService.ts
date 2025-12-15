@@ -2,27 +2,77 @@ import { AnyARecord } from "dns";
 import { AppDataSource } from "../config/data-source";
 import { ServiceProvider } from "../models/ServiceProvider";
 import { User } from "../models/User";
+import { Subcategory } from "../models/Subcategory";
+import { Availability } from "../models/Availability";
 
 export class ProviderService {
   private providerRepository = AppDataSource.getRepository(ServiceProvider);
   private userRepository = AppDataSource.getRepository(User);
+  private subcategoryRepository = AppDataSource.getRepository(Subcategory);
+  private availabilityRepository = AppDataSource.getRepository(Availability);
 
-  async create(idUser: number, data: {
+  isObject = (value: unknown) => {
+    return (
+      typeof value === "object" &&
+      value !== null &&
+      !Array.isArray(value) &&
+      Object.keys(value).length > 0
+    );
+  };
+
+  async create(
+    idUser: number,
+    data: {
       companyName: string;
-    }, file?: Express.Multer.File
+      subcategories: string;
+      availabilities: JSON;
+    },
+    file?: Express.Multer.File
   ) {
-
     const profileImageUrl = file ? `/uploads/${file.filename}` : null;
 
-    const user = await this.userRepository.findOne({ where: { id: idUser}, relations: { provider: true }});
+    const user = await this.userRepository.findOne({
+      where: { id: idUser },
+      relations: { provider: true },
+    });
     if (!user) throw new Error("Usuário não existente");
-    if(user.provider) throw new Error("Prestador de serviços já existente");
+
+    if (user.provider) throw new Error("Prestador de serviços já existente");
 
     const newData: any = { ...data, user, profileImageUrl };
 
     const provider = this.providerRepository.create(newData);
+    const providerSaved = await this.providerRepository.save(provider);
 
-    return await this.providerRepository.save(provider);
+    const subcategories = JSON.parse(data.subcategories);
+
+    // Caso tenha subcategorias...
+    if (Array.isArray(subcategories)) {
+      var categoryList: Array<Object> = [];
+
+      subcategories.forEach((element) => {
+        categoryList.push({ name: element, provider: providerSaved });
+      });
+
+      const subcategoriesToSave =
+        this.subcategoryRepository.create(categoryList);
+
+      this.subcategoryRepository.save(subcategoriesToSave);
+    }
+
+    if (this.isObject(data.availabilities)) {
+      Object.entries(data.availabilities).forEach(([day, hours]: [string, any]) => {
+        const { start, end } = hours;
+
+        const weekDay = this.availabilityRepository.create({
+          name: day, start: start, end: end, provider: providerSaved[0]
+        });
+
+        this.availabilityRepository.save(weekDay);
+      });
+    }
+
+    return providerSaved;
   }
 
   async getById(id: number) {
@@ -44,13 +94,12 @@ export class ProviderService {
     const provider = await this.providerRepository.findOne({
       where: {
         user: {
-          id: id
-        }
-      }
+          id: id,
+        },
+      },
     });
 
     if (!provider) throw new Error("Provedor não encontrado");
-
 
     await this.providerRepository.remove(provider);
     return { message: "Provedor removido" };
@@ -77,10 +126,16 @@ export class ProviderService {
   //   }
 
   async update(id: number, data: Partial<ServiceProvider>) {
-    const user = await this.userRepository.findOne({ where: { id: id }, relations: { provider: true } })
-    if (!user) throw new Error("Usuário não encontrado")
+    const user = await this.userRepository.findOne({
+      where: { id: id },
+      relations: { provider: true },
+    });
+    if (!user) throw new Error("Usuário não encontrado");
 
-    const provider = await this.providerRepository.findOne({ where: { user: { id: id } }, relations: { user: true } });
+    const provider = await this.providerRepository.findOne({
+      where: { user: { id: id } },
+      relations: { user: true },
+    });
     if (!provider) throw new Error("Provedor não encontrado");
 
     Object.assign(provider, data);

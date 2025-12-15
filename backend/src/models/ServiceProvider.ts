@@ -14,11 +14,16 @@ import { Category } from "./Category";
 import { Contract } from "./Contract";
 import { Hire } from "./Hire";
 import { Payment } from "./Payment";
+import { Subcategory } from "./Subcategory";
+import { Availability } from "./Availability";
 
 @Entity("service_providers")
 export class ServiceProvider {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ length: 255, nullable: false })
+  professionalName: string;
 
   @Column({ length: 100, nullable: false })
   companyName: string;
@@ -43,6 +48,12 @@ export class ServiceProvider {
 
   @Column({ type: "varchar", length: 255, nullable: true })
   profileImageUrl?: string | null;
+
+  @OneToMany(() => Subcategory, (subcategory) => subcategory.provider)
+  subcategories: Subcategory[];
+
+  @OneToMany(() => Availability, (availability) => availability.provider)
+  availabilities: Availability[];
 
   @OneToMany(() => Contract, (contract) => contract.provider)
   contracts: Contract[];

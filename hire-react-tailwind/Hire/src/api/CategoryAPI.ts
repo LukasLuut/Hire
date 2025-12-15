@@ -33,6 +33,17 @@ export const categoryAPI = {
     return response;
   },
 
+  getCategoryById: async (id: number): Promise<Category | null> => {
+    const response: Category = await apiRequest(`/categories/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if(!response || typeof(response) == undefined) return null;
+    return response;
+  },
   // login: (data: UserLoginAPI) =>
   //   apiRequest("/auth/login", {
   //     method: "POST",

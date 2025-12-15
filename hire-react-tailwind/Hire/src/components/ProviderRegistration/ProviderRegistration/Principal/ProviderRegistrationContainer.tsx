@@ -32,14 +32,14 @@ export default function ProviderRegistrationContainer() {
   name: "Lucas William",
   cnpj: "",
   professionalEmail: "lucas.william@Hire.com",
-  professionalPhone: "(51) 98765-4321",
+  professionalPhone: "51984584293",
   shortDescription:
     "Profissional dedicado com foco em qualidade e atendimento personalizado.",
   profilePhoto: null,
 
   // Profissional
   companyName: "Reformas William",
-  category: "Construção Civil",
+  category: "",
   subcategories: ["Pintura", "Elétrica", "Reparos gerais"],
   experienceLevel: "especialista",
   portfolio: [],
@@ -160,7 +160,6 @@ export default function ProviderRegistrationContainer() {
     if(!validateFormData(form, step)) {
       return;
     }
-    
 
     if(step == 2) {
       if (!validateAddress()) return;
@@ -175,16 +174,16 @@ export default function ProviderRegistrationContainer() {
     const token = localStorage.getItem("token");
     if(!token) return;
 
-    if(!form.profilePhoto) return;
-
     const formData = new FormData();
 
-    formData.append("companyName", form.name);
+    formData.append("companyName", form.companyName);
+    formData.append("professionalName", form.name);
     formData.append("professionalEmail", form.professionalEmail);
     formData.append("professionalPhone", form.professionalPhone);
     formData.append("description", form.shortDescription);
-    formData.append("cnpj", form.cnpj);
-    formData.append("image", form.profilePhoto);
+    formData.append("cnpj", form.cnpj ? form.cnpj : "");
+    formData.append("subcategories", JSON.stringify(form.subcategories));
+    formData.append("image", form.profilePhoto ? form.profilePhoto : "");
 
     providerApi.create(formData, token);
 

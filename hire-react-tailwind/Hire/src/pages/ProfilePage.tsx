@@ -27,6 +27,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { getFirstAndLastName } from "../utils/nameUtils"
 import { userAPI } from "../api/UserAPI";
 import { type User } from "../interfaces/UserInterface"
+import { providerApi } from "../api/ProviderAPI";
 
 /* --------------------------------------------------------------------------
  * MOCKS DE DADOS
@@ -282,7 +283,7 @@ export default function ProfilePage() {
           <div className="flex flex-col items-center justify-center min-h-50 bg-[var(--bg-dark)] border-b-1  border-[var(--border)] text-[var(--text)]">
             {!registration?(
               <button className="bg-[var(--primary)] rounded-xl w-55 h-15 mt-6 text-lg text-white animate-bounce "
-                onClick={()=>setRegistration(true) }>
+                onClick={ ()=> setRegistration(true) }>
                 Cadastre sua empresa
               </button>
             ):(<ProviderRegistrationContainer />)}

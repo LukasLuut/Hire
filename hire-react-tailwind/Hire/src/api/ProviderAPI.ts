@@ -12,6 +12,19 @@ export const providerApi = {
     });
   },
 
+  getByUser: async (token: string) => {
+    const response = await apiRequest('/providers', {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      }
+    });
+
+    if(!response || typeof response == "undefined") return null;
+    return response;
+  }
+
 };
 
 

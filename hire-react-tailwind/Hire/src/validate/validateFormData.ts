@@ -32,5 +32,17 @@ export const validateFormData = (data: ProviderForm, step: number): boolean => {
     }
   }
 
+  if(step >= 1) {
+    if(!data.companyName) {
+      alert("Insira um nome comercial");
+      return false;
+    }
+    if(!data.category) { 
+      alert("Insira uma categoria");
+      return false;
+    }
+
+  }
+
   return true;
 };
