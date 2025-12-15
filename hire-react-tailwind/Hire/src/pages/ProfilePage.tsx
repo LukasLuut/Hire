@@ -22,7 +22,6 @@ import ServiceResponseModal from "../components/Negotiation/ServiceResponseModal
 import ServiceFormalizerModal from "../components/Negotiation/ServiceFormalizerModal";
 import ProviderRegistration from "../components/ProviderRegistration/ProviderRegistration";
 import ProviderRegistrationContainer from "../components/ProviderRegistration/ProviderRegistration/Principal/ProviderRegistrationContainer";
-import NegotiationRoom from "../components/Negotiation/NegotiationRoom";
 import ServiceEditor from "../components/ServiceEditor/ServiceEditor";
 import type { ProviderForm } from "../components/ProviderRegistration/ProviderRegistration/helpers/types-and-helpers";
 import ProviderHero from "../components/ProviderHero/ProviderHero";

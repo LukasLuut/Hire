@@ -15,6 +15,7 @@ import {
   MapPin,
   Star,
 } from "lucide-react";
+import ServiceGallery from "../ServiceGallery/ServiceGallery/ServiceGallery";
 
 interface ProviderHeroProps {
   provider: ProviderForm;
@@ -40,13 +41,13 @@ export default function ProviderHero({ provider }: ProviderHeroProps) {
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="mt-4 md:mt-6 mb-8 md:mb-10 bg-[var(--bg-dark)] px-4 sm:px-6 py-6 text-[var(--text)] border-t border-[var(--border)]"
+      className="mt-4 md:mt-2 mb-8 md:mb-10 bg-[var(--bg-dark)] px-4 sm:px-6 py-6 text-[var(--text)] "
     >
       {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
         <div className="flex flex-col sm:flex-row gap-5">
           {/* Avatar / Logo */}
-          <div className="w-28 h-28 sm:w-40 sm:h-40 lg:w-56 lg:h-56 rounded-full bg-[var(--bg)] border border-[var(--primary)] flex items-center justify-center shrink-0 mx-auto sm:mx-0">
+          <div className="w-28 h-28 sm:w-40 sm:h-40 ml-0 mr-0 md:mr-10 md:ml-40 lg:w-70 lg:h-70 rounded-full bg-[var(--bg)] border border-[var(--primary)] flex items-center justify-center shrink-0 mx-auto sm:mx-0">
             <Building2 className="w-12 h-12 sm:w-16 sm:h-16 lg:w-24 lg:h-24 text-[var(--primary)]" />
           </div>
 
@@ -113,7 +114,7 @@ export default function ProviderHero({ provider }: ProviderHeroProps) {
       </div>
 
       {/* MODELO DE ATENDIMENTO */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-24">
         <InfoCard icon={<Globe />} label="Atendimento Online" value={provider.online ? "Disponível" : "—"} />
         <InfoCard icon={<Map />} label="Atendimento Presencial" value={provider.inPerson ? "Disponível" : "—"} />
         <InfoCard
@@ -160,7 +161,7 @@ export default function ProviderHero({ provider }: ProviderHeroProps) {
       </div>
 
       {/* CONFIANÇA */}
-      <div className="mt-6 pt-4 border-t border-[var(--border)] flex flex-col gap-2 text-sm">
+      <div className="mt-6 pt-4 border-t border-[var(--border)] flex flex-col md:flex-row  gap-2 text-sm">
         <StatusLine
           icon={<ShieldCheck />}
           text={provider.idDocument ? "Identidade verificada" : "Verificação pendente"}
@@ -185,6 +186,7 @@ export default function ProviderHero({ provider }: ProviderHeroProps) {
           />
         )}
       </div>
+      <ServiceGallery/>
     </motion.section>
   );
 }

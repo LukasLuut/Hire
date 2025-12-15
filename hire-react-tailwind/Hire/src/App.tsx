@@ -14,7 +14,7 @@ import ServiceDashboard from "./components/ServiceEditor/ServiceEditor";
 import PostCard from "./components/ServiceGallery/Service/Service";
 import ServiceDashboardSophisticated from "./pages/DashboardClient";
 import { DemoServiceProgressContainer } from "./components/ServiceProgress";
-import GOTCharacterSheet from "./testes/ScrollList"
+
 
 export default function App() {
   const [theme, setTheme] = useState<"dark" | "light">(() => {
@@ -41,7 +41,7 @@ export default function App() {
       <Navbar theme={theme} setTheme={setTheme} />
       <Routes>
         {/* Página inicial */}
-        <Route path="/" element={<ProfilePage/>} />
+        <Route path="/" element={<DashboardPrestador/>} />
 
         {/* Rotas principais */}
         <Route path="/profile" element={<ProfilePage />} />
