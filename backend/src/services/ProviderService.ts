@@ -25,8 +25,7 @@ export class ProviderService {
     data: {
       companyName: string;
       subcategories: string;
-      availabilities: JSON;
-    },
+      },
     file?: Express.Multer.File
   ) {
     const profileImageUrl = file ? `/uploads/${file.filename}` : null;
@@ -58,18 +57,6 @@ export class ProviderService {
         this.subcategoryRepository.create(categoryList);
 
       this.subcategoryRepository.save(subcategoriesToSave);
-    }
-
-    if (this.isObject(data.availabilities)) {
-      Object.entries(data.availabilities).forEach(([day, hours]: [string, any]) => {
-        const { start, end } = hours;
-
-        const weekDay = this.availabilityRepository.create({
-          name: day, start: start, end: end, provider: providerSaved[0]
-        });
-
-        this.availabilityRepository.save(weekDay);
-      });
     }
 
     return providerSaved;
