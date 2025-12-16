@@ -47,18 +47,12 @@ export default function App() {
         <Route path="/" element={<AuthPage />} />
 
         {/* Rotas principais */}
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/home" element={<ProfilePage />} />
         <Route path="/auth" element={<AuthPage />} />
-        <Route path="/prestador/dashboard" element={<DashboardPrestador />} />
-        <Route path="/client/dashboard" element={<ServiceDashboardSophisticated />} />
+        <Route path="/business" element={<DashboardPrestador />} />
+        <Route path="/client" element={<ServiceDashboardSophisticated />} />
 
-        {/* Serviços e criação */}
-        {/* <Route path="/service/create" element={<ServiceCreationWizardModal />} /> */}
-        <Route path="/service/editor" element={<ServiceDashboard openServiceEditor={function (): void {
-          throw new Error("Function not implemented.");
-        } } />} />
-        {/* <Route path="/service/view" element={<PostCard />} /> */}
-
+      
         {/* Contratos */}
         {/* <Route path="/contract/viewer" element={<ContractViewer />} /> */}
         <Route path="/contract/preview" element={<ContractPreview />} />

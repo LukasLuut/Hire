@@ -1,19 +1,18 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, type Provider } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { mockProvider } from "./ProfilePage";
 import ProviderHero from "../components/ProviderHero/ProviderHero";
 import {
   Star,
-  Clock,
-  DollarSign,
-  Bell,
   Plus,
   MessageSquare,
   Archive,
-  X,
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import ServiceEditor from "../components/ServiceEditor/ServiceEditor";
+import { providerApi } from "../api/ProviderAPI";
+import type { ProviderForm } from "../components/ProviderRegistration/ProviderRegistration/helpers/types-and-helpers";
 
 /* ---------------------------
    Types & Mock data (same as antes)
@@ -228,6 +227,28 @@ export default function DashboardPrestador() {
   // mobile accordion (drawer alternative per sua escolha 'b')
   const [panelOpen, setPanelOpen] = useState(false);
 
+   /* AQUI COMEÇA A BRINCADEIRA */ 
+  const [provider, setProvider] = useState<ProviderForm | null>(null);
+
+  useEffect(() => {
+    const getProvider = async () => {
+      const token = localStorage.getItem("token");
+      if(!token) return;
+
+      const provider: ProviderForm | null = await providerApi.getByUser(token);
+
+      if(!provider) {
+        alert("Não existe um prestador de serviços");
+        return;
+      } else {
+        setProvider(provider);
+      }
+
+      console.log('ESSE É O PROVIDER: ' + JSON.stringify(provider))
+    };
+
+    getProvider();
+  }, [])
   
   /* fetch resources (with fallback mocks) */
   useEffect(() => {
@@ -268,17 +289,19 @@ export default function DashboardPrestador() {
 
   // UI motion variants
   const panelVariant = { closed: { height: 0, opacity: 0 }, open: { height: "auto", opacity: 1 } };
+  const[openCreateService, setOpenCreateService]=useState(false)
 
   /* ---------------------------
      Render
      --------------------------- */
+  
   return (
     <LayoutGroup>
       <div className="min-h-screen bg-[var(--bg-dark)] pt-25 text-[var(--text)] px-4 sm:px-6 md:px-8 lg:px-10 py-6">
         {/* header */}        
         <div className="max-w-[90%] mx-auto flex flex-col lg:flex-row gap-6">
           {/* aside (desktop) visible at right; on mobile it will be an accordion below header */}
-          <ProviderHero provider={mockProvider}/>
+          {provider && <ProviderHero provider={provider} />}
           <aside className="w-full mt-6 lg:w-80">
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className=" lg:block mb-4 bg-[var(--bg-light)]/40 backdrop-blur-xl rounded-2xl p-4 border border-[var(--border)] shadow-md">
               <div className="flex items-center justify-between mb-3">
@@ -287,7 +310,7 @@ export default function DashboardPrestador() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <button className="flex items-center gap-3 p-2 rounded-lg bg-[var(--primary)]/90 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
+                <button onClick={()=>setOpenCreateService(true)} className="flex items-center gap-3 p-2 rounded-lg bg-[var(--primary)]/90 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
                   <Plus /> <span className="text-sm">Novo serviço</span>
                 </button>
                 <button className="flex items-center gap-3 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
@@ -329,7 +352,7 @@ export default function DashboardPrestador() {
                   {panelOpen ? <ChevronUp /> : <ChevronDown />}
                 </div>
               </motion.button>
-
+              
               <AnimatePresence>
                 {panelOpen && (
                   <motion.div
@@ -342,8 +365,8 @@ export default function DashboardPrestador() {
                   >
                     <div className="p-4 rounded-2xl bg-[var(--bg-light)]/30 border border-[var(--border)]">
                       <div className="flex flex-col gap-3">
-                        <button className="flex items-center gap-3 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
-                          <Plus /> <span className="text-sm">Novo serviço</span>
+                        <button onClick={()=>setOpenCreateService(true)} className="flex items-center gap-3 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
+                          <Plus /> <span  className="text-sm">Novo serviço</span>
                         </button>
                         <button className="flex items-center gap-3 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
                           <MessageSquare /> <span className="text-sm">Mensagens</span>
@@ -365,6 +388,10 @@ export default function DashboardPrestador() {
                 )}
               </AnimatePresence>
             </div>
+            <div >
+
+            {openCreateService&&( <div className="fixed inset-0 z-20 "><ServiceEditor isOpen={openCreateService} onClose={() => setOpenCreateService(false)} /></div>)}
+            </div>
             {/* right column inside main (bookings + reviews) */}
             <aside className="lg:col-span-1">
               <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="bg-[var(--bg-light)]/30 backdrop-blur-xl rounded-2xl p-4 border border-[var(--border)]">
@@ -372,7 +399,7 @@ export default function DashboardPrestador() {
                   <h4 className="font-semibold">Reservas recentes</h4>
                   <div className="text-xs text-[var(--text-muted)]">Próximas</div>
                 </div>
-
+                
                 <div className="flex flex-col gap-3">
                   {(bookings || MOCK_BOOKINGS).slice(0, 4).map((b) => {
                     const svc = (services || MOCK_SERVICES).find((s) => s.id === b.serviceId);

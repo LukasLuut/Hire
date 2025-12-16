@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
+import type {ReactNode} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PanInfo } from "framer-motion";
 import { Save, Trash2, PlusCircle } from "lucide-react";
@@ -24,17 +25,31 @@ import type { Category } from "../../interfaces/CategoryInterface";
 //   acceptedTerms?: boolean;
 //   images: string[];
 // }
-
-type Props = {
-  openServiceEditor: () => void; // caso não receba parâmetros
-};
-
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+ 
+}
 
 /* --------------------------------------------------------------------------
  * Componente principal do painel de serviços
  * -------------------------------------------------------------------------- */
-export default function ServiceDashboard({ openServiceEditor }: Props) {
+export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
   /* --------------------------- Estado inicial dos serviços --------------------------- */
+  /* --------------------------- Estado inicial dos serviços --------------------------- */
+  
+  // Fecha com ESC
+  useEffect(() => {
+    function handleEsc(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+
+    if (isOpen) window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
   const [service, setService] = useState<Service>(
     {
       id: 0,
@@ -85,7 +100,7 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
   field: keyof Service,
   value: string | boolean | undefined | string[] | number
 ) => {
-  setService((prev) => ({
+  setService((prev: any) => ({
     ...prev,
     [field]: value
   }));
@@ -188,7 +203,7 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
    * Renderização principal
    * -------------------------------------------------------------------------- */
   return (
-    <div className="min-h-screen md:pt-15 pt-17 overflow-hidden bg-[var(--bg-dark)] text-[var(--text)] flex flex-col md:flex-row transition-all duration-500 items-center justify-center">
+    <div onClick={onClose} className="min-h-screen md:pt-15 pt-17 overflow-hidden bg-[var(--bg-dark)]/50 text-[var(--text)] flex flex-col md:flex-row transition-all duration-500 items-center justify-center">
       <div className="flex-1 relative flex overflow-hidden w-full max-w-[1024px]">
 
         {/* ----------------------------------------------------------------------
@@ -469,7 +484,7 @@ export default function ServiceDashboard({ openServiceEditor }: Props) {
                       try {
                         serviceAPI.create(formData);
                         alert("Serviço criado com sucesso;")
-                        openServiceEditor();
+                        onClose();
                       } catch (err: any) {
                         console.error(err)
                       }

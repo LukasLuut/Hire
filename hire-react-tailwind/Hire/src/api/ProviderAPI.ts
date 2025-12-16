@@ -1,3 +1,4 @@
+import type { ProviderForm } from "../components/ProviderRegistration/ProviderRegistration/helpers/types-and-helpers";
 import { apiRequest } from "./ApiClient";
 
 export const providerApi = {
@@ -17,8 +18,8 @@ export const providerApi = {
     });
   },
 
-  getByUser: async (token: string) => {
-    const response = await apiRequest('/providers', {
+  getByUser: async (token: string): Promise<ProviderForm | null>  => {
+    const response: ProviderForm = await apiRequest('/providers', {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

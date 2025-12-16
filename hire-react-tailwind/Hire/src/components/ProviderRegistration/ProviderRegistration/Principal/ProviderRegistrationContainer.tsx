@@ -1,7 +1,7 @@
 // ---------------------------------
 // Container principal: gerencia estado, navegação e submit.
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { toFiles } from "../helpers/file-helpers";
@@ -21,13 +21,26 @@ import type { Address } from "../../../../interfaces/AddressInterface";
 import { providerApi } from "../../../../api/ProviderAPI";
 import { validateFormData } from "../../../../validate/validateFormData";
 
-type Props = {
-  openRegistrationContainer: () => void; // caso não receba parâmetros
-};
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-export default function ProviderRegistrationContainer({ openRegistrationContainer }: Props) {
+export default function ProviderRegistrationContainer({ isOpen, onClose }: ModalProps) {
   const [step, setStep] = useState<number>(0);
   const totalSteps = 5;
+
+   // Fecha com ESC
+  useEffect(() => {
+    function handleEsc(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+
+    if (isOpen) window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
 
   const initialForm: ProviderForm = {
   // Identidade
@@ -214,7 +227,7 @@ export default function ProviderRegistrationContainer({ openRegistrationContaine
 
     console.log("Submitting: ", form);
     alert("Simulação: formulário enviado. Ver console.");
-    openRegistrationContainer();
+    onClose();
   };
 
   useEffect(() => {

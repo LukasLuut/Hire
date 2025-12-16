@@ -61,7 +61,7 @@ export default function AuthPage() {
         const body: any = await handleLogin(formLoginData);
         localStorage.setItem("token", body.token);
         const user = body.user;
-        navigate("/profile", { state: { user } });
+        navigate("/home", { state: { user } });
 
       } else {
 
