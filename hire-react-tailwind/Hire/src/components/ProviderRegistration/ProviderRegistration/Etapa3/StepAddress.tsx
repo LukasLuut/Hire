@@ -135,19 +135,7 @@ export default function StepAddress({
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 bg-[var(--bg)] border border-[var(--border)] rounded-2xl p-4 shadow-sm">
-        <Toggle
-          checked={form.hasPhysicalLocation}
-          onChange={(v) => update("hasPhysicalLocation", v)}
-          label="Tenho local físico de atendimento"
-        />
-        <p className="text-xs text-[var(--text-muted)] sm:ml-2">
-          Ative para adicionar endereço completo e visualizar no mapa.
-        </p>
-      </div>
-
       <AnimatePresence mode="wait">
-        {form.hasPhysicalLocation ? (
           <motion.div
             key="physical"
             initial={{ opacity: 0, y: 5 }}
@@ -191,28 +179,6 @@ export default function StepAddress({
               )}
             </div>
           </motion.div>
-        ) : (
-          <motion.div
-            key="radius"
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            transition={{ duration: 0.25 }}
-            className="bg-[var(--bg)] flex  flex-col border border-[var(--border)] rounded-2xl shadow-md p-6 max-w-sm"
-          >
-            <label className="text-sm text-[var(--text-muted)]">Raio de atuação (km)</label>
-            <input
-              type="number"
-              className="input w-20 rounded-md px-3 bg-[var(--bg-light)] mt-2"
-              value={form.serviceRadiusKm || ""}
-              onChange={(e) => update("serviceRadiusKm", Number(e.target.value))}
-              placeholder="Ex: 20"
-            />
-            <p className="text-xs text-[var(--text-muted)] mt-2">
-              Exemplo: 20 → você atende até 20 km da sua cidade base.
-            </p>
-          </motion.div>
-        )}
       </AnimatePresence>
     </motion.div>
   );

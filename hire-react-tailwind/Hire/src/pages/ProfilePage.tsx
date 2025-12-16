@@ -15,19 +15,18 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import ServiceGalleryMagazine from "../components/ServiceGallery/ServiceGallery/ServiceGallery";
 import { Star, Edit3, MessageSquare } from "lucide-react";
-import { ServiceCreationWizardModal } from "../components/ServiceCreator/ServiceCreationWizardModal";
 import ServiceNegotiationModal from "../components/Negotiation/ServiceNegotiationModal";
 import ServiceResponseModal from "../components/Negotiation/ServiceResponseModal";
 import ServiceFormalizerModal from "../components/Negotiation/ServiceFormalizerModal";
 import ProviderRegistration from "../components/ProviderRegistration/ProviderRegistration";
 import ProviderRegistrationContainer from "../components/ProviderRegistration/ProviderRegistration/Principal/ProviderRegistrationContainer";
-import NegotiationRoom from "../components/Negotiation/NegotiationRoom";
 import ServiceEditor from "../components/ServiceEditor/ServiceEditor";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getFirstAndLastName } from "../utils/nameUtils"
 import { userAPI } from "../api/UserAPI";
 import { type User } from "../interfaces/UserInterface"
 import { providerApi } from "../api/ProviderAPI";
+import type { ProviderForm } from "../components/ProviderRegistration/ProviderRegistration/helpers/types-and-helpers";
+import ProviderHero from "../components/ProviderHero/ProviderHero";
 
 /* --------------------------------------------------------------------------
  * MOCKS DE DADOS
@@ -40,6 +39,74 @@ const mockReviews = [
   { id: 2, name: "Maria Oliveira", rating: 4, comment: "Ótima comunicação e entrega dentro do prazo." },
   { id: 3, name: "Carlos Santos", rating: 5, comment: "Serviço impecável, recomendo sem dúvidas!" },
 ];
+
+export const mockProvider: ProviderForm = {
+  name: "Lucas William",
+  cnpj: "12.345.678/0001-90",
+  professionalEmail: "contato@lwstudio.com",
+  professionalPhone: "(11) 99999-9999",
+  shortDescription:
+    "Estúdio especializado em desenvolvimento web, UI/UX e soluções digitais sob medida para pequenas e médias empresas.",
+  profilePhoto: null,
+
+  companyName: "LW Studio Digital",
+  category: "Tecnologia & Design",
+  subcategories: ["Desenvolvimento Web", "UI/UX Design", "Identidade Visual"],
+  experienceLevel: "especialista",
+
+  portfolio: [],
+  portfolioPreviews: [
+    "/portfolio/site-1.png",
+    "/portfolio/app-2.png",
+    "/portfolio/dashboard-3.png",
+  ],
+
+  availability: {
+    monday: { start: "09:00", end: "18:00" },
+    tuesday: { start: "09:00", end: "18:00" },
+    wednesday: { start: "09:00", end: "18:00" },
+    thursday: { start: "09:00", end: "18:00" },
+    friday: { start: "09:00", end: "17:00" },
+    saturday: null,
+    sunday: null,
+  },
+
+  inPerson: true,
+  online: true,
+  onlineLink: "https://meet.google.com/lw-studio",
+
+  hasPhysicalLocation: true,
+  address: {
+    cep: "01000-000",
+    street: "Av. Paulista",
+    number: "1000",
+    neighborhood: "Bela Vista",
+    city: "São Paulo",
+    state: "SP",
+    lat: -23.561684,
+    lng: -46.656139,
+  },
+  serviceRadiusKm: 25,
+
+  idDocument: null,
+  certifications: [],
+  links: [
+    "https://lwstudio.com.br",
+    "https://github.com/lucaswilliam",
+    "https://linkedin.com/in/lucaswilliam",
+  ],
+
+  acceptsCustomProposals: true,
+  notifications: {
+    email: true,
+    whatsapp: true,
+  },
+
+  showApproxLocation: true,
+  allowReviews: true,
+  showPrices: true,
+  status: "available",
+};
 
 const mockProfile = {
   name: "João Silva",
@@ -291,7 +358,9 @@ export default function ProfilePage() {
                 onClick={ ()=> setRegistration(true) }>
                 Cadastre sua empresa
               </button>
-            ):(<ProviderRegistrationContainer openRegistrationContainer={openRegistrationContainer} />)}
+              
+            ):(<ProviderRegistrationContainer openRegistrationContainer={openRegistrationContainer}/>)}
+            <ProviderHero provider={mockProvider}/>
             
           </div>
         ):(

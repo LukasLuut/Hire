@@ -4,27 +4,20 @@ import { ServiceProvider } from "../models/ServiceProvider";
 import { User } from "../models/User";
 import { Subcategory } from "../models/Subcategory";
 import { Availability } from "../models/Availability";
+import { Link } from "../models/Link";
 
 export class ProviderService {
   private providerRepository = AppDataSource.getRepository(ServiceProvider);
   private userRepository = AppDataSource.getRepository(User);
   private subcategoryRepository = AppDataSource.getRepository(Subcategory);
-  private availabilityRepository = AppDataSource.getRepository(Availability);
-
-  isObject = (value: unknown) => {
-    return (
-      typeof value === "object" &&
-      value !== null &&
-      !Array.isArray(value) &&
-      Object.keys(value).length > 0
-    );
-  };
+  private linkRepository = AppDataSource.getRepository(Link);
 
   async create(
     idUser: number,
     data: {
       companyName: string;
-      subcategories: string;
+      subcategories?: string;
+      links?: string;
       },
     file?: Express.Multer.File
   ) {
@@ -43,7 +36,8 @@ export class ProviderService {
     const provider = this.providerRepository.create(newData);
     const providerSaved = await this.providerRepository.save(provider);
 
-    const subcategories = JSON.parse(data.subcategories);
+    const subcategories = JSON.parse(data.subcategories ? data.subcategories : "");
+    const links = JSON.parse(data.links ? data.links : "");
 
     // Caso tenha subcategorias...
     if (Array.isArray(subcategories)) {
@@ -53,10 +47,22 @@ export class ProviderService {
         categoryList.push({ name: element, provider: providerSaved });
       });
 
-      const subcategoriesToSave =
-        this.subcategoryRepository.create(categoryList);
+      const subcategoriesToSave = this.subcategoryRepository.create(categoryList);
 
       this.subcategoryRepository.save(subcategoriesToSave);
+    }
+
+    // Caso tenha subcategorias...
+    if (Array.isArray(links)) {
+      var linksList: Array<Object> = [];
+
+      links.forEach((element) => {
+        linksList.push({ name: element, provider: providerSaved });
+      });
+
+      const linksToSave = this.linkRepository.create(linksList);
+
+      this.linkRepository.save(linksToSave);
     }
 
     return providerSaved;

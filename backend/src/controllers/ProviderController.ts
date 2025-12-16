@@ -3,10 +3,19 @@ import { ProviderService } from "../services/ProviderService";
 
 const providerService = new ProviderService;
 
+function toBoolean (value: any): boolean {
+  return value === true || value === 'true' || value === '1' || value === 1;
+}
+
 export class ProviderController {
+
+    
     create = async (req: Request, res: Response) => {
         try {
-            const provider = await providerService.create((req as any).user.id, req.body, req.file);
+            const { attendsOnline, attendsPresent} = req.body;
+            
+            const body = {...req.body, attendsOnline: toBoolean(attendsOnline), attendsPresent: toBoolean(attendsPresent)}
+            const provider = await providerService.create((req as any).user.id, body, req.file);
             res.status(201).json(provider);
         } 
         catch(err: any) {

@@ -16,6 +16,7 @@ import { Hire } from "./Hire";
 import { Payment } from "./Payment";
 import { Subcategory } from "./Subcategory";
 import { Availability } from "./Availability";
+import { Link } from "./Link";
 
 @Entity("service_providers")
 export class ServiceProvider {
@@ -40,6 +41,15 @@ export class ServiceProvider {
   @Column() 
   professionalPhone: string;
 
+  @Column({ default: false })
+  attendsPresent: boolean
+
+  @Column({ default: false })
+  attendsOnline: boolean
+
+  @Column({ length: 400 })
+  onlineLink?: string
+
   @Column({ length: 255, nullable: true })
   description?: string
 
@@ -51,6 +61,9 @@ export class ServiceProvider {
 
   @OneToMany(() => Subcategory, (subcategory) => subcategory.provider)
   subcategories: Subcategory[];
+
+  @OneToMany(() => Link, (link) => link.provider)
+  links: Link[];
 
   @OneToMany(() => Availability, (availability) => availability.provider)
   availabilities: Availability[];

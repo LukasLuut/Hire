@@ -141,14 +141,14 @@ export default function ServiceGalleryZoom() {
         {/* ------------------------------------------------------------------
          * CABEÇALHO
          * ------------------------------------------------------------------ */}
-        <h1 className="text-6xl font-bold text-center pt-15 mb-15 border-t-2 border-[var(--text)]/20">
+        <h1 className="text-6xl font-bold text-center pt-15 mb-10 ">
           Galeria de Serviços
         </h1>
 
         {/* ------------------------------------------------------------------
          * BARRA DE PESQUISA + TAGS + FILTROS
          * ------------------------------------------------------------------ */}
-        <div className="flex flex-col items-center mb-10">
+        <div className="flex flex-col items-center gap-3 mb-5">
           {/* Campo de busca */}
           <div className="relative w-full max-w-2xl">
             <input
@@ -165,9 +165,7 @@ export default function ServiceGalleryZoom() {
             >
               <X size={18} />
             </button>
-          </div>
-
-          {/* Tags sugeridas */}
+            {/* Tags sugeridas */}
           <div className="flex flex-wrap justify-center gap-2 mt-4">
             {tags.slice(0, isMobile ? 3 : tags.length).map((tag) => (
               <motion.button
@@ -182,6 +180,7 @@ export default function ServiceGalleryZoom() {
               </motion.button>
             ))}
           </div>
+          </div>          
 
           {/* Filtros adicionais */}
           <div className="flex flex-wrap bg-[var(--bg)] md:rounded-full rounded-2xl py-1 px-4 justify-center gap-4 mt-5 text-sm">
@@ -225,7 +224,7 @@ export default function ServiceGalleryZoom() {
         {/* ------------------------------------------------------------------
          * GRADE DE CARDS
          * ------------------------------------------------------------------ */}
-        <div className="grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-4 gap-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2  md:grid-cols-3 gap-16">
           {filtered.map((srv) => (
            
               <PostCard service={srv}/>

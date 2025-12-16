@@ -185,6 +185,10 @@ export default function ProviderRegistrationContainer({ openRegistrationContaine
     formData.append("description", form.shortDescription);
     formData.append("cnpj", form.cnpj ? form.cnpj : "");
     formData.append("subcategories", JSON.stringify(form.subcategories));
+    formData.append("attendsPresent", JSON.stringify(form.inPerson));
+    formData.append("attendsOnline", JSON.stringify(form.online));
+    formData.append("onlineLink", form.onlineLink);
+    formData.append("links", JSON.stringify(form.links));
     formData.append("image", form.profilePhoto ? form.profilePhoto : "");
 
     providerApi.create(formData, token);
