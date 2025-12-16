@@ -86,6 +86,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const getUser = async () => {
       if(!token) {
+      navigate('/auth')
       return;
     }
 
@@ -138,6 +139,10 @@ export default function ProfilePage() {
 
   const openServiceEditor = async () => {
     setOpen((prev) => !prev)
+  }
+
+  const openRegistrationContainer = async () => {
+    setRegistration(prev => !prev)
   }
 
   /* ------------------------------------------------------------------------
@@ -286,7 +291,7 @@ export default function ProfilePage() {
                 onClick={ ()=> setRegistration(true) }>
                 Cadastre sua empresa
               </button>
-            ):(<ProviderRegistrationContainer />)}
+            ):(<ProviderRegistrationContainer openRegistrationContainer={openRegistrationContainer} />)}
             
           </div>
         ):(

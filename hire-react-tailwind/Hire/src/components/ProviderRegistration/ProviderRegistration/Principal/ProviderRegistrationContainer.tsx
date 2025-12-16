@@ -21,11 +21,13 @@ import type { Address } from "../../../../interfaces/AddressInterface";
 import { providerApi } from "../../../../api/ProviderAPI";
 import { validateFormData } from "../../../../validate/validateFormData";
 
-export default function ProviderRegistrationContainer() {
+type Props = {
+  openRegistrationContainer: () => void; // caso não receba parâmetros
+};
+
+export default function ProviderRegistrationContainer({ openRegistrationContainer }: Props) {
   const [step, setStep] = useState<number>(0);
   const totalSteps = 5;
-
-  
 
   const initialForm: ProviderForm = {
   // Identidade
@@ -201,6 +203,7 @@ export default function ProviderRegistrationContainer() {
 
     console.log("Submitting: ", form);
     alert("Simulação: formulário enviado. Ver console.");
+    openRegistrationContainer();
   };
 
   useEffect(() => {
