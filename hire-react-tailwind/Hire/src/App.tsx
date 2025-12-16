@@ -14,6 +14,7 @@ import ServiceDashboard from "./components/ServiceEditor/ServiceEditor";
 import PostCard from "./components/ServiceGallery/Service/Service";
 import ServiceDashboardSophisticated from "./pages/DashboardClient";
 import { DemoServiceProgressContainer } from "./components/ServiceProgress";
+import Accessibility from "./components/Accessibility";
 
 
 export default function App() {
@@ -39,9 +40,11 @@ export default function App() {
   return (
     <Router>
       <Navbar theme={theme} setTheme={setTheme} />
+      <Accessibility/>
       <Routes>
         {/* Página inicial */}
-        <Route path="/" element={<DashboardPrestador/>} />
+        
+        <Route path="/" element={<DashboardPrestador />} />
 
         {/* Rotas principais */}
         <Route path="/home" element={<ProfilePage />} />

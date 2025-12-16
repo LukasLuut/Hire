@@ -182,3 +182,29 @@ body.light {
 }
 
 
+   
+   .a11y-dyslexia-font { font-family: 'OpenDyslexic', system-ui, -apple-system, 'Segoe UI', Roboto, "Helvetica Neue", Arial }
+   .a11y-focus-outline :focus { outline: 3px dashed #f59e0b; outline-offset: 3px }
+
+    /* Acessibilidade - estilos globais */
+
+   :root {
+     --site-line-height: 1.4;
+     --site-letter-spacing: normal;
+     --site-word-spacing: normal;
+   }
+
+   html { line-height: var(--site-line-height); letter-spacing: var(--site-letter-spacing); word-spacing: var(--site-word-spacing); }
+
+   .a11y-grayscale { filter: grayscale(1) !important; }
+
+   .a11y-high-contrast { filter: none !important;  }
+
+   .a11y-dyslexia-font { font-family: 'OpenDyslexic', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif !important; }
+
+   .a11y-focus-outline :focus { outline: 3px solid #ffd54f; outline-offset: 2px; }
+
+   .a11y-reduce-motion * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+
+   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+   .sr-only:focus { position: static; width: auto; height: auto; margin: 0; clip: auto; }

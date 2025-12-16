@@ -76,7 +76,7 @@ const MOCK_SERVICES: Service[] = [
       "Fullstack com React, Node, banco e deploy. Entrega com testes e documentação. Opção de suporte mensal.",
     category: "Tecnologia",
     images: [
-      "https://images.unsplash.com/photo-1517148815978-75f6acaaff06?w=1400&q=60&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1400&q=60&auto=format&fit=crop",
     ],
     rating: 4.85,
     price: "R$ 5.000",

@@ -1,10 +1,120 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import bgImage from "../assets/bg-login.png";
 import hirePng from "../assets/Hire..png"
+import { userAPI, type UserAPI, type UserLoginAPI } from "../api/UserAPI";
+import { useNavigate } from 'react-router-dom';
+import UseTerms from "../components/Terms/UseTerms";
+
+
+
 
 export default function AuthPage() {
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({
+    name: "",
+    cpf: "",
+    email: "",
+    password: "",
+    acceptedTerms: false
+  });
+  const [formLoginData, setFormLoginData] = useState({ 
+    email: "",
+    password: "",
+  });
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    localStorage.removeItem("token");
+  }, [])
+
+  const cleanForm = () => {
+    setFormData({
+      name: "",
+      cpf: "",
+      email: "",
+      password: "",
+      acceptedTerms: false
+    });
+
+    setFormLoginData({
+      "email": "",
+      "password": ""
+    })
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleChangeLogin = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormLoginData({ ...formLoginData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); // evita reload da página
+
+    try {
+      // Chama a função que faz o registro
+      if (isLogin) {
+        const body: any = await handleLogin(formLoginData);
+        localStorage.setItem("token", body.token);
+        const user = body.user;
+        navigate("/profile", { state: { user } });
+
+      } else {
+
+        if (!formData.acceptedTerms) {
+          alert("Você precisa aceitar os termos antes de continuar.");
+          return;
+        }
+
+        await handleRegistrar(formData);
+        alert("Usuário registrado com sucesso!");
+        setIsLogin(true);
+        cleanForm();
+
+      }
+    } catch (error: any) {
+      console.error(isLogin ? "Usuário não encontrado: " : "Erro ao registrar usuário:", error);
+      isLogin ? alert("Email e/ou senha inválido(s)") : alert(error.message || "Erro na requisição!");
+    }
+  };
+
+  const handleRegistrar = async (data: UserAPI) => {
+    return await userAPI.create({
+      name: data.name,
+      email: data.email,
+      cpf: data.cpf,
+      password: data.password,
+      acceptedTerms: data.acceptedTerms
+    })
+  }
+
+  const handleLogin = async (data: UserLoginAPI) => {
+    return await userAPI.login({
+      email: data.email,
+      password: data.password
+    })
+  }
+
+  const formatCPF = (value: string) => {
+  // Remove tudo que não é número e adiciona máscara
+    const onlyNums = value.replace(/\D/g, "");
+    return onlyNums
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+};
+
+// Atualiza e formata o CPF no estado
+  const handleChangeCPF = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCPF(e.target.value);
+    setFormData((prev) => ({ ...prev, cpf: formatted }));
+  };
+
+
 
   return (
     <div
@@ -24,7 +134,7 @@ export default function AuthPage() {
           className="absolute inset-0 z-0"
           style={{
             backgroundColor: "color-mix(in oklch, var(--bg-dark), transparent 90%)",
-           
+
           }}
         />
 
@@ -86,26 +196,31 @@ export default function AuthPage() {
                   damping: 18,
                 }}
                 className="w-full rounded-2xl p-6 md:p-8 bg-[var(--bg-dark)]/50 backdrop-blur-sm shadow-lg border-b-1 border-[var(--border)]"
-                
+
               >
                 <h2
                   className="text-2xl text-[var(--text)] md:text-3xl font-semibold mb-6 text-center"
-                  
+
                 >
                   Bem-vindo de volta
                 </h2>
-                <form className="space-y-4">
+                <form className="space-y-4" onSubmit={handleSubmit}>
                   <input
                     type="email"
                     placeholder="Email"
+                    name="email"
                     className="w-full p-3 rounded-lg placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 text-sm md:text-base text-[var(--text)] border-b-1 border-[var(--border)]"
-                   
+                    required
+                    onChange={handleChangeLogin}
+                    value={formLoginData.email}
                   />
                   <input
                     type="password"
                     placeholder="Senha"
+                    name="password"
                     className="w-full p-3 rounded-lg placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 text-sm md:text-base text-[var(--text)] border-b-1 border-[var(--border)]"
-                   
+                    onChange={handleChangeLogin}
+                    value={formLoginData.password}
                   />
                   <button
                     type="submit"
@@ -130,40 +245,77 @@ export default function AuthPage() {
                 className="w-full rounded-2xl border-b-1  border-[var(--border)] p-6 md:p-8 backdrop-blur-md shadow-lg"
                 style={{
                   backgroundColor: "color-mix(in oklch, var(--bg-dark), transparent 50%)",
-                  
+
                 }}
               >
                 <h2
                   className="text-2xl md:text-3xl font-semibold mb-6 text-center text-[var(--text)]"
-                  
+
                 >
                   Crie sua conta
                 </h2>
-                <form className="space-y-4">
+                <form className="space-y-4" onSubmit={handleSubmit}>
                   <input
                     type="text"
+                    name="name"
+                    required
                     placeholder="Nome completo"
                     className="w-full p-3 rounded-lg placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 text-sm md:text-base text-[var(--text)] border-b-1 border-[var(--border)]"
-                   
+                    onChange={handleChange}
+                    value={formData.name}
                   />
-                   <input
+                  <input
                     type="text"
+                    name="cpf"
+                    required
                     placeholder="CPF"
                     className="w-full p-3 rounded-lg placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 text-sm md:text-base text-[var(--text)] border-b-1 border-[var(--border)]"
-                   
+                    onChange={handleChangeCPF}
+                    value={formatCPF(formData.cpf)}
+                    inputMode="numeric"
+                    pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
+                    maxLength={14}
                   />
                   <input
                     type="email"
+                    name="email"
+                    required
                     placeholder="Email"
                     className="w-full p-3 rounded-lg placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 text-sm md:text-base text-[var(--text)] border-b-1 border-[var(--border)]"
-                   
+                    onChange={handleChange}
+                    value={formData.email}
                   />
                   <input
                     type="password"
+                    name="password"
+                    required
                     placeholder="Senha"
                     className="w-full p-3 rounded-lg placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 text-sm md:text-base text-[var(--text)] border-b-1 border-[var(--border)]"
-                   
+                    onChange={handleChange}
+                    value={formData.password}
                   />
+                  <label className="flex items-start gap-2 text-sm text-[var(--text-muted)]">
+                    <input
+                      type="checkbox"
+                      name="acceptedTerms"
+                      checked={formData.acceptedTerms}
+                      onChange={(e) =>
+                        setFormData({ ...formData, acceptedTerms: e.target.checked })
+                      }
+                      
+                      className="mt-1 accent-[var(--primary)]"
+                    />
+                    <span>
+                      Li e concordo com a{" "}
+                      <button
+                      type="button"
+                      onClick={() => setIsPrivacyOpen(true)}
+                      className="text-[var(--primary)] hover:underline"
+                      >
+                        Política de Privacidade e Termos de Uso
+                      </button>.
+                    </span>
+                  </label>
                   <button
                     type="submit"
                     className="w-full py-3 rounded-lg font-semibold transition text-sm md:text-base"
@@ -181,8 +333,11 @@ export default function AuthPage() {
         </div>
 
         {/* Efeitos orgânicos de luz */}
-       
+
       </div>
+      {isPrivacyOpen && (
+                <UseTerms setIsPrivacyOpen={setIsPrivacyOpen}/>  
+              )}
     </div>
   );
 }
