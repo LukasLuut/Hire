@@ -47,6 +47,28 @@ export class ServiceProvider {
   @Column({ default: false })
   attendsOnline: boolean
 
+  // ESSAS SÃO TESTES  
+  @Column({ default: false })
+  personalizedProposals: boolean
+
+  @Column({ default: false })
+  approximateLocation: boolean
+
+  @Column({ default: false })
+  publicReviews: boolean
+
+  @Column({ default: false })
+  pricesOnPage: boolean
+
+  @Column({ default: false })
+  whatsNotification: boolean
+
+  @Column({ default: false })
+  emailNotification: boolean
+
+  @Column({ default: "available"})
+  status?: string;
+
   @Column({ length: 400 })
   onlineLink?: string
 

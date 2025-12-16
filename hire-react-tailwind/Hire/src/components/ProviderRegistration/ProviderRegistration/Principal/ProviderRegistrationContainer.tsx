@@ -187,6 +187,13 @@ export default function ProviderRegistrationContainer({ openRegistrationContaine
     formData.append("subcategories", JSON.stringify(form.subcategories));
     formData.append("attendsPresent", JSON.stringify(form.inPerson));
     formData.append("attendsOnline", JSON.stringify(form.online));
+    formData.append("personalizedProposals", JSON.stringify(form.acceptsCustomProposals));
+    formData.append("approximateLocation", JSON.stringify(form.showApproxLocation));
+    formData.append("publicReviews", JSON.stringify(form.allowReviews));
+    formData.append("pricesOnPage", JSON.stringify(form.showPrices));
+    formData.append("whatsNotification", JSON.stringify(form.notifications.whatsapp));
+    formData.append("emailNotification", JSON.stringify(form.notifications.email));
+    formData.append("status", form.status);
     formData.append("onlineLink", form.onlineLink);
     formData.append("links", JSON.stringify(form.links));
     formData.append("image", form.profilePhoto ? form.profilePhoto : "");
