@@ -7,6 +7,7 @@ import { serviceAPI } from "../../api/ServiceAPI";
 import type { Service } from "../../interfaces/ServiceInterface";
 import { categoryAPI } from "../../api/CategoryAPI";
 import type { Category } from "../../interfaces/CategoryInterface";
+import { providerApi } from "../../api/ProviderAPI";
 
 /* --------------------------------------------------------------------------
  * Interface de dados do serviço
@@ -38,6 +39,25 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
   /* --------------------------- Estado inicial dos serviços --------------------------- */
   /* --------------------------- Estado inicial dos serviços --------------------------- */
   
+  const [providerId, setProviderId] = useState(0);
+
+  useEffect(() => {
+    const getProvider = async () => {
+      const token = localStorage.getItem("token");
+      if(!token) return;
+
+      const provider: any = await providerApi.getByUser(token);
+
+      if(!provider) return;
+
+      setProviderId(provider.id);
+
+      console.log("ESSE É O ID DO PRESTADOR::: " + provider.id)
+    }
+
+    getProvider();
+  }, [])
+
   // Fecha com ESC
   useEffect(() => {
     function handleEsc(e: KeyboardEvent) {
@@ -68,7 +88,7 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
   );
 
   const [categories, setCategories] = useState<Category[]>([])
-
+  const [categoryName, setCategoryName] = useState("");
 
 
 
@@ -197,13 +217,25 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
     handleChange("price", digits); // salva "123" no service
   };
 
+  useEffect(() => {
+    const getCategoryName = async () => {
+      const category = await categoryAPI.getCategoryById(Number(selectedService.categoryId))
+
+      if(!category) return;
+
+      setCategoryName(category.name);
+    }
+
+    getCategoryName();
+  }, [selectedService.categoryId])
+
 
 
   /* --------------------------------------------------------------------------
    * Renderização principal
    * -------------------------------------------------------------------------- */
   return (
-    <div onClick={onClose} className="min-h-screen md:pt-15 pt-17 overflow-hidden bg-[var(--bg-dark)]/50 text-[var(--text)] flex flex-col md:flex-row transition-all duration-500 items-center justify-center">
+    <div  className="min-h-screen md:pt-15 pt-17 overflow-hidden bg-[var(--bg-dark)]/50 text-[var(--text)] flex flex-col md:flex-row transition-all duration-500 items-center justify-center">
       <div className="flex-1 relative flex overflow-hidden w-full max-w-[1024px]">
 
         {/* ----------------------------------------------------------------------
@@ -473,7 +505,7 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
                       formData.append("title", selectedService.title);
                       formData.append("description_service", selectedService.description_service);
                       formData.append("categoryId", String(selectedService.categoryId));
-                      formData.append("providerId", String(1));
+                      formData.append("providerId", String(providerId));
                       formData.append("price", selectedService.price);
                       formData.append("duration", selectedService.duration);
                       formData.append("subcategory", selectedService.subcategory);
@@ -538,7 +570,7 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
         <div className="grid grid-cols-2 gap-4 mt-2">
           <div>
             <span className="font-semibold text-[var(--text)]">Categoria:</span>{" "}
-            {selectedService.categoryId || "-"}
+            {categoryName || "-"}
           </div>
           <div>
             <span className="font-semibold text-[var(--text)]">Subcategoria:</span>{" "}
