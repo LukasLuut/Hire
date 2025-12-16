@@ -44,10 +44,10 @@ export default function App() {
         <Route path="/" element={<DashboardPrestador/>} />
 
         {/* Rotas principais */}
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/home" element={<ProfilePage />} />
         <Route path="/auth" element={<AuthPage />} />
-        <Route path="/prestador/dashboard" element={<DashboardPrestador />} />
-        <Route path="/client/dashboard" element={<ServiceDashboardSophisticated />} />
+        <Route path="/buisness" element={<DashboardPrestador />} />
+        <Route path="/client" element={<ServiceDashboardSophisticated />} />
 
         {/* Serviços e criação */}
         {/* <Route path="/service/create" element={<ServiceCreationWizardModal />} /> */}

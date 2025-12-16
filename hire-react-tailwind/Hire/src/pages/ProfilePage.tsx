@@ -25,6 +25,7 @@ import ProviderRegistrationContainer from "../components/ProviderRegistration/Pr
 import ServiceEditor from "../components/ServiceEditor/ServiceEditor";
 import type { ProviderForm } from "../components/ProviderRegistration/ProviderRegistration/helpers/types-and-helpers";
 import ProviderHero from "../components/ProviderHero/ProviderHero";
+import ServiceDashboardSophisticated from "./DashboardClient";
 
 /* --------------------------------------------------------------------------
  * MOCKS DE DADOS
@@ -327,7 +328,7 @@ export default function ProfilePage() {
               </button>
               
             ):(<ProviderRegistrationContainer />)}
-            <ProviderHero provider={mockProvider}/>
+            {!registration&&(<ServiceDashboardSophisticated />)}
             
           </div>
         ):(

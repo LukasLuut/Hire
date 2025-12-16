@@ -261,7 +261,7 @@ export default function ServiceDashboardSophisticated() {
 
   return (
     <LayoutGroup>
-      <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] p-6 md:p-10 ">
+      <div className="min-h-screen bg-[var(--bg-dark)] md:min-w-screen text-[var(--text)] p-6 md:p-10 ">
         {/* Floating Search + Filters (sophisticated) */}
         <motion.div
           initial={{ y: -18, opacity: 0 }}
