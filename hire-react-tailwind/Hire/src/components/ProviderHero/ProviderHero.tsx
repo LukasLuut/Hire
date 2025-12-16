@@ -1,7 +1,7 @@
 // ProviderHero.tsx — Hero institucional refatorado (responsivo)
 // ------------------------------------------------------
 
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import type { ProviderForm, DayKey } from "../ProviderRegistration/ProviderRegistration/helpers/types-and-helpers";
 import {
@@ -16,12 +16,27 @@ import {
   Star,
 } from "lucide-react";
 import ServiceGallery from "../ServiceGallery/ServiceGallery/ServiceGallery";
+import { useNavigate } from "react-router-dom";
+
 
 interface ProviderHeroProps {
-  provider: ProviderForm;
+  provider: any | null;
 }
 
 export default function ProviderHero({ provider }: ProviderHeroProps) {
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!provider) {
+      navigate("/home", { replace: true });
+    }
+  }, [provider, navigate]);
+
+  if (!provider) {
+    return null; // não renderiza nada
+  }
+
   const availability = provider.availability;
 
   const days: [DayKey, string][] = [
@@ -35,6 +50,8 @@ export default function ProviderHero({ provider }: ProviderHeroProps) {
   ];
 
   const availabilityList = days.filter(([key]) => availability?.[key]);
+
+  useEffect(()=> {console.log("ESSE É O PROVIDER DENTRO DO HERO: " + JSON.stringify(provider))}, [])
 
   return (
     <motion.section
@@ -66,24 +83,24 @@ export default function ProviderHero({ provider }: ProviderHeroProps) {
 
             <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
               <Briefcase className="w-4 h-4 text-[var(--primary)]" />
-              <span>{provider.category || "Categoria não informada"}</span>
+              <span>{provider.category.name  || "Categoria não informada"}</span>
             </div>
 
             <h2 className="mt-2 ml-3 text-[var(--bg-dark)] md:text-[var(--text)]">Sobre</h2>
-            {provider.shortDescription && (
+            {provider.description && (
               <p className="mt-3 md:ml-3  max-w-2xl text-sm text-[var(--text-muted)] leading-relaxed">
-                {provider.shortDescription}
+                {provider.description}
               </p>
             )}
 
             {provider.subcategories?.length > 0 && (
               <div className="flex md:ml-3 flex-wrap gap-2 mt-2">
-                {provider.subcategories.map((sub, i) => (
+                {provider.subcategories.map((sub: { id: number, name: string}, i: number) => (
                   <span
                     key={i}
                     className="px-3 py-1 text-xs rounded-full bg-[var(--primary)]/10 border border-[var(--primary)]/20"
                   >
-                    {sub}
+                    {sub.name}
                   </span>
                 ))}
               </div>
@@ -99,24 +116,23 @@ export default function ProviderHero({ provider }: ProviderHeroProps) {
                 ? "bg-[var(--primary)]/10 text-[var(--primary)] border-[var(--primary)]/30"
                 : "bg-yellow-500/10 text-yellow-400 border-yellow-500/30"
             }`}
-          >
+          > 
             {provider.status === "available"
               ? "Aberto"
               : "Agenda fechada"}
           </span>
 
-          {provider.experienceLevel && (
+          
             <span className="px-3 py-1 rounded-full text-xs sm:text-sm border border-[var(--border)]">
-              Nível {provider.experienceLevel}
+              Nível Iniciante
             </span>
-          )}
         </div>
       </div>
 
       {/* MODELO DE ATENDIMENTO */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-24">
-        <InfoCard icon={<Globe />} label="Atendimento Online" value={provider.online ? "Disponível" : "—"} />
-        <InfoCard icon={<Map />} label="Atendimento Presencial" value={provider.inPerson ? "Disponível" : "—"} />
+        <InfoCard icon={<Globe />} label="Atendimento Online" value={provider.attendsOnline ? "Disponível" : "—"} />
+        <InfoCard icon={<Map />} label="Atendimento Presencial" value={provider.attendsPresent ? "Disponível" : "—"} />
         <InfoCard
           icon={<Clock />}
           label="Agenda"
@@ -125,7 +141,7 @@ export default function ProviderHero({ provider }: ProviderHeroProps) {
         <InfoCard
           icon={<Briefcase />}
           label="Propostas"
-          value={provider.acceptsCustomProposals ? "Flexíveis" : "Escopo fixo"}
+          value={provider.personalizedProposals ? "Flexíveis" : "Escopo fixo"}
         />
       </div>
 
@@ -161,7 +177,7 @@ export default function ProviderHero({ provider }: ProviderHeroProps) {
       </div>
 
       {/* CONFIANÇA */}
-      <div className="mt-6 pt-4 border-t border-[var(--border)] flex flex-col md:flex-row  gap-2 text-sm">
+      {/* <div className="mt-6 pt-4 border-t border-[var(--border)] flex flex-col md:flex-row  gap-2 text-sm">
         <StatusLine
           icon={<ShieldCheck />}
           text={provider.idDocument ? "Identidade verificada" : "Verificação pendente"}
@@ -170,7 +186,7 @@ export default function ProviderHero({ provider }: ProviderHeroProps) {
 
         <StatusLine
           icon={<FileText />}
-          text={
+          text={ 
             provider.certifications.length > 0
               ? `${provider.certifications.length} certificado${provider.certifications.length > 1 ? "s" : ""}`
               : "Nenhum certificado informado"
@@ -185,7 +201,7 @@ export default function ProviderHero({ provider }: ProviderHeroProps) {
             highlight
           />
         )}
-      </div>
+      </div> */}
       <ServiceGallery/>
     </motion.section>
   );

@@ -93,8 +93,9 @@ export class ServiceProvider {
   @OneToMany(() => Contract, (contract) => contract.provider)
   contracts: Contract[];
 
-  @OneToMany(() => Category, (category) => category.provider)
-  categories: Category[];
+  @OneToOne(() => Category, (category) => category.provider)
+  @JoinColumn()
+  category: Category;
 
   @OneToMany(() => Service, (service) => service.provider)
   services: Service[];

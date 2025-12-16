@@ -70,7 +70,7 @@ export class ProviderService {
 
   async getById(id: number) {
     const provider = await this.providerRepository.findOne({
-      relations: { user: true },
+      relations: { user: true, subcategories: true, links: true, category: true },
       where: {
         user: {
           id: id,

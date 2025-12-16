@@ -3,6 +3,7 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Service } from "./Service";
@@ -19,7 +20,7 @@ export class Category {
   @Column({ length: 400, nullable: false })
   description: string;
 
-  @ManyToOne(() => ServiceProvider, (provider) => provider.categories)
+  @OneToOne(() => ServiceProvider, (provider) => provider.category)
   provider: ServiceProvider;
 
   @OneToMany(() => Service, (service) => service.category)

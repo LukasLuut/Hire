@@ -235,20 +235,26 @@ export default function DashboardPrestador() {
       const token = localStorage.getItem("token");
       if(!token) return;
 
-      const provider: ProviderForm | null = await providerApi.getByUser(token);
+      const providerData: ProviderForm | null = await providerApi.getByUser(token);
 
-      if(!provider) {
+      console.log("Esse é o provider: " + JSON.stringify(providerData))
+
+      if(!providerData) {
         alert("Não existe um prestador de serviços");
         return;
       } else {
-        setProvider(provider);
+        setProvider(providerData);
       }
 
-      console.log('ESSE É O PROVIDER: ' + JSON.stringify(provider))
+      setProvider(providerData);
     };
 
     getProvider();
   }, [])
+
+  useEffect(() => {
+    
+  }, [provider])
   
   /* fetch resources (with fallback mocks) */
   useEffect(() => {

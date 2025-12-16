@@ -42,17 +42,17 @@ const mockReviews = [
 ];
 
 export const mockProvider: ProviderForm = {
-  name: "Lucas William",
-  cnpj: "12.345.678/0001-90",
-  professionalEmail: "contato@lwstudio.com",
-  professionalPhone: "(11) 99999-9999",
+  name: "",
+  cnpj: "",
+  professionalEmail: "",
+  professionalPhone: "",
   shortDescription:
-    "Estúdio especializado em desenvolvimento web, UI/UX e soluções digitais sob medida para pequenas e médias empresas.",
+    "",
   profilePhoto: null,
 
-  companyName: "LW Studio Digital",
-  category: "Tecnologia & Design",
-  subcategories: ["Desenvolvimento Web", "UI/UX Design", "Identidade Visual"],
+  companyName: "",
+  category: "Tecnologia",
+  subcategories: [],
   experienceLevel: "especialista",
 
   portfolio: [],
@@ -186,10 +186,6 @@ export default function ProfilePage() {
   /* ------------------------------------------------------------------------
    * FUNÇÃO PARA ABERTURA DO MODAL DE CONTRATAÇÃO
    * ------------------------------------------------------------------------ */
-  const handleContratar = () =>{
-    setOpenContratar(true);
-  }
-
   const handleUpdate = async () => {
     if(!isEditing) return;
 
@@ -203,14 +199,6 @@ export default function ProfilePage() {
     } catch (err: any) {
       console.error(err)
     }
-  }
-
-  const openServiceEditor = async () => {
-    setOpen((prev) => !prev)
-  }
-
-  const openRegistrationContainer = async () => {
-    setRegistration(prev => !prev)
   }
 
   /* ------------------------------------------------------------------------
