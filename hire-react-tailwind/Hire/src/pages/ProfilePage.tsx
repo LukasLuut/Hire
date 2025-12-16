@@ -111,8 +111,8 @@ export const mockProvider: ProviderForm = {
 };
 
 const mockProfile = {
-  name: "João Silva",
-  bio: "Cliente especializado em encher a porra do saco",
+  name: "Vitor Reis",
+  bio: "Especializado em desenvolvimento web, UI/UX e soluções digitais sob medida para pequenas e médias empresas",
   image: "https://api.dicebear.com/9.x/miniavs/svg?seed=vitorreis.svg",
   rating: 4.8,
   reviewsCount: 24,
@@ -304,26 +304,32 @@ export default function ProfilePage() {
           </section>
 
           {/* BOTÕES DE AÇÃO */}
-          <div className="flex gap-4 mt-2">
-            <button 
+          <div className="flex items-end gap-4 mt-2">
+             {!registration&&(
+              <button className="bg-[var(--primary)] rounded-xl w-55 h-15 mt-6 text-lg text-white animate-bounce "
+                onClick={()=>setRegistration(true) }>
+                Cadastre sua empresa
+              </button>              
+            )}
+            {/* <button 
             onClick={handleContratar}
             className="px-2 md:px-4  py-2 bg-[var(--primary)] text-white rounded-lg hover:brightness-110 transition">
               Contratar
-            </button>
-            <button 
+            </button> */}
+            {/* <button 
             onClick={()=>{setIsOpenResponse(true)}}
             className="px-2 md:px-4 py-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-light)] transition">
               Mensagem
-            </button>
+            </button> */}
              {/* BOTÃO DO MODAL DE CRIAÇÃO DE SERVIÇO */}
-            <button 
+            {/* <button 
             onClick={()=>{setOpen(true)}}
             className="px-2 md:px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:brightness-110 transition">
                Serviço +
-            </button>
+            </button> */}
              <button 
-            onClick={()=>{setIsOpenChat(true)}}
-            className="px-2 md:px-4 py-2 border flex gap-2 items-center border-[var(--border)] rounded-lg hover:bg-[var(--bg-light)] transition">
+                onClick={()=>{setIsOpenChat(true)}}
+                className="px-2 md:px-4 py-2 border min-h-14 bottom-0 flex gap-2 items-center border-[var(--border)] rounded-lg hover:bg-[var(--bg-light)] transition">
               <MessageSquare size={20} /> Chat
             </button>
           </div>
@@ -337,7 +343,7 @@ export default function ProfilePage() {
        {/* ===============================================================
        * SEÇÃO DE CRIAÇÃO DE SERVIÇOS
        * =============================================================== */}      
-        {open?(<ServiceEditor  />):(<p></p>)}
+        <ServiceEditor isOpen={open} onClose={() => setOpen(false)}  />
 
        {/* ===============================================================
        * SEÇÃO DE RESPOSTA DE SERVIÇOS
@@ -352,15 +358,11 @@ export default function ProfilePage() {
         {/* ===============================================================
        * SEÇÃO DE REGISTRO E GALERIA DE SERVIÇOS
        * =============================================================== */}
+         {registration&&(<ProviderRegistrationContainer isOpen={registration} onClose={() => setRegistration(false)} />)}
+
         {isClient ?(
           <div className="flex flex-col items-center justify-center min-h-50 bg-[var(--bg-dark)] border-b-1  border-[var(--border)] text-[var(--text)]">
-            {!registration?(
-              <button className="bg-[var(--primary)] rounded-xl w-55 h-15 mt-6 text-lg text-white animate-bounce "
-                onClick={()=>setRegistration(true) }>
-                Cadastre sua empresa
-              </button>
-              
-            ):(<ProviderRegistrationContainer />)}
+           
             {!registration&&(<ServiceDashboardSophisticated />)}
             
           </div>

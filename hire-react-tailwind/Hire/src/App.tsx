@@ -52,11 +52,7 @@ export default function App() {
         <Route path="/buisness" element={<DashboardPrestador />} />
         <Route path="/client" element={<ServiceDashboardSophisticated />} />
 
-        {/* Serviços e criação */}
-        {/* <Route path="/service/create" element={<ServiceCreationWizardModal />} /> */}
-        <Route path="/service/editor" element={<ServiceDashboard />} />
-        {/* <Route path="/service/view" element={<PostCard />} /> */}
-
+      
         {/* Contratos */}
         {/* <Route path="/contract/viewer" element={<ContractViewer />} /> */}
         <Route path="/contract/preview" element={<ContractPreview />} />

@@ -1,7 +1,8 @@
 // ---------------------------------
 // Container principal: gerencia estado, navegação e submit.
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import type {ReactNode} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { toFiles } from "../helpers/file-helpers";
@@ -16,10 +17,27 @@ import StepAddress from "../Etapa3/StepAddress";
 import StepDocuments from "../Etapa4/StepDocuments";
 import StepPreferences from "../Etapa5/StepPreferences";
 import ProfilePreview from "../ProfilePreview/ProfilePreview";
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  
+}
 
-export default function ProviderRegistrationContainer() {
+export default function ProviderRegistrationContainer({ isOpen, onClose }: ModalProps) {
   const [step, setStep] = useState<number>(0);
   const totalSteps = 5;
+
+   // Fecha com ESC
+  useEffect(() => {
+    function handleEsc(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+
+    if (isOpen) window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
 
   const initialForm: ProviderForm = {
   // Identidade

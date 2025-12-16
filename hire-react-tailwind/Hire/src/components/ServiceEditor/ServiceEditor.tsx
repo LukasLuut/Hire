@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
+import type {ReactNode} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PanInfo } from "framer-motion";
 import { Save, Trash2, PlusCircle } from "lucide-react";
@@ -20,12 +21,30 @@ interface Service {
   acceptedTerms?: boolean;
   images: string[];
 }
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+ 
+}
 
 /* --------------------------------------------------------------------------
  * Componente principal do painel de serviços
  * -------------------------------------------------------------------------- */
-export default function ServiceDashboard() {
+export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
   /* --------------------------- Estado inicial dos serviços --------------------------- */
+  
+  // Fecha com ESC
+  useEffect(() => {
+    function handleEsc(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+
+    if (isOpen) window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
   const [services, setServices] = useState<Service[]>([
     {
       id: 1,
@@ -130,7 +149,7 @@ export default function ServiceDashboard() {
    * Renderização principal
    * -------------------------------------------------------------------------- */
   return (
-    <div className="min-h-screen md:pt-15 pt-17 overflow-hidden bg-[var(--bg-dark)] text-[var(--text)] flex flex-col md:flex-row transition-all duration-500 items-center justify-center">
+    <div onClick={onClose} className="min-h-screen md:pt-15 pt-17 overflow-hidden bg-[var(--bg-dark)]/50 text-[var(--text)] flex flex-col md:flex-row transition-all duration-500 items-center justify-center">
       <div className="flex-1 relative flex overflow-hidden w-full max-w-[1024px]">
 
         {/* ----------------------------------------------------------------------

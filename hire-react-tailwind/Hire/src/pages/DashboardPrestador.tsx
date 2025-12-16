@@ -14,6 +14,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import ServiceEditor from "../components/ServiceEditor/ServiceEditor";
 
 /* ---------------------------
    Types & Mock data (same as antes)
@@ -268,6 +269,7 @@ export default function DashboardPrestador() {
 
   // UI motion variants
   const panelVariant = { closed: { height: 0, opacity: 0 }, open: { height: "auto", opacity: 1 } };
+  const[openCreateService, setOpenCreateService]=useState(false)
 
   /* ---------------------------
      Render
@@ -287,7 +289,7 @@ export default function DashboardPrestador() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <button className="flex items-center gap-3 p-2 rounded-lg bg-[var(--primary)]/90 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
+                <button onClick={()=>setOpenCreateService(true)} className="flex items-center gap-3 p-2 rounded-lg bg-[var(--primary)]/90 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
                   <Plus /> <span className="text-sm">Novo serviço</span>
                 </button>
                 <button className="flex items-center gap-3 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
@@ -329,7 +331,7 @@ export default function DashboardPrestador() {
                   {panelOpen ? <ChevronUp /> : <ChevronDown />}
                 </div>
               </motion.button>
-
+              
               <AnimatePresence>
                 {panelOpen && (
                   <motion.div
@@ -342,8 +344,8 @@ export default function DashboardPrestador() {
                   >
                     <div className="p-4 rounded-2xl bg-[var(--bg-light)]/30 border border-[var(--border)]">
                       <div className="flex flex-col gap-3">
-                        <button className="flex items-center gap-3 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
-                          <Plus /> <span className="text-sm">Novo serviço</span>
+                        <button onClick={()=>setOpenCreateService(true)} className="flex items-center gap-3 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
+                          <Plus /> <span  className="text-sm">Novo serviço</span>
                         </button>
                         <button className="flex items-center gap-3 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
                           <MessageSquare /> <span className="text-sm">Mensagens</span>
@@ -365,6 +367,10 @@ export default function DashboardPrestador() {
                 )}
               </AnimatePresence>
             </div>
+            <div >
+
+            {openCreateService&&( <div className="fixed inset-0 z-20 "><ServiceEditor isOpen={openCreateService} onClose={() => setOpenCreateService(false)} /></div>)}
+            </div>
             {/* right column inside main (bookings + reviews) */}
             <aside className="lg:col-span-1">
               <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="bg-[var(--bg-light)]/30 backdrop-blur-xl rounded-2xl p-4 border border-[var(--border)]">
@@ -372,7 +378,7 @@ export default function DashboardPrestador() {
                   <h4 className="font-semibold">Reservas recentes</h4>
                   <div className="text-xs text-[var(--text-muted)]">Próximas</div>
                 </div>
-
+                
                 <div className="flex flex-col gap-3">
                   {(bookings || MOCK_BOOKINGS).slice(0, 4).map((b) => {
                     const svc = (services || MOCK_SERVICES).find((s) => s.id === b.serviceId);
