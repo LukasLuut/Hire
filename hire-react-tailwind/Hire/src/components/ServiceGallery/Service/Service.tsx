@@ -1,8 +1,9 @@
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Clock, Tag as TagIcon, Heart, HandCoins } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, Tag as TagIcon, Heart, HandCoins, Trash, SquarePen } from "lucide-react";
 import ServiceDetailModal from "../ServiceDetail/ServiceDetail";
 import { LOCAL_PORT } from "../../../api/ApiClient";
+import ServiceEditor from "../../ServiceEditor/ServiceEditor";
 
 /* --------------------------------------------------------------------------
  * Interface do Serviço
@@ -98,8 +99,16 @@ export default function PostCard({ service }: { service: Service }) {
       setOpen(true);
     };
 
+    const [openEdit, setOpenEdit] = useState<boolean>(false);
+
+    const handleEdit = () => {
+      setOpenEdit((prev) => !prev)
+    }
+
   return (
     <div className="pt-5 ">
+
+      {openEdit&&(<div className="fixed inset-0 z-30"><ServiceEditor serviceId={service.id} isOpen={openEdit} onClose={()=>{setOpenEdit(false)}}/></div>)} 
     <div
       className={`relative bg-[var(--bg)] shadow-lg shadow-[#00000077] mx-auto w-[80vw] h-[80vh] md:w-[20vw] md:h-[60vh] rounded-2xl overflow-hidden`}
       onTouchStart={onTouchStart}
@@ -136,15 +145,24 @@ export default function PostCard({ service }: { service: Service }) {
       
 
       {/* Botão like canto superior */}
-      <div className="absolute top-4 right-4 z-20 flex flex-col items-center">
+      <div className="absolute top-4 px-3 z-20 flex flex-row justify-between min-w-full items-top ">
+        <button
+          onClick={handleEdit}
+          className="p-2 w-9 h-9 rounded-full bg-[var(--primary)]/40 backdrop-blur-md hover:bg-[var(--primary)]/70"
+        >
+          <SquarePen className=" w-5 h-5 text-white" />
+          
+        </button>
+       
         <button
           onPointerDown={startHold}
           onPointerUp={endHold}
           className="p-2 rounded-full bg-black/40 backdrop-blur-md hover:bg-[var(--primary)]/70"
         >
           <Heart className="w-5 h-5 text-white" />
+          <span className="text-xs absolut text-white/90">{likeCount}</span>
         </button>
-        <span className="text-xs absolut text-white/90">{likeCount}</span>
+        
       </div>
 
       {/* Like central */}
@@ -222,6 +240,7 @@ export default function PostCard({ service }: { service: Service }) {
     isOpen={open}
     onClose={()=>{setOpen(false)}}
     />
+    
 </div>
 
   );

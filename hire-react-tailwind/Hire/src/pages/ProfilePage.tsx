@@ -144,6 +144,7 @@ export default function ProfilePage() {
     email: "",
     about: "",
   })
+  const [provider, setProvider] = useState<boolean>(false);
 
   /* ------------------------------------------------------------------------
    * SIMULAÇÃO DE CARREGAMENTO DE DADOS
@@ -170,11 +171,35 @@ export default function ProfilePage() {
         return;
       } else {
         setUser(user);
+      };
+
+      const provider = await providerApi.getByUser(token);
+
+      if(!provider) {
+        setProvider(false);
+      } else {
+        setProvider(true);
       }
     }
 
     getUser();  
   }, []); 
+
+  
+  useEffect(() => {
+    if(provider) localStorage.setItem("provider", "1");
+    if(!provider) localStorage.setItem("provider", "0")
+  }, [provider])
+
+   // Fecha com ESC
+  useEffect(() => {
+    function handleEsc(e: KeyboardEvent) {
+      if (e.key === "Escape") setIsEditing(false);
+    }
+
+    if (isEditing) window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [isEditing]);
 
   /* ------------------------------------------------------------------------
    * FUNÇÕES DE EDIÇÃO
@@ -193,13 +218,32 @@ export default function ProfilePage() {
     if(!token) return;
     
     try {
-      const res = await userAPI.update({name: user?.name, about: user?.about}, token)
+      const res = await userAPI.update({name: user?.name, about: user?.about}, token);
+      const updateEmail = await userAPI.updateUser(token, user.email);
       alert("Informações editadas com sucesso!")
+      return { res, updateEmail };
+    } catch (err: any) {
+      console.error(err)
+    }
+  }
+
+  const handleDelete = async () => {
+
+    const token = localStorage.getItem("token")
+    if(!token) return;
+    
+    try {
+      const res = await userAPI.deleteUser(token)
+      alert("Usuário deletado com sucesso!")
+      localStorage.removeItem("token");
+      navigate('/auth')
       return res;
     } catch (err: any) {
       console.error(err)
     }
   }
+
+   
 
   /* ------------------------------------------------------------------------
    * ESTADO DE CARREGAMENTO (Tela de loading)
@@ -261,6 +305,9 @@ export default function ProfilePage() {
             ) : (
               <h1 className="text-4xl font-bold">{user.name}</h1>
             )}
+            {isEditing && (
+              <button className="px-2 py-2 text-md bg-red-700 rounded-md" onClick={handleDelete}>Excluir Usuário</button>
+            )}
 
             {/* <div className="flex items-center gap-1 text-yellow-400">
               <Star size={20} fill="currentColor" />
@@ -278,22 +325,31 @@ export default function ProfilePage() {
           </p> */}
           {/* CAIXA DE EDIÇÃO */}
             {/* BIO / SOBRE */}
-          <section className="p-5 pb-10 md:px-5">
+          <section className="p-5 pb-10 flex flex-col md:px-5">
             <h2 className="text-xl font-semibold mb-2">Sobre</h2>
             {isEditing ? (
               <textarea
                 value={user.about}
+                placeholder="Fale um pouco sobre você..."
                 onChange={(e) => setUser((prev: any) => ({...prev, about: e.target.value}))}
                 className="md:w-2xl w-xs bg-[var(--bg-light)] border border-[var(--primary)] rounded-lg p-2 text-[var(--text)] resize-none h-32"
               />
             ) : (
-              <p className="text-[var(--text-muted)] max-w-2xl">{user.about}</p>
+              <p className="text-[var(--text-muted)] max-w-2xl">{user.about ? user.about : "Fale um pouco sobre você... Por exemplo: ''Sou uma pessoa dedicada, sempre em busca de aprendizado e novas experiências. Gosto de colaborar, compartilhar conhecimento e enfrentar desafios que contribuam para meu crescimento pessoal e profissional.''"}</p>
             )} 
+            {isEditing && (
+              <input
+              className=" bg-[var(--bg-light)] mt-5 border border-[var(--primary)] rounded-lg p-2 text-[var(--text)] resize-none h-8"
+              value={user.email}
+              onChange={(e) => setUser((prev: any) => ({...prev, email: e.target.value}))}
+              placeholder="Email"
+              />
+            )}
           </section>
 
           {/* BOTÕES DE AÇÃO */}
           <div className="flex items-end gap-4 mt-2">
-             {!registration&&(
+             {(!registration && !provider) && (
               <button className="bg-[var(--primary)] rounded-xl w-55 h-15 mt-6 text-lg text-white animate-bounce "
                 onClick={()=>setRegistration(true) }>
                 Cadastre sua empresa
@@ -331,7 +387,7 @@ export default function ProfilePage() {
        {/* ===============================================================
        * SEÇÃO DE CRIAÇÃO DE SERVIÇOS
        * =============================================================== */}      
-        <ServiceEditor isOpen={open} onClose={() => setOpen(false)}  />
+        <ServiceEditor serviceId={null} isOpen={open} onClose={() => setOpen(false)}  />
 
        {/* ===============================================================
        * SEÇÃO DE RESPOSTA DE SERVIÇOS

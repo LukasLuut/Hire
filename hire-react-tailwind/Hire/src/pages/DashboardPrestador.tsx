@@ -13,6 +13,8 @@ import {
 import ServiceEditor from "../components/ServiceEditor/ServiceEditor";
 import { providerApi } from "../api/ProviderAPI";
 import type { ProviderForm } from "../components/ProviderRegistration/ProviderRegistration/helpers/types-and-helpers";
+import { useLocation, useNavigate } from "react-router-dom";
+
 
 /* ---------------------------
    Types & Mock data (same as antes)
@@ -249,10 +251,6 @@ export default function DashboardPrestador() {
 
     getProvider();
   }, [])
-
-  useEffect(() => {
-    
-  }, [provider])
   
   /* fetch resources (with fallback mocks) */
   useEffect(() => {
@@ -299,7 +297,19 @@ export default function DashboardPrestador() {
   /* ---------------------------
      Render
      --------------------------- */
-  
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const localProvider = localStorage.getItem("provider")
+  if (localProvider == "0") {
+    navigate("/home");
+  }
+  }, [provider, navigate]);
+
+  if (localStorage.getItem("provider") == "0") {
+    return null; // impede o carregamento do componente
+  }
+
   return (
     <LayoutGroup>
       <div className="min-h-screen bg-[var(--bg-dark)] pt-25 text-[var(--text)] px-4 sm:px-6 md:px-8 lg:px-10 py-6">
@@ -395,7 +405,7 @@ export default function DashboardPrestador() {
             </div>
             <div >
 
-            {openCreateService&&( <div className="fixed inset-0 z-20 "><ServiceEditor isOpen={openCreateService} onClose={() => setOpenCreateService(false)} /></div>)}
+            {openCreateService&&( <div className="fixed inset-0 z-20 "><ServiceEditor serviceId={null} isOpen={openCreateService} onClose={() => setOpenCreateService(false)} /></div>)}
             </div>
             {/* right column inside main (bookings + reviews) */}
             <aside className="lg:col-span-1">

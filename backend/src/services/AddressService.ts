@@ -20,27 +20,4 @@ export class AddressService {
 
         return address;
     }
-
-    // async list() {
-    //     return await this.addressRepository.find();
-    // }
-
-    // async update(id: number, data: Partial<Category>) {
-    //     const category = await this.addressRepository.findOne({ where: { id } });
-
-    //     if (!category) throw new Error("Categoria não encontrada");
-    //     const { ...rest } = data
-    //     Object.assign(category, rest);
-    //     return await this.addressRepository.save(category);
-    // }
-
-    // async remove(id: number) {
-    //     const category = await this.addressRepository.findOne({ where: { id } });
-
-    //     if (!category) throw new Error("Categoria não encontrada")
-
-    //     await this.addressRepository.remove(category);
-
-    //     return { message: "Categoria removida com sucesso" }
-    // }
 }

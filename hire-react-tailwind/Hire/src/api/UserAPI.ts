@@ -59,8 +59,40 @@ export const userAPI = {
       }),
     })
     return response;
+  },
+
+  updateUser: async (
+    token: string,
+    email: string
+  ) => {
+    const response = await apiRequest("/users/me", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token, // ← garante que token é válido
+      },
+      body: JSON.stringify({
+        email: email
+      }),
+    })
+    return response;
+  },
+
+  deleteUser: async (token: string) => {
+    const response = await apiRequest("/users/me", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token, // ← garante que token é válido
+      }
+    })
+    return response;
+  },
   }
-};
+
+
+
+
 
 export interface UserAPI {
   name: string;

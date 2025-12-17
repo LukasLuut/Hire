@@ -51,10 +51,14 @@ export class ServiceService {
     return await this.serviceRepository.find({ relations: { category: true}});
   }
 
-  async update(id: number, data: Partial<Service>) {
-    const service = await this.serviceRepository.findOne({ where: { id } });
+  async getById(id: number) {
+    return await this.serviceRepository.findOne({ where: { id: id },relations: { category: true}});
+  }
 
+  async update(id: number, data: Partial<Service>) {
+    const service = await this.serviceRepository.findOne({ where: { id: id }});
     if (!service) throw new Error("Serviço não encontrado");
+    
     const { ...rest } = data;
     Object.assign(service, rest);
     return await this.serviceRepository.save(service);

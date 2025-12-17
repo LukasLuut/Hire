@@ -14,6 +14,7 @@ import {
 import { serviceAPI, type ServiceData } from "../api/ServiceAPI";
 import { categoryAPI } from "../api/CategoryAPI";
 import { LOCAL_PORT } from "../api/ApiClient";
+import ServiceDetail from "../components/ServiceGallery/ServiceDetail/ServiceDetail";
 
 /**
  * ServiceDashboardSophisticated.tsx
@@ -285,6 +286,12 @@ export default function ServiceDashboardSophisticated() {
 
   const skeletons = Array.from({ length: 8 }).map((_, i) => i);
 
+  const [open, setOpen] = useState(false);
+  
+  const handleDetail = () => {
+    setOpen(true)
+  }
+
   return (
     <LayoutGroup>
       <div className="min-h-screen bg-[var(--bg-dark)] md:min-w-screen text-[var(--text)] p-6 md:p-10 ">
@@ -502,7 +509,7 @@ export default function ServiceDashboardSophisticated() {
                         <div className="text-right">
                           
                           <button
-                            onClick={() => setSelectedService(srv)}
+                            onClick={() => {setSelectedService(srv); handleDetail()}}
                             className="mt-2 text-xs px-3 py-1 rounded-full bg-[var(--primary)] text-white font-medium hover:brightness-95 transition"
                           >
                             Ver detalhes
@@ -589,66 +596,10 @@ export default function ServiceDashboardSophisticated() {
       {/* DETAILS MODAL */}
       <AnimatePresence>
         {selectedService && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{ backdropFilter: "blur(6px)" }}
-            onClick={() => setSelectedService(null)}
-          >
-            <motion.div
-              layoutId={`card-${selectedService.id}`}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-4xl rounded-3xl overflow-hidden bg-[var(--bg)] border border-[var(--border)] shadow-2xl"
-              initial={{ scale: 0.96, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.96, y: 20 }}
-            >
-              <div className="relative">
-                <img src={selectedService.images[0]} alt={selectedService.title} className="w-full h-72 object-cover" />
-                <button
-                  onClick={() => setSelectedService(null)}
-                  className="absolute top-4 right-4 bg-black/40 rounded-full p-2"
-                >
-                  <X />
-                </button>
-              </div>
-
-              <div className="p-6 bg-[linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))]">
-                <div className="flex items-start gap-6">
-                  <div className="flex-1">
-                    <h3 className="text-2xl font-bold">{selectedService.title}</h3>
-                    <p className="text-[var(--text-muted)] mt-2">{selectedService.description}</p>
-
-                    <div className="mt-4 flex items-center gap-4">
-                      <div className="flex items-center gap-2 text-yellow-400"><Star /> {selectedService.rating.toFixed(2)}</div>
-                      <div className="flex items-center gap-2 text-[var(--text-muted)]"><Clock /> {selectedService.duration}</div>
-                      <div className="flex items-center gap-2 text-[var(--text-muted)]"><DollarSign /> {selectedService.price}</div>
-                    </div>
-
-                    <div className="mt-6 flex gap-3">
-                      <button className="px-4 py-2 rounded-2xl bg-[var(--highlight)] text-black font-semibold">Contratar</button>
-                      <button className="px-4 py-2 rounded-2xl border border-[var(--border)]">Mensagem</button>
-                    </div>
-                  </div>
-
-                  <aside className="w-44">
-                    <div className="text-sm text-[var(--text-muted)]">Galeria</div>
-                    <div className="mt-3 flex flex-col gap-2">
-                      {selectedService.images.map((img, i) => (
-                        <img key={i} src={img} className="w-full h-20 object-cover rounded-md border border-[var(--border)]" />
-                      ))}
-                    </div>
-                  </aside>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
+          <ServiceDetail service={selectedService} images={selectedService.images} isOpen={open} onClose={()=>{setOpen(false)}}/>)}
       </AnimatePresence>
     </LayoutGroup>
-  );
+  );  
 }
 
 /* small helper for filtered count label */

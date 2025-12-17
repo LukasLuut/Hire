@@ -2,12 +2,13 @@ import {  useEffect, useState } from "react";
 import type {ReactNode} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PanInfo } from "framer-motion";
-import { Save, Trash2, PlusCircle } from "lucide-react";
-import { serviceAPI } from "../../api/ServiceAPI";
+import { Save, Trash2, PlusCircle, Trash } from "lucide-react";
+import { serviceAPI, type ServiceData } from "../../api/ServiceAPI";
 import type { Service } from "../../interfaces/ServiceInterface";
 import { categoryAPI } from "../../api/CategoryAPI";
 import type { Category } from "../../interfaces/CategoryInterface";
 import { providerApi } from "../../api/ProviderAPI";
+
 
 /* --------------------------------------------------------------------------
  * Interface de dados do serviço
@@ -29,13 +30,13 @@ import { providerApi } from "../../api/ProviderAPI";
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
- 
+  serviceId: number | null;
 }
 
 /* --------------------------------------------------------------------------
  * Componente principal do painel de serviços
  * -------------------------------------------------------------------------- */
-export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
+export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalProps) {
   /* --------------------------- Estado inicial dos serviços --------------------------- */
   /* --------------------------- Estado inicial dos serviços --------------------------- */
   
@@ -228,7 +229,83 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
     getCategoryName();
   }, [selectedService.categoryId])
 
+  const [hasService, setHasService] = useState<boolean>(false);
 
+  useEffect(() => {
+    if(!serviceId || Number(serviceId) == 0) {
+      setHasService(false);
+      return;
+    }
+
+    if(serviceId > 0) {
+      setHasService(true);
+    }
+
+    const setServiceToEdit = async () => {
+
+      const serviceData: ServiceData | null = await serviceAPI.getServiceById(serviceId);
+      if(!serviceData || typeof serviceData == "undefined") return;
+
+      setService(
+        {
+        id: serviceData.id,
+        title: serviceData.title,
+        description_service: serviceData.description_service,
+        price: String(serviceData.price),
+        duration: serviceData.duration,
+        categoryId: 10,
+        subcategory: serviceData.subcategory,
+        negotiable: false,
+        requiresScheduling: false,
+        acceptedTerms: true,
+        imageUrl: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800",
+        cancellationNotice: ""
+        }
+      );
+
+      setPriceDigits(String(serviceData.price))
+
+      console.log('ESSE É O SERVIÇO: ' + JSON.stringify(serviceData))
+    };
+
+    setServiceToEdit();
+  }, []);
+
+  const handleDelete = async () => {
+    try {
+      await serviceAPI.deleteUser(selectedService.id);
+      alert("Serviço removido com sucesso!")
+      window.location.reload(); 
+    }
+    catch (err: any) {
+      console.error(err)
+    }
+  }
+
+  const handleUpdate = async () => {
+    try {
+      console.log("HANDLEEEEEE UPDATEDO")
+      const formData = new FormData();
+
+      formData.append("title", selectedService.title);
+      formData.append("description_service", selectedService.description_service);
+      formData.append("categoryId", String(selectedService.categoryId));
+      formData.append("providerId", String(providerId));
+      formData.append("price", selectedService.price);
+      formData.append("duration", selectedService.duration);
+      // formData.append("subcategory", selectedService.subcategory);
+      formData.append("negotiable", String(selectedService.negotiable));
+      formData.append("requiresScheduling", String(selectedService.requiresScheduling));
+      // formData.append("image", imageFile);
+      await serviceAPI.update(selectedService.id, formData);
+
+      alert("Informações editadas com sucesso");
+      window.location.reload();
+
+    } catch (err: any) {
+      console.error(err);
+    }
+  }
 
   /* --------------------------------------------------------------------------
    * Renderização principal
@@ -258,7 +335,7 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
               onDragEnd={handleDragEnd}
             >
               {/* --------------------------- Título e descrição --------------------------- */}
-              <h3 className="text-4xl text-[var(--primary)] font-bold mb-3">Criador de Serviço</h3>
+              <h3 className="text-4xl text-[var(--primary)] font-bold mb-3">{hasService ? "Editar Serviço" : "Criar Serviço"}</h3>
               <h3 className="text-sm text-[var(--text-muted)] ml-1 mb-6">Monte sua vitrine digital e transforme seu trabalho em oportunidades reais.</h3>
               <div className="flex flex-col gap-4">
                 <label className="flex flex-col">
@@ -482,10 +559,15 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
 
 
                 {/* --------------------------- Botão salvar --------------------------- */}
-                <div className="mt-5 flex justify-center">
+                <div className="mt-5 flex gap-3 justify-center">
                   <button
                     className="flex items-center justify-center gap-2 bg-[var(--primary)] text-white font-semibold px-4 py-2 rounded-lg hover:brightness-110 transition"
                     onClick={() => {
+                      if(hasService) {
+                        handleUpdate();
+                        return;
+                      }
+
                       if (
                         !selectedService.categoryId ||
                         !selectedService.description_service ||
@@ -516,15 +598,23 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
 
                       try {
                         serviceAPI.create(formData);
-                        alert("Serviço criado com sucesso;")
+                        alert("Serviço criado com sucesso;");
+                        window.location.reload();
                         onClose();
                       } catch (err: any) {
                         console.error(err)
                       }
                     }}
                   >
-                    <Save size={18} /> Salvar alterações
+                    <Save size={18} />{hasService ? "Salvar Alterações" : "Criar Serviço"}
                   </button>
+                  {serviceId && (
+                  <button className="flex items-center justify-center gap-2 bg-red-600 text-white font-semibold px-4 py-2 rounded-lg hover:brightness-110 transition"
+                  onClick={handleDelete}>
+                    <Trash size={18} /> Excluir serviço
+                  </button>
+
+                  )}
                 </div>
               </div>
             </motion.div>

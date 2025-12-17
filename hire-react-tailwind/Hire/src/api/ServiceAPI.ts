@@ -54,37 +54,53 @@ export const serviceAPI = {
     return services;
     },
 
+  getServiceById: async (id: number): Promise<ServiceData | null> => {
+  const response: ServiceData = await apiRequest(`/services/${id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
-  // login: (data: UserLoginAPI) =>
-  //   apiRequest("/auth/login", {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify({
-  //       email: data.email,
-  //       password: data.password,
-  //     }),
-  //   }),
+  if(!response || typeof(response) == undefined) return null;
 
-  // update: async (
-  //   user: {
-  //     name: string;
-  //     about: string;
-  //   },
-  //   token: string
-  // ) => {
-  //   const response = await apiRequest("/users/me", {
-  //     method: "PUT",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       "Authorization": "Bearer " + token, // ← garante que token é válido
-  //     },
-  //     body: JSON.stringify({
-  //       name: user.name,
-  //       about: user.about,
-  //     }),
-  //   })
-  //   return response;
-  // }
+    return {
+      id: response.id,
+      title: response.title,
+      description_service: response.description_service,
+      category: response.category,
+      subcategory: response.subcategory,
+      price: response.price,
+      active: true,
+      duration: response.duration,
+      rating: 4.6,
+      imageUrl: response.imageUrl
+    }
+  },
+
+  deleteUser: async (id: number) => {
+    const response = await apiRequest(`/services/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+    return response;
+  },
+
+  update: async (
+    id: number,
+    data: FormData
+  ) => {
+    const response = await apiRequest(`/services/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: data
+    })
+    return response;
+  },
 };
 
 

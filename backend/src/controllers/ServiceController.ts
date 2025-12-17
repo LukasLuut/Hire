@@ -24,6 +24,17 @@ export class ServiceController {
         }
     }
 
+    getById = async (req: Request, res: Response) => {
+        try {
+            const { id } = req.params;
+            const services = await serviceService.getById(Number(id));
+            res.json(services)
+        }
+        catch(err: any) {
+            res.status(400).json({ message: err.message})
+        }
+    }
+
     update = async (req: Request, res: Response) => {
           try {
                 const { id } = req.params;
