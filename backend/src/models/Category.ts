@@ -23,6 +23,7 @@ export class Category {
   @OneToOne(() => ServiceProvider, (provider) => provider.category)
   provider: ServiceProvider;
 
-  @OneToOne(() => Service, (service) => service.category)
-  service: Service;
+  @OneToMany(() => Service, (service) => service.category)
+  services: Service[];
+
 }

@@ -222,7 +222,7 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
 
       if(!category) return;
 
-      setCategoryName(category.name);
+      setCategoryName(category.name || "Marcenaria");
     }
 
     getCategoryName();

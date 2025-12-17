@@ -23,7 +23,7 @@ export class Service {
 
   @Column()
   negotiable: boolean;
-  
+
   @Column()
   requiresScheduling: boolean;
 
@@ -43,14 +43,17 @@ export class Service {
   imageUrl?: string | null;
 
   @ManyToOne(() => ServiceProvider, (provider) => provider.services, {
-    onDelete: "CASCADE"
+    onDelete: "CASCADE",
   })
   @JoinColumn()
   provider: ServiceProvider;
 
-  @OneToOne(() => Category, (category) => category.service)
-  @JoinColumn()
+  @ManyToOne(() => Category, (category) => category.services, {
+  nullable: false,
+  })
+  @JoinColumn({ name: "category_id" })
   category: Category;
+
 
   @OneToOne(() => Hire, (hire) => hire.service)
   hire: Hire;
