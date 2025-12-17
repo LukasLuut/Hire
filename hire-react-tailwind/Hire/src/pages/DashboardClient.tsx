@@ -11,6 +11,9 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { serviceAPI, type ServiceData } from "../api/ServiceAPI";
+import { categoryAPI } from "../api/CategoryAPI";
+import { LOCAL_PORT } from "../api/ApiClient";
 
 /**
  * ServiceDashboardSophisticated.tsx
@@ -190,14 +193,37 @@ export default function ServiceDashboardSophisticated() {
     const load = async () => {
       setLoading(true);
       try {
-        // you can replace the URLs with your real endpoints
-        const serviceRes = await fetchWithTimeout("/api/services");
-        const serviceData = await serviceRes.json();
-        if (!mounted) return;
-        setServices(serviceData);
+        const data = await serviceAPI.getServices();
+        if(!data) throw new Error();
+
+        if(Array.isArray(data)) {
+          const list: Service[] = data.map((e) => {
+            const image = LOCAL_PORT +  e.imageUrl;
+
+            return {
+            id: e.id,
+            title: e.title,
+            shortDescription: e.description_service,
+            description: e.description_service,
+            subcategory: e.subcategory,
+            category: e.category.name,
+            price: String(e.price),
+            active: true,
+            duration: e.duration,
+            rating: 4.6,
+            images: [image]
+            }
+          });
+
+          setServices(list)
+        }
+
+
+
       } catch {
-        setServices(MOCK_SERVICES);
+        if (mounted) setServices(MOCK_SERVICES);
       }
+
 
       try {
         const provRes = await fetchWithTimeout("/api/providers");
@@ -461,7 +487,7 @@ export default function ServiceDashboardSophisticated() {
                     <div className="p-3  ">
                       <h3 className="text-lg font-semibold leading-tight">{srv.title}</h3>
                       <p className="text-sm text-[var(--text-muted)] mt-2 line-clamp-2">{srv.shortDescription}</p>
-                        <div className=" mt-4  text-[var(--highlight)] font-semibold">{srv.price}</div>
+                        <div className=" mt-4  text-[var(--highlight)] font-semibold">R$ {srv.price}</div>
                       <div className=" flex items-center  justify-between">
                         <div className="flex items-center  gap-3">
                           <div className="flex items-center  bg-[var(--bg-light)]/30 px-2 py-1 rounded-md border border-[var(--border-muted)]">

@@ -44,6 +44,18 @@ export const categoryAPI = {
     if(!response || typeof(response) == undefined) return null;
     return response;
   },
+
+  getCategoryNameById: async (id: number): Promise<string | null> => {
+    const response: Category = await apiRequest(`/categories/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if(!response || typeof(response) == undefined) return null;
+    return response.name;
+  },
   // login: (data: UserLoginAPI) =>
   //   apiRequest("/auth/login", {
   //     method: "POST",

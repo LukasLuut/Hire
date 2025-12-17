@@ -217,7 +217,7 @@ export default function ServiceDetail({
               <div className="grid grid-cols-2 gap-y-2 text-sm">
                 <Info label="Categoria" value={service.category} />
                 <Info label="Subcategoria" value={service.subcategory} />
-                <Info label="Preço" value={"R$" + service.price + ",00"} />
+                <Info label="Preço" value={"R$" + service.price + ",00cd "} />
                 <Info label="Duração" value={service.duration} />
                 <Info
                   label="Negociável"

@@ -2,6 +2,18 @@ import type { Service } from "../interfaces/ServiceInterface";
 import { apiRequest } from "./ApiClient";
 
 
+export interface ServiceData {
+  id: number,
+  title: string,
+  description_service: string,
+  category: {id: number, name: string, description: string},
+  subcategory: string,
+  price: number,
+  active: boolean,
+  duration: string,
+  rating: number,
+  imageUrl: string
+}
 
 export const serviceAPI = {
 
@@ -12,20 +24,36 @@ export const serviceAPI = {
     });
   },
 
-  // getUser: async (token: string): Promise<User | null> => {
-  //   const response: User = await apiRequest("/users/me", {
-  //     method: "GET",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       "Authorization": "Bearer " + token,
-  //     },
-  //   });
+  getServices: async (): Promise<ServiceData[] | null> => {
+    const response: ServiceData[] = await apiRequest("/services", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  //   console.log("CCCCCCCCCCCCCCCCCC");
-  //   console.log(response);
-  //   if(!response || typeof(response) == undefined) return null;
-  //   return response;
-  // },
+    if(!response || typeof(response) == undefined) return null;
+
+    const services =
+    response.map((e) => {
+      return {
+        id: e.id,
+        title: e.title,
+        description_service: e.description_service,
+        category: e.category,
+        subcategory: e.subcategory,
+        price: e.price,
+        active: true,
+        duration: e.duration,
+        rating: 4.6,
+        imageUrl: e.imageUrl
+  
+      }
+    })
+
+    return services;
+    },
+
 
   // login: (data: UserLoginAPI) =>
   //   apiRequest("/auth/login", {

@@ -259,6 +259,7 @@ export default function DashboardPrestador() {
     let mounted = true;
     async function load() {
      
+      console.log("EM QUE MOMENTO ISSO É CARREGADO")
       try {
         const res = await fetchWithTimeout("/api/my/services");
         const data = await res.json();

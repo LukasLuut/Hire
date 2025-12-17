@@ -48,7 +48,7 @@ export class ServiceService {
   }
 
   async list() {
-    return await this.serviceRepository.find();
+    return await this.serviceRepository.find({ relations: { category: true}});
   }
 
   async update(id: number, data: Partial<Service>) {
