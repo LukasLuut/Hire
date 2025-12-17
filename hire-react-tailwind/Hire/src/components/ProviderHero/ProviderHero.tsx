@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import ServiceGallery from "../ServiceGallery/ServiceGallery/ServiceGallery";
 import { useNavigate } from "react-router-dom";
+import { LOCAL_PORT } from "../../api/ApiClient";
 
 
 interface ProviderHeroProps {
@@ -26,6 +27,8 @@ interface ProviderHeroProps {
 export default function ProviderHero({ provider }: ProviderHeroProps) {
 
   const navigate = useNavigate();
+  const imageLink = provider.profileImageUrl ?
+  LOCAL_PORT + provider.profileImageUrl : null;
 
   useEffect(() => {
     if (!provider) {
@@ -51,8 +54,6 @@ export default function ProviderHero({ provider }: ProviderHeroProps) {
 
   const availabilityList = days.filter(([key]) => availability?.[key]);
 
-  useEffect(()=> {console.log("ESSE É O PROVIDER DENTRO DO HERO: " + JSON.stringify(provider))}, [])
-
   return (
     <motion.section
       initial={{ opacity: 0, y: 6 }}
@@ -65,7 +66,10 @@ export default function ProviderHero({ provider }: ProviderHeroProps) {
         <div className="flex flex-col sm:flex-row gap-5">
           {/* Avatar / Logo */}
           <div className="w-28 h-28 sm:w-40 sm:h-40 ml-0 mr-0 md:mr-10 md:ml-40 lg:w-70 lg:h-70 rounded-full bg-[var(--bg)] border border-[var(--primary)] flex items-center justify-center shrink-0 mx-auto sm:mx-0">
+            {imageLink ?
+            <img src={imageLink} className="w-12 h-12 sm:w-16 sm:h-16 lg:w-70 lg:h-70 rounded-full text-[var(--primary)]" /> :
             <Building2 className="w-12 h-12 sm:w-16 sm:h-16 lg:w-24 lg:h-24 text-[var(--primary)]" />
+            }
           </div>
 
           {/* Info principal */}
@@ -83,7 +87,7 @@ export default function ProviderHero({ provider }: ProviderHeroProps) {
 
             <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
               <Briefcase className="w-4 h-4 text-[var(--primary)]" />
-              <span>{provider.category.name  || "Categoria não informada"}</span>
+              <span>{provider.category ? provider.category.name : "Categoria não informada"}</span>
             </div>
 
             <h2 className="mt-2 ml-3 text-[var(--bg-dark)] md:text-[var(--text)]">Sobre</h2>

@@ -18,13 +18,15 @@ import { useEffect, useState } from "react";
 import { motion,  LayoutGroup } from "framer-motion";
 import { Search, X, Filter } from "lucide-react";
 import PostCard from "../Service/Service";
+import { providerApi } from "../../../api/ProviderAPI";
+import type { Service } from "../../../interfaces/ServiceInterface";
 
 /* --------------------------------------------------------------------------
  * MOCK DE DADOS
  * Aqui simulamos alguns serviços para demonstração.
  * Em um projeto real, esses dados viriam de uma API ou banco de dados.
  * -------------------------------------------------------------------------- */
-const services = [
+const servicesMock = [
   {
     id: 1,
     title: "Design de Interface",
@@ -71,6 +73,55 @@ const services = [
  * COMPONENTE PRINCIPAL
  * ========================================================================== */
 export default function ServiceGalleryZoom() {
+
+  const [services, setServices] = useState([
+    {
+    id: 1,
+    title: "Design de Interface",
+    description: "Criação de telas otimizadas com foco em UX e responsividade.",
+    subcategory: "Subcategoria",
+    category: "UI/UX",
+    price: "R$500",
+    duration: "2 dias",
+    rating: 4.8,
+    images: ["https://images.pexels.com/photos/4348401/pexels-photo-4348401.jpeg", "/img/uiux2.jpg"],
+  }
+]);
+
+  useEffect(() => {
+    const getServices = async () => {
+      const token = localStorage.getItem("token");
+      if(!token) return;
+
+      const servicesList = await providerApi.getServices(token);
+
+      if(!servicesList) return;
+
+      if(Array.isArray(servicesList)) {
+        const list = servicesList.map((e) => ({
+          id: e.id,
+          title: e.title,
+          description: e.description_service,
+          subcategory: e.subcategory,
+          category: e.category ? e.category.name : "Categoria",
+          price: e.price,
+          duration: e.duration,
+          rating: 3.2,
+          images: [
+            e.imageUrl,
+            "/img/uiux2.jpg",
+          ],
+      }));
+
+      setServices(list);
+
+      }
+    }
+
+    getServices();
+  }, [])
+
+
   /* ------------------------------------------------------------------------
    * ESTADOS PRINCIPAIS
    * ------------------------------------------------------------------------ */
@@ -128,7 +179,7 @@ export default function ServiceGalleryZoom() {
     }
 
     setFiltered(results);
-  }, [searchTerm, priceOrder, minRating]);
+  }, [searchTerm, priceOrder, minRating, services]);
 
 
 

@@ -237,8 +237,6 @@ export default function DashboardPrestador() {
 
       const providerData: ProviderForm | null = await providerApi.getByUser(token);
 
-      console.log("Esse é o provider: " + JSON.stringify(providerData))
-
       if(!providerData) {
         alert("Não existe um prestador de serviços");
         return;

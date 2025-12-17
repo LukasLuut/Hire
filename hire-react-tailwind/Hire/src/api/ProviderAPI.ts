@@ -1,4 +1,5 @@
 import type { ProviderForm } from "../components/ProviderRegistration/ProviderRegistration/helpers/types-and-helpers";
+import type { Service } from "../interfaces/ServiceInterface";
 import { apiRequest } from "./ApiClient";
 
 export const providerApi = {
@@ -29,8 +30,20 @@ export const providerApi = {
 
     if(!response || typeof response == "undefined") return null;
     return response;
-  }
+  },
 
+  getServices: async (token: string) => {
+    const response = await apiRequest('/providers/services', {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      }
+    });
+
+    if(!response) return null;
+    return response;
+  }
 };
 
 

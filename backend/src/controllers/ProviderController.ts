@@ -52,6 +52,16 @@ export class ProviderController {
     }
   };
 
+  getServices = async (req: Request, res: Response) => {
+    try {
+      const services = await providerService.getServices((req as any).user.id);
+      res.status(201).json(services);
+
+    } catch (err: any) {
+      res.status(400).json({ messages: err.message });
+    }
+  }
+
   async delete(req: Request, res: Response) {
     try {
       const result = await providerService.remove((req as any).user.id);

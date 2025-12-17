@@ -52,7 +52,6 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
 
       setProviderId(provider.id);
 
-      console.log("ESSE É O ID DO PRESTADOR::: " + provider.id)
     }
 
     getProvider();
@@ -502,6 +501,8 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
 
                       const formData = new FormData();
 
+                      // console.log("ESSE É O FORMATO ")
+
                       formData.append("title", selectedService.title);
                       formData.append("description_service", selectedService.description_service);
                       formData.append("categoryId", String(selectedService.categoryId));
@@ -549,9 +550,9 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
       onDragEnd={handleDragEnd}
     >
       {/* --------------------------- Imagem principal --------------------------- */}
-    {selectedService.imageUrl && (
+    {imagePreview && (
       <img
-        src={selectedService.imageUrl}
+        src={imagePreview ? imagePreview : selectedService.imageUrl}
         alt={selectedService.title}
         className="w-full h-64 object-cover rounded-lg mb-4"
       />

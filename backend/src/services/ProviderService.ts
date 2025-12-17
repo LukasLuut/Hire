@@ -83,6 +83,23 @@ export class ProviderService {
     return provider;
   }
 
+  async getServices(id: number) {
+    const provider = await this.providerRepository.findOne({
+      relations: { services: {
+        category: true
+       } },
+      where: {
+        user: {
+          id: id
+        }
+      }
+    });
+
+    if(!provider) throw new Error("Provedor não encontrado");
+
+    return provider.services;
+  }
+
   async remove(id: number) {
     const provider = await this.providerRepository.findOne({
       where: {

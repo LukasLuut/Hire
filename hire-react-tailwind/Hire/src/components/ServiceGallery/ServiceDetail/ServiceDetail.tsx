@@ -30,6 +30,7 @@ interface Service {
 
 interface ServiceDetailProps {
   service: Service;
+  images: string[]
   isOpen: boolean;
   onClose: () => void;
 }
@@ -39,6 +40,7 @@ interface ServiceDetailProps {
  * -------------------------------------------------------------------------- */
 export default function ServiceDetail({
   service,
+  images,
   isOpen,
   onClose,
 }: ServiceDetailProps) {
@@ -67,14 +69,14 @@ export default function ServiceDetail({
   const slideNext = () => {
     setDirection(1);
     setCurrentIndex((prev) =>
-      prev === service.images.length - 1 ? 0 : prev + 1
+      prev === images.length - 1 ? 0 : prev + 1
     );
   };
 
   const slidePrev = () => {
     setDirection(-1);
     setCurrentIndex((prev) =>
-      prev === 0 ? service.images.length - 1 : prev - 1
+      prev === 0 ? images.length - 1 : prev - 1
     );
   };
 
@@ -140,7 +142,7 @@ export default function ServiceDetail({
               <AnimatePresence custom={direction} mode="wait">
                 <motion.img
                   key={currentIndex}
-                  src={service.images[currentIndex]}
+                  src={images[currentIndex]}
                   alt={service.title}
                   className="absolute w-full h-full object-cover cursor-pointer"
                   drag="x"
@@ -187,7 +189,7 @@ export default function ServiceDetail({
 
               {/* Indicadores */}
               <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
-                {service.images.map((_, i) => (
+                {images.map((_, i) => (
                   <div
                     key={i}
                     className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
@@ -215,7 +217,7 @@ export default function ServiceDetail({
               <div className="grid grid-cols-2 gap-y-2 text-sm">
                 <Info label="Categoria" value={service.category} />
                 <Info label="Subcategoria" value={service.subcategory} />
-                <Info label="Preço" value={service.price} />
+                <Info label="Preço" value={"R$" + service.price + ",00"} />
                 <Info label="Duração" value={service.duration} />
                 <Info
                   label="Negociável"
@@ -253,7 +255,7 @@ export default function ServiceDetail({
 
           {/* ----------------------- Modal de imagens ----------------------- */}
           <ImageGalleryModal
-            images={service.images}
+            images={images}
             open={imageModalOpen}
             onClose={() => setImageModalOpen(false)}
             startIndex={currentIndex}
@@ -282,7 +284,7 @@ function Info({
     <div className={`${spanFull ? "col-span-2" : ""}`}>
       <span className="font-semibold">{label}: </span>
       <span className="text-[var(--text-muted)]">
-        {value && value.trim() !== "" ? value : "-"}
+        {value !== "" ? value : "-"}
       </span>
     </div>
   );

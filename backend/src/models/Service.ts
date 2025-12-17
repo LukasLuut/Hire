@@ -48,7 +48,8 @@ export class Service {
   @JoinColumn()
   provider: ServiceProvider;
 
-  @ManyToOne(() => Category, (category) => category.services)
+  @OneToOne(() => Category, (category) => category.service)
+  @JoinColumn()
   category: Category;
 
   @OneToOne(() => Hire, (hire) => hire.service)

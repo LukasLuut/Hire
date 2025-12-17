@@ -1,4 +1,6 @@
 // apiClient.ts
+export const LOCAL_PORT = `http://localhost:8080`;
+
 export async function apiRequest<T>(
   endpoint: string,
   options: RequestInit = {}
