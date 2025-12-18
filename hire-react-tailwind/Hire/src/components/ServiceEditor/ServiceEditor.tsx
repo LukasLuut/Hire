@@ -149,7 +149,7 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
    * Renderização principal
    * -------------------------------------------------------------------------- */
   return (
-    <div onClick={onClose} className="min-h-screen md:pt-15 pt-17 overflow-hidden bg-[var(--bg-dark)]/50 text-[var(--text)] flex flex-col md:flex-row transition-all duration-500 items-center justify-center">
+    <div className="min-h-screen md:pt-15 pt-17 overflow-hidden bg-[var(--bg-dark)]/50 text-[var(--text)] flex flex-col md:flex-row transition-all duration-500 items-center justify-center">
       <div className="flex-1 relative flex overflow-hidden w-full max-w-[1024px]">
 
         {/* ----------------------------------------------------------------------
