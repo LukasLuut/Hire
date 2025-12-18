@@ -1,7 +1,8 @@
+import type { User } from "../interfaces/UserInterface";
 import { apiRequest } from "./ApiClient";
 
 export const userAPI = {
-  
+
   create: async (data: UserAPI) => {
     return await apiRequest("/auth/register", {
       method: "POST",
@@ -14,6 +15,19 @@ export const userAPI = {
         acceptedTerms: data.acceptedTerms,
       }),
     });
+  },
+
+  getUser: async (token: string): Promise<User | null> => {
+    const response: User = await apiRequest("/users/me", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token,
+      },
+    });
+
+    if(!response || typeof(response) == undefined) return null;
+    return response;
   },
 
   login: (data: UserLoginAPI) =>
@@ -44,11 +58,41 @@ export const userAPI = {
         about: user.about,
       }),
     })
-
     return response;
-  
+  },
+
+  updateUser: async (
+    token: string,
+    email: string
+  ) => {
+    const response = await apiRequest("/users/me", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token, // ← garante que token é válido
+      },
+      body: JSON.stringify({
+        email: email
+      }),
+    })
+    return response;
+  },
+
+  deleteUser: async (token: string) => {
+    const response = await apiRequest("/users/me", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token, // ← garante que token é válido
+      }
+    })
+    return response;
+  },
   }
-};
+
+
+
+
 
 export interface UserAPI {
   name: string;

@@ -1,7 +1,9 @@
 export interface User {
+    id: number,
     name: string,
     email: string,
-    password: string, 
-    cpf?: string,
-    about?:string
+    cpf_cnpj?: string,
+    about:string,
+    acceptedTerms?: boolean,
+    acceptedAt?: Date,
 }

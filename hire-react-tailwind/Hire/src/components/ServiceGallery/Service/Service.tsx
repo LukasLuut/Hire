@@ -1,7 +1,9 @@
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Clock, Tag as TagIcon, Heart, HandCoins } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, Tag as TagIcon, Heart, HandCoins, Trash, SquarePen } from "lucide-react";
 import ServiceDetailModal from "../ServiceDetail/ServiceDetail";
+import { LOCAL_PORT } from "../../../api/ApiClient";
+import ServiceEditor from "../../ServiceEditor/ServiceEditor";
 
 /* --------------------------------------------------------------------------
  * Interface do Serviço
@@ -20,11 +22,19 @@ interface Service {
   likes?: number;
 }
 
+
 /* --------------------------------------------------------------------------
  * Componente PostCard com Partículas de Like
  * -------------------------------------------------------------------------- */
 export default function PostCard({ service }: { service: Service }) {
  
+  const image1 = service.images[0];
+
+  const imagesLink = [
+    image1 ? LOCAL_PORT + image1 : "https://images.pexels.com/photos/1267338/pexels-photo-1267338.jpeg",
+    image1 ? LOCAL_PORT + image1 : "https://images.pexels.com/photos/1267338/pexels-photo-1267338.jpeg",
+
+  ]
 
   const [index, setIndex] = useState(0);
   const total = service.images.length;
@@ -89,8 +99,16 @@ export default function PostCard({ service }: { service: Service }) {
       setOpen(true);
     };
 
+    const [openEdit, setOpenEdit] = useState<boolean>(false);
+
+    const handleEdit = () => {
+      setOpenEdit((prev) => !prev)
+    }
+
   return (
     <div className="pt-5 ">
+
+      {openEdit&&(<div className="fixed inset-0 z-30"><ServiceEditor serviceId={service.id} isOpen={openEdit} onClose={()=>{setOpenEdit(false)}}/></div>)} 
     <div
       className={`relative bg-[var(--bg)] shadow-lg shadow-[#00000077] mx-auto w-[80vw] h-[80vh] md:w-[20vw] md:h-[60vh] rounded-2xl overflow-hidden`}
       onTouchStart={onTouchStart}
@@ -100,7 +118,7 @@ export default function PostCard({ service }: { service: Service }) {
       <AnimatePresence mode="wait">
         <motion.img
           key={index}
-          src={service.images[index]}
+          src={imagesLink[index]}
           alt={service.title}
           initial={{ opacity: 0, scale: 1.05 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -127,15 +145,24 @@ export default function PostCard({ service }: { service: Service }) {
       
 
       {/* Botão like canto superior */}
-      <div className="absolute top-4 right-4 z-20 flex flex-col items-center">
+      <div className="absolute top-4 px-3 z-20 flex flex-row justify-between min-w-full items-top ">
+        <button
+          onClick={handleEdit}
+          className="p-2 w-9 h-9 rounded-full bg-[var(--primary)]/40 backdrop-blur-md hover:bg-[var(--primary)]/70"
+        >
+          <SquarePen className=" w-5 h-5 text-white" />
+          
+        </button>
+       
         <button
           onPointerDown={startHold}
           onPointerUp={endHold}
           className="p-2 rounded-full bg-black/40 backdrop-blur-md hover:bg-[var(--primary)]/70"
         >
           <Heart className="w-5 h-5 text-white" />
+          <span className="text-xs absolut text-white/90">{likeCount}</span>
         </button>
-        <span className="text-xs absolut text-white/90">{likeCount}</span>
+        
       </div>
 
       {/* Like central */}
@@ -188,7 +215,7 @@ export default function PostCard({ service }: { service: Service }) {
           <h3 className="text-lg sm:text-xl font-semibold mb-2">{service.title}</h3>
           <p className="text-sm text-gray-200 line-clamp-2 mb-3">{service.description}</p>
           <div className="flex items-center justify-between text-sm font-medium mb-2">
-            {service.price && <span className="bg-white/10 px-3 flex gap-1 items-center py-1 rounded-full backdrop-blur-sm"><HandCoins size={16}/> {service.price}</span>}
+            {service.price && <span className="bg-white/10 px-3 flex gap-1 items-center py-1 rounded-full backdrop-blur-sm"><HandCoins size={16}/> R$ {service.price}</span>}
             {service.duration && (
               <span className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm">
                 <Clock size={14} /> {service.duration}
@@ -209,9 +236,11 @@ export default function PostCard({ service }: { service: Service }) {
     </div>
     <ServiceDetailModal 
     service={service}
+    images={imagesLink}
     isOpen={open}
     onClose={()=>{setOpen(false)}}
     />
+    
 </div>
 
   );

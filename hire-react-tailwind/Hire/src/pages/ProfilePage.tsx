@@ -12,22 +12,19 @@
  * -------------------------------------------------------------------------- */
 
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { motion } from "framer-motion";
 import ServiceGalleryMagazine from "../components/ServiceGallery/ServiceGallery/ServiceGallery";
 import { Star, Edit3, MessageSquare } from "lucide-react";
-import { ServiceCreationWizardModal } from "../components/ServiceCreator/ServiceCreationWizardModal";
 import ServiceNegotiationModal from "../components/Negotiation/ServiceNegotiationModal";
 import ServiceResponseModal from "../components/Negotiation/ServiceResponseModal";
 import ServiceFormalizerModal from "../components/Negotiation/ServiceFormalizerModal";
-import ProviderRegistration from "../components/ProviderRegistration/ProviderRegistration";
 import ProviderRegistrationContainer from "../components/ProviderRegistration/ProviderRegistration/Principal/ProviderRegistrationContainer";
 import ServiceEditor from "../components/ServiceEditor/ServiceEditor";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getFirstAndLastName } from "../utils/nameUtils"
 import { userAPI } from "../api/UserAPI";
+import { type User } from "../interfaces/UserInterface"
+import { providerApi } from "../api/ProviderAPI";
 import type { ProviderForm } from "../components/ProviderRegistration/ProviderRegistration/helpers/types-and-helpers";
-import ProviderHero from "../components/ProviderHero/ProviderHero";
 import ServiceDashboardSophisticated from "./DashboardClient";
 
 /* --------------------------------------------------------------------------
@@ -43,17 +40,17 @@ const mockReviews = [
 ];
 
 export const mockProvider: ProviderForm = {
-  name: "Lucas William",
-  cpfCnpj: "12.345.678/0001-90",
-  email: "contato@lwstudio.com",
-  phone: "(11) 99999-9999",
+  name: "",
+  cnpj: "",
+  professionalEmail: "",
+  professionalPhone: "",
   shortDescription:
-    "Estúdio especializado em desenvolvimento web, UI/UX e soluções digitais sob medida para pequenas e médias empresas.",
+    "",
   profilePhoto: null,
 
-  companyName: "LW Studio Digital",
-  category: "Tecnologia & Design",
-  subcategories: ["Desenvolvimento Web", "UI/UX Design", "Identidade Visual"],
+  companyName: "",
+  category: "Tecnologia",
+  subcategories: [],
   experienceLevel: "especialista",
 
   portfolio: [],
@@ -127,7 +124,7 @@ export default function ProfilePage() {
    * ------------------------------------------------------------------------ */
   const [profile, setProfile] = useState<typeof mockProfile | null>(null);
   const [reviews, setReviews] = useState<typeof mockReviews | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [open, setOpen] = useState(false);
   const [openContratar, setOpenContratar]=useState(false)
@@ -138,74 +135,113 @@ export default function ProfilePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-
   // Todas as informações do usuário
-  const [user, setUser] = useState(location.state?.user)
-
-
+  const [user, setUser] = useState<User>({
+    id: 0,
+    name: "",
+    email: "",
+    about: "",
+  })
+  const [provider, setProvider] = useState<boolean>(false);
 
   /* ------------------------------------------------------------------------
    * SIMULAÇÃO DE CARREGAMENTO DE DADOS
    * - Tenta buscar dados de uma API (comentado por enquanto)
    * - Caso falhe, usa os dados mockados
    * ------------------------------------------------------------------------ */
+
   useEffect(() => {
-
-    if(!token) {
+    const getUser = async () => {
+      if(!token) {
       navigate('/auth')
+      return;
     }
-    
-    const fetchData = async () => {
-      try {
-        mockProfile.name = getFirstAndLastName(user.name);
-        
-        if(user.about) mockProfile.bio = user.about;
 
-        const profileData = mockProfile;
-        const reviewsData = mockReviews;
+      const profileData = mockProfile;
+      const reviewsData = mockReviews;
 
-        setProfile(profileData);
-        setReviews(reviewsData);
-      } catch (error) {
-        console.warn("Erro ou timeout, usando mock...");
-        setProfile(mockProfile);
-        setReviews(mockReviews);
-      } finally {
-        setLoading(false);
+      setProfile(profileData);
+      setReviews(reviewsData);
+
+      const user: User | null = await userAPI.getUser(token);
+      
+      if(!user) {
+        return;
+      } else {
+        setUser(user);
+      };
+
+      const provider = await providerApi.getByUser(token);
+
+      if(!provider) {
+        setProvider(false);
+      } else {
+        setProvider(true);
       }
-    };
+    }
 
-    fetchData();
-  }, [user]);
+    getUser();  
+  }, []); 
+
+  
+  useEffect(() => {
+    if(provider) localStorage.setItem("provider", "1");
+    if(!provider) localStorage.setItem("provider", "0")
+  }, [provider])
+
+   // Fecha com ESC
+  useEffect(() => {
+    function handleEsc(e: KeyboardEvent) {
+      if (e.key === "Escape") setIsEditing(false);
+    }
+
+    if (isEditing) window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [isEditing]);
 
   /* ------------------------------------------------------------------------
    * FUNÇÕES DE EDIÇÃO
    * ------------------------------------------------------------------------ */
-  const handleEditToggle = () => setIsEditing((prev) => !prev);
-
-  const handleProfileChange = (field: keyof typeof mockProfile, value: string) => {
-    if (profile) setProfile({ ...profile, [field]: value });
-  };
-
-  /* ------------------------------------------------------------------------
-   * FUNÇÃO PARA ABERTURA DO MODAL DE CONTRATAÇÃO
-   * ------------------------------------------------------------------------ */
-  const handleContratar = () =>{
-    setOpenContratar(true);
+  const handleEditToggle = () => {setIsEditing((prev) => !prev);
+    handleUpdate();
   }
 
+  /* ------------------------------------------------------------------------
+   * FUNÇÃO PARA ABERTURA DO MODAL DE UPDATE
+   * ------------------------------------------------------------------------ */
   const handleUpdate = async () => {
+    if(!isEditing) return;
+
     const token = localStorage.getItem("token")
     if(!token) return;
     
     try {
-      return await userAPI.update({name: user.name, about: user.about}, token)
-      
+      const res = await userAPI.update({name: user?.name, about: user?.about}, token);
+      const updateEmail = await userAPI.updateUser(token, user.email);
+      alert("Informações editadas com sucesso!")
+      return { res, updateEmail };
     } catch (err: any) {
-      alert("ererrrererererererere")
       console.error(err)
     }
   }
+
+  const handleDelete = async () => {
+
+    const token = localStorage.getItem("token")
+    if(!token) return;
+    
+    try {
+      const res = await userAPI.deleteUser(token)
+      alert("Usuário deletado com sucesso!")
+      localStorage.removeItem("token");
+      navigate('/auth')
+      return res;
+    } catch (err: any) {
+      console.error(err)
+    }
+  }
+
+   
 
   /* ------------------------------------------------------------------------
    * ESTADO DE CARREGAMENTO (Tela de loading)
@@ -224,7 +260,6 @@ export default function ProfilePage() {
     );
   }
  
-
   /* ------------------------------------------------------------------------
    * RENDERIZAÇÃO PARA PRESTADOR (COM GALERIA DE SERVIÇOS)
    * ------------------------------------------------------------------------ */
@@ -259,53 +294,62 @@ export default function ProfilePage() {
           <div className="flex items-center gap-4 flex-wrap">
             {isEditing ? (
               <input
-                value={profile?.name}
-                onChange={(e) => handleProfileChange("name", e.target.value)}
+                value={user.name}
+                onChange={(e) => {setUser((prev: any) => ({...prev, name: e.target.value}))
+              location.state.user.name = e.target.value
+              }}
                 className="bg-[var(--bg-light)] border border-[var(--primary)] rounded-lg px-2 py-1 text-2xl"
               />
             ) : (
-              <h1 className="text-4xl font-bold">{profile?.name}</h1>
+              <h1 className="text-4xl font-bold">{user.name}</h1>
+            )}
+            {isEditing && (
+              <button className="px-2 py-2 text-md bg-red-700 rounded-md" onClick={handleDelete}>Excluir Usuário</button>
             )}
 
-            <div className="flex items-center gap-1 text-yellow-400">
-              <Star size={20} fill="currentColor" />
+            <div className="flex items-center md:flex-row flex-col gap-1 text-yellow-400">
+              <div className="flex flex-row">
+                <Star size={20} fill="currentColor" />
               <span className="font-semibold">
                 {profile?.rating ? profile.rating.toFixed(1) : "0.0"}
               </span>
+              </div>
               <span className="text-[var(--text-muted)] text-sm">
                 ({profile?.reviewsCount} avaliações)
               </span>
             </div>
           </div>
 
-          <p className="pl-2 text-[var(--text-muted)]">
+          {/* <p className="pl-2 text-[var(--text-muted)]">
             Desenvolvedor Web & Designer UI/UX
-          </p>
+          </p> */}
           {/* CAIXA DE EDIÇÃO */}
             {/* BIO / SOBRE */}
-          <section className="p-5 pb-10 md:px-5">
+          <section className="p-5 pb-10 flex flex-col md:px-5">
             <h2 className="text-xl font-semibold mb-2">Sobre</h2>
             {isEditing ? (
               <textarea
                 value={user.about}
-                onChange={(e) => setUser({ ...user, about: e.target.value })}
+                placeholder="Fale um pouco sobre você..."
+                onChange={(e) => setUser((prev: any) => ({...prev, about: e.target.value}))}
                 className="md:w-2xl w-xs bg-[var(--bg-light)] border border-[var(--primary)] rounded-lg p-2 text-[var(--text)] resize-none h-32"
               />
             ) : (
-              <p className="text-[var(--text-muted)] max-w-2xl">{profile?.bio}</p>
+              <p className="text-[var(--text-muted)] max-w-2xl">{user.about ? user.about : "Fale um pouco sobre você... Por exemplo: ''Sou uma pessoa dedicada, sempre em busca de aprendizado e novas experiências. Gosto de colaborar, compartilhar conhecimento e enfrentar desafios que contribuam para meu crescimento pessoal e profissional.''"}</p>
+            )} 
+            {isEditing && (
+              <input
+              className=" bg-[var(--bg-light)] mt-5 border border-[var(--primary)] rounded-lg p-2 text-[var(--text)] resize-none h-8"
+              value={user.email}
+              onChange={(e) => setUser((prev: any) => ({...prev, email: e.target.value}))}
+              placeholder="Email"
+              />
             )}
-            { isEditing && 
-              <button 
-            onClick={ handleUpdate }
-            className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:brightness-110 transition">
-              Salvar
-            </button>
-            } 
           </section>
 
           {/* BOTÕES DE AÇÃO */}
           <div className="flex items-end gap-4 mt-2">
-             {!registration&&(
+             {(!registration && !provider) && (
               <button className="bg-[var(--primary)] rounded-xl w-55 h-15 mt-6 text-lg text-white animate-bounce "
                 onClick={()=>setRegistration(true) }>
                 Cadastre sua empresa
@@ -343,7 +387,7 @@ export default function ProfilePage() {
        {/* ===============================================================
        * SEÇÃO DE CRIAÇÃO DE SERVIÇOS
        * =============================================================== */}      
-        <ServiceEditor isOpen={open} onClose={() => setOpen(false)}  />
+        <ServiceEditor serviceId={null} isOpen={open} onClose={() => setOpen(false)}  />
 
        {/* ===============================================================
        * SEÇÃO DE RESPOSTA DE SERVIÇOS

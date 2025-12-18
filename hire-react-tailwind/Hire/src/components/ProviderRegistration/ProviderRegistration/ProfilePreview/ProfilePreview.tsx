@@ -1,7 +1,7 @@
 // ProfilePreview.tsx — versão aprimorada com mais informações
 // ------------------------------------------------------
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import type { ProviderForm, DayKey, Availability } from "../helpers/types-and-helpers";
 import {
   ShieldCheck,
@@ -12,6 +12,8 @@ import {
   Globe,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import type { Category } from "../../../../interfaces/CategoryInterface";
+import { categoryAPI } from "../../../../api/CategoryAPI";
 
 export default function ProfilePreview({
   form,
@@ -33,6 +35,20 @@ export default function ProfilePreview({
   ];
 
   const availabilityList = days.filter(([key]) => availability?.[key]);
+
+  const [category, setCategory] = useState<Category>();
+
+  useEffect( () => {
+    const getCategory = async () => {
+      const categoryGetted = await categoryAPI.getCategoryById(Number(form.category));
+
+      if(categoryGetted) {
+        setCategory(categoryGetted);
+      }
+    }
+
+    getCategory();
+   }, [form.category])
 
   return (
     <motion.div
@@ -59,7 +75,7 @@ export default function ProfilePreview({
           </div>
           <div className="text-sm text-[var(--text-muted)] flex items-center gap-1">
             <Briefcase className="w-4 h-4 text-[var(--primary)]" />
-            {form.category || "Categoria"}
+            {category ? category.name : "Categoria"}
           </div>
         </div>
       </div>

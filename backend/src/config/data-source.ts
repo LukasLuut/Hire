@@ -10,6 +10,9 @@ import { ServiceProvider } from '../models/ServiceProvider';
 import { Hire } from '../models/Hire';
 import { Contract } from '../models/Contract';
 import { Payment } from '../models/Payment';
+import { Subcategory } from '../models/Subcategory';
+import { Availability } from '../models/Availability';
+import { Link } from '../models/Link';
 
 dotenv.config();
 
@@ -38,5 +41,5 @@ export const AppDataSource = new DataSource({
 
     // Aqui registramos as entidades (as classes que representam tabelas).
     // O TypeORM precisa saber quais são para criar o mapeamento com o banco.
-    entities: [User, Address, Category, Service, ServiceProvider, Hire, Contract, Payment],
+    entities: [User, Address, Category, Service, ServiceProvider, Hire, Contract, Payment, Subcategory, Availability, Link],
 });

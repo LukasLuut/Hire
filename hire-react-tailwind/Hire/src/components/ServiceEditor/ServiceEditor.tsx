@@ -2,37 +2,62 @@ import {  useEffect, useState } from "react";
 import type {ReactNode} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PanInfo } from "framer-motion";
-import { Save, Trash2, PlusCircle } from "lucide-react";
+import { Save, Trash2, PlusCircle, Trash } from "lucide-react";
+import { serviceAPI, type ServiceData } from "../../api/ServiceAPI";
+import type { Service } from "../../interfaces/ServiceInterface";
+import { categoryAPI } from "../../api/CategoryAPI";
+import type { Category } from "../../interfaces/CategoryInterface";
+import { providerApi } from "../../api/ProviderAPI";
+
 
 /* --------------------------------------------------------------------------
  * Interface de dados do serviço
  * -------------------------------------------------------------------------- */
-interface Service {
-  id: number;
-  title: string;
-  description: string;
-  category?: string;
-  subcategory?: string;
-  price?: string;
-  negotiable?: boolean;
-  duration?: string;
-  requiresScheduling?: boolean;
-  cancellationNotice?: string;
-  acceptedTerms?: boolean;
-  images: string[];
-}
+// interface Service {
+//   id: number;
+//   title: string;
+//   description: string;
+//   category?: string;
+//   subcategory?: string;
+//   price?: string;
+//   negotiable?: boolean;
+//   duration?: string;
+//   requiresScheduling?: boolean;
+//   cancellationNotice?: string;
+//   acceptedTerms?: boolean;
+//   images: string[];
+// }
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
- 
+  serviceId: number | null;
 }
 
 /* --------------------------------------------------------------------------
  * Componente principal do painel de serviços
  * -------------------------------------------------------------------------- */
-export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
+export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalProps) {
+  /* --------------------------- Estado inicial dos serviços --------------------------- */
   /* --------------------------- Estado inicial dos serviços --------------------------- */
   
+  const [providerId, setProviderId] = useState(0);
+
+  useEffect(() => {
+    const getProvider = async () => {
+      const token = localStorage.getItem("token");
+      if(!token) return;
+
+      const provider: any = await providerApi.getByUser(token);
+
+      if(!provider) return;
+
+      setProviderId(provider.id);
+
+    }
+
+    getProvider();
+  }, [])
+
   // Fecha com ESC
   useEffect(() => {
     function handleEsc(e: KeyboardEvent) {
@@ -45,26 +70,29 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
 
   if (!isOpen) return null;
 
-  const [services, setServices] = useState<Service[]>([
+  const [service, setService] = useState<Service>(
     {
-      id: 1,
-      title: "Desenvolvimento Web",
-      description: "Criação de sites modernos, rápidos e responsivos.",
-      price: "R$ 1.500",
-      duration: "7 dias",
-      category: "Tecnologia",
-      subcategory: "Desenvolvimento",
-      negotiable: true,
+      id: 0,
+      title: "",
+      description_service: "",
+      price: "",
+      duration: "",
+      categoryId: null,
+      subcategory: "",
+      negotiable: false,
       requiresScheduling: false,
       acceptedTerms: true,
-      images: [
-        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800",
-      ],
+      imageUrl: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800",
+      cancellationNotice: ""
     },
-  ]);
+  );
 
-  /* --------------------------- Controle de seleção e responsividade --------------------------- */
-  const [selectedId] = useState<number>(services[0].id);
+  const [categories, setCategories] = useState<Category[]>([])
+  const [categoryName, setCategoryName] = useState("");
+
+
+
+  /* --------------------------- Controle de selessssssssssssssção e responsividade --------------------------- */
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 768);
 
   // Controle de qual slide está visível no mobile (editor ou preview)
@@ -85,30 +113,36 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
   }, []);
 
   /* --------------------------- Serviço atualmente selecionado --------------------------- */
-  const selectedService = services.find((s) => s.id === selectedId)!;
+  const selectedService: Service = service;
 
   /* --------------------------- Função para atualizar campos do serviço --------------------------- */
   const handleChange = (
-    field: keyof Service,
-    value: string | boolean | undefined | string[]
-  ) => {
-    setServices((prev) =>
-      prev.map((srv) =>
-        srv.id === selectedId ? { ...srv, [field]: value } : srv
-      )
-    );
-  };
+  field: keyof Service,
+  value: string | boolean | undefined | string[] | number
+) => {
+  setService((prev: any) => ({
+    ...prev,
+    [field]: value
+  }));
+};
+
 
   /* --------------------------- Funções do editor de imagens --------------------------- */
-  const addImage = () => {
-    const url = prompt("Insira a URL da imagem");
-    if (!url) return;
-    handleChange("images", [...selectedService.images, url]);
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
   };
 
-  const removeImage = (index: number) => {
-    const newImages = selectedService.images.filter((_, i) => i !== index);
-    handleChange("images", newImages);
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
   };
 
   /* --------------------------- Função de swipe lateral (mobile) --------------------------- */
@@ -145,11 +179,139 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
   const mobileModalClass =
     "absolute top-10 left-4 right-4 bottom-10 bg-[var(--bg-light)] rounded-2xl shadow-lg border border-[var(--border)] p-6 flex flex-col overflow-auto";
 
+
+  useEffect(() => {
+    const getCategory = async () => {
+        const response: Category[] | null = await categoryAPI.getCategory();
+
+        if(!response || response == undefined) return;
+
+        const categoriesClone: Category[] = response.map((e) => {
+          return {
+           id: e.id,
+           name: e.name,
+           description: e.description };
+        })
+        setCategories(categoriesClone);
+    }
+
+    getCategory();
+  }, []);
+
+  useEffect(() => {
+  }, [categories]);
+
+
+  const [priceDigits, setPriceDigits] = useState(""); 
+
+
+  const formatPrice = (digits: string) => {
+    if (!digits) return "";
+    return `R$ ${digits}`;
+  };
+
+  const onPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, "");
+
+    setPriceDigits(digits);
+    handleChange("price", digits); // salva "123" no service
+  };
+
+  useEffect(() => {
+    const getCategoryName = async () => {
+      const category = await categoryAPI.getCategoryById(Number(selectedService.categoryId))
+
+      if(!category) return;
+
+      setCategoryName(category.name || "Marcenaria");
+    }
+
+    getCategoryName();
+  }, [selectedService.categoryId])
+
+  const [hasService, setHasService] = useState<boolean>(false);
+
+  useEffect(() => {
+    if(!serviceId || Number(serviceId) == 0) {
+      setHasService(false);
+      return;
+    }
+
+    if(serviceId > 0) {
+      setHasService(true);
+    }
+
+    const setServiceToEdit = async () => {
+
+      const serviceData: ServiceData | null = await serviceAPI.getServiceById(serviceId);
+      if(!serviceData || typeof serviceData == "undefined") return;
+
+      setService(
+        {
+        id: serviceData.id,
+        title: serviceData.title,
+        description_service: serviceData.description_service,
+        price: String(serviceData.price),
+        duration: serviceData.duration,
+        categoryId: 10,
+        subcategory: serviceData.subcategory,
+        negotiable: false,
+        requiresScheduling: false,
+        acceptedTerms: true,
+        imageUrl: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800",
+        cancellationNotice: ""
+        }
+      );
+
+      setPriceDigits(String(serviceData.price))
+
+      console.log('ESSE É O SERVIÇO: ' + JSON.stringify(serviceData))
+    };
+
+    setServiceToEdit();
+  }, []);
+
+  const handleDelete = async () => {
+    try {
+      await serviceAPI.deleteUser(selectedService.id);
+      alert("Serviço removido com sucesso!")
+      window.location.reload(); 
+    }
+    catch (err: any) {
+      console.error(err)
+    }
+  }
+
+  const handleUpdate = async () => {
+    try {
+      console.log("HANDLEEEEEE UPDATEDO")
+      const formData = new FormData();
+
+      formData.append("title", selectedService.title);
+      formData.append("description_service", selectedService.description_service);
+      formData.append("categoryId", String(selectedService.categoryId));
+      formData.append("providerId", String(providerId));
+      formData.append("price", selectedService.price);
+      formData.append("duration", selectedService.duration);
+      // formData.append("subcategory", selectedService.subcategory);
+      formData.append("negotiable", String(selectedService.negotiable));
+      formData.append("requiresScheduling", String(selectedService.requiresScheduling));
+      // formData.append("image", imageFile);
+      await serviceAPI.update(selectedService.id, formData);
+
+      alert("Informações editadas com sucesso");
+      window.location.reload();
+
+    } catch (err: any) {
+      console.error(err);
+    }
+  }
+
   /* --------------------------------------------------------------------------
    * Renderização principal
    * -------------------------------------------------------------------------- */
   return (
-    <div className="min-h-screen md:pt-15 pt-17 overflow-hidden bg-[var(--bg-dark)]/50 text-[var(--text)] flex flex-col md:flex-row transition-all duration-500 items-center justify-center">
+    <div  className="min-h-screen md:pt-15 pt-17 overflow-hidden bg-[var(--bg-dark)]/50 text-[var(--text)] flex flex-col md:flex-row transition-all duration-500 items-center justify-center">
       <div className="flex-1 relative flex overflow-hidden w-full max-w-[1024px]">
 
         {/* ----------------------------------------------------------------------
@@ -173,7 +335,7 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
               onDragEnd={handleDragEnd}
             >
               {/* --------------------------- Título e descrição --------------------------- */}
-              <h3 className="text-4xl text-[var(--primary)] font-bold mb-3">Criador de Serviço</h3>
+              <h3 className="text-4xl text-[var(--primary)] font-bold mb-3">{hasService ? "Editar Serviço" : "Criar Serviço"}</h3>
               <h3 className="text-sm text-[var(--text-muted)] ml-1 mb-6">Monte sua vitrine digital e transforme seu trabalho em oportunidades reais.</h3>
               <div className="flex flex-col gap-4">
                 <label className="flex flex-col">
@@ -193,10 +355,11 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
                     Descrição detalhada
                   </span>
                   <textarea
+                    required
                     placeholder="Descreva o serviço, incluindo detalhes importantes..."
-                    value={selectedService.description}
+                    value={selectedService.description_service}
                     onChange={(e) =>
-                      handleChange("description", e.target.value)
+                      handleChange("description_service", e.target.value)
                     }
                     rows={4}
                     className="p-2 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-[var(--text)] resize-none"
@@ -207,15 +370,29 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
                 <div className="grid grid-cols-2 gap-4">
                   <label className="flex flex-col">
                     <span className="text-[var(--text-muted)] text-sm mb-1">Categoria</span>
-                    <input
+                    <select
+                      required
+                      value={selectedService.categoryId ? selectedService.categoryId : ""}
+                      onChange={(e) => handleChange("categoryId", Number(e.target.value))}
+                      className="p-2 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-[var(--text)]"
+                    >
+                      <option value="" disabled selected>Selecione uma categoria</option>
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
+
+                    </select>
+                    {/* <input
                       placeholder="Ex: Tecnologia, Beleza..."
                       type="text"
-                      value={selectedService.category}
+                      value={selectedService.categoryId}
                       onChange={(e) =>
-                        handleChange("category", e.target.value)
+                        handleChange("categoryId", e.target.value)
                       }
                       className="p-2 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-[var(--text)]"
-                    />
+                    /> */}
                   </label>
                   <label className="flex flex-col">
                     <span className="text-[var(--text-muted)] text-sm mb-1">Subcategoria</span>
@@ -238,8 +415,10 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
                     <input
                       placeholder="Ex: R$ 200,00"
                       type="text"
-                      value={selectedService.price}
-                      onChange={(e) => handleChange("price", e.target.value)}
+                      inputMode="numeric"
+                      pattern="\d*"
+                      value={formatPrice(priceDigits)}
+                      onChange={onPriceChange}
                       className="p-2 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-[var(--text)]"
                     />
                   </label>
@@ -309,27 +488,26 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
                 </div>
 
                 {/* --------------------------- Editor de imagens --------------------------- */}
-                <div className="mt-4">
+                {/* <div className="mt-4">
                   <h4 className="font-semibold mb-2">Imagens do serviço</h4>
                   <div className="flex gap-2 flex-wrap">
-                    {selectedService.images.map((img, idx) => (
-                      <div
-                        key={idx}
-                        className="relative w-24 h-24 rounded-lg overflow-hidden border border-[var(--border)]"
+                    {selectedService.imageUrl && (
+                    <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-[var(--border)]">
+                      <img
+                        src={selectedService.imageUrl}
+                        alt="Imagem do serviço"
+                        className="w-full h-full object-cover"
+                      />
+
+                      <button
+                        onClick={removeImage}
+                        className="absolute top-1 right-1 bg-[var(--bg-dark)]/70 p-1 rounded-full text-white hover:bg-red-600 transition"
                       >
-                        <img
-                          src={img}
-                          alt={`Imagem ${idx + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                        <button
-                          onClick={() => removeImage(idx)}
-                          className="absolute top-1 right-1 bg-[var(--bg-dark)]/70 p-1 rounded-full text-white hover:bg-red-600 transition"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    ))}
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  )}
+
                     <button
                       onClick={addImage}
                       className="flex items-center justify-center w-24 h-24 rounded-lg border border-[var(--border)] text-[var(--text-muted)] hover:bg-[var(--bg-dark)]/20 transition"
@@ -337,25 +515,106 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
                       <PlusCircle size={24} />
                     </button>
                   </div>
+                </div> */}
+                <div className="mt-4">
+                  <h4 className="font-semibold mb-2">Imagem do serviço</h4>
+
+                  <div className="flex gap-2 flex-wrap">
+                    {imagePreview ? (
+                      <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-[var(--border)]">
+                        <img
+                          src={imagePreview}
+                          alt="Imagem do serviço"
+                          className="w-full h-full object-cover"
+                        />
+
+                        <button
+                          type="button"
+                          onClick={removeImage}
+                          className="absolute top-1 right-1 bg-[var(--bg-dark)]/70 p-1 rounded-full text-white hover:bg-red-600 transition"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <label
+                          htmlFor="imageUpload"
+                          className="flex items-center justify-center w-24 h-24 rounded-lg border border-[var(--border)] text-[var(--text-muted)] cursor-pointer hover:bg-[var(--bg-dark)]/20 transition"
+                        >
+                          <PlusCircle size={24} />
+                        </label>
+
+                        <input
+                          id="imageUpload"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                          className="hidden"
+                        />
+                      </>
+                    )}
+                  </div>
                 </div>
 
+
                 {/* --------------------------- Botão salvar --------------------------- */}
-                <div className="mt-5 flex justify-center">
+                <div className="mt-5 flex gap-3 justify-center">
                   <button
                     className="flex items-center justify-center gap-2 bg-[var(--primary)] text-white font-semibold px-4 py-2 rounded-lg hover:brightness-110 transition"
                     onClick={() => {
-                      /* Chamada API comentada
-                      fetch("/api/save-service", {
-                        method: "POST",
-                        body: JSON.stringify(selectedService),
-                        headers: { "Content-Type": "application/json" },
-                      });
-                      */
-                      alert("Salvo com sucesso (mock)");
+                      if(hasService) {
+                        handleUpdate();
+                        return;
+                      }
+
+                      if (
+                        !selectedService.categoryId ||
+                        !selectedService.description_service ||
+                        !selectedService.title ||
+                        !selectedService.price ||
+                        !selectedService.subcategory
+                      ) {
+                        alert("Preencha todos os campos obrigatórios.");
+                        return;
+                      }
+
+                      if (!imageFile) return alert("Selecione uma imagem");
+
+                      const formData = new FormData();
+
+                      // console.log("ESSE É O FORMATO ")
+
+                      formData.append("title", selectedService.title);
+                      formData.append("description_service", selectedService.description_service);
+                      formData.append("categoryId", String(selectedService.categoryId));
+                      formData.append("providerId", String(providerId));
+                      formData.append("price", selectedService.price);
+                      formData.append("duration", selectedService.duration);
+                      formData.append("subcategory", selectedService.subcategory);
+                      formData.append("negotiable", String(selectedService.negotiable));
+                      formData.append("requiresScheduling", String(selectedService.requiresScheduling));
+                      formData.append("image", imageFile);
+
+                      try {
+                        serviceAPI.create(formData);
+                        alert("Serviço criado com sucesso;");
+                        window.location.reload();
+                        onClose();
+                      } catch (err: any) {
+                        console.error(err)
+                      }
                     }}
                   >
-                    <Save size={18} /> Salvar alterações
+                    <Save size={18} />{hasService ? "Salvar Alterações" : "Criar Serviço"}
                   </button>
+                  {serviceId && (
+                  <button className="flex items-center justify-center gap-2 bg-red-600 text-white font-semibold px-4 py-2 rounded-lg hover:brightness-110 transition"
+                  onClick={handleDelete}>
+                    <Trash size={18} /> Excluir serviço
+                  </button>
+
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -381,13 +640,13 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
       onDragEnd={handleDragEnd}
     >
       {/* --------------------------- Imagem principal --------------------------- */}
-      {selectedService.images[0] && (
-        <img
-          src={selectedService.images[0]}
-          alt={selectedService.title}
-          className="w-full h-64 object-cover rounded-lg mb-4"
-        />
-      )}
+    {imagePreview && (
+      <img
+        src={imagePreview ? imagePreview : selectedService.imageUrl}
+        alt={selectedService.title}
+        className="w-full h-64 object-cover rounded-lg mb-4"
+      />
+    )}
 
       {/* --------------------------- Informações do serviço --------------------------- */}
       <div className="p-4 flex flex-col gap-2">
@@ -396,13 +655,13 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
         </h2>
 
         <p className="text-[var(--text-muted)] line-clamp-3">
-          {selectedService.description}
+          {selectedService.description_service}
         </p>
 
         <div className="grid grid-cols-2 gap-4 mt-2">
           <div>
             <span className="font-semibold text-[var(--text)]">Categoria:</span>{" "}
-            {selectedService.category || "-"}
+            {categoryName || "-"}
           </div>
           <div>
             <span className="font-semibold text-[var(--text)]">Subcategoria:</span>{" "}
@@ -436,18 +695,16 @@ export default function ServiceDashboard({ isOpen, onClose }: ModalProps) {
         </div>
 
         {/* --------------------------- Lista de imagens adicionais --------------------------- */}
-        {selectedService.images.length > 0 && (
+        {imagePreview && (
           <div className="flex gap-2 mt-4 overflow-x-auto">
-            {selectedService.images.map((img, idx) => (
-              <img
-                key={idx}
-                src={img}
-                alt={`Imagem ${idx + 1}`}
-                className="w-24 h-24 object-cover rounded-lg border border-[var(--border)]"
-              />
-            ))}
+            <img
+              src={imagePreview}
+              alt="Preview da imagem"
+              className="w-24 h-24 object-cover rounded-lg border border-[var(--border)]"
+            />
           </div>
         )}
+
       </div>
     </motion.div>
   )}

@@ -17,6 +17,40 @@ export default function StepIdentity({
   profilePreviewUrl: string | null;
   onProfileFile: (f: FileOrNull) => void;
 }) {
+
+  function formatCNPJ(value: string) {
+  return value
+    .replace(/\D/g, "")               // remove tudo que não é número
+    .replace(/^(\d{2})(\d)/, "$1.$2")
+    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/\.(\d{3})(\d)/, ".$1/$2")
+    .replace(/(\d{4})(\d)/, "$1-$2")
+    .slice(0, 18);
+}
+
+  function formatPhone(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+
+  if (digits.length <= 2) {
+    return digits;
+  }
+
+  if (digits.length <= 7) {
+    return digits.replace(/^(\d{2})(\d+)/, "($1) $2");
+  }
+
+  if (digits.length <= 11) {
+    return digits.replace(
+      /^(\d{2})(\d)(\d{4})(\d{0,4})$/,
+      "($1) $2 $3-$4"
+    );
+  }
+
+  return digits;
+
+}
+
+
   return (
     <div className="flex flex-col gap-10 animate-fadeIn">
       {/* ======================= */}
@@ -81,32 +115,39 @@ export default function StepIdentity({
         {/* Campos principais */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <InputField
-            label="Nome completo / Empresa"
+            label="Nome Profissional / Empresa"
             value={form.name}
             onChange={(v) => update("name", v)}
             placeholder="Ex: João Silva ou Studio ABC"
           />
 
           <InputField
-            label="CPF / CNPJ"
-            value={form.cpfCnpj}
-            onChange={(v) => update("cpfCnpj", v)}
-            placeholder="000.000.000-00 ou 00.000.000/0000-00"
+            label="CNPJ (Opcional)"
+            value={formatCNPJ(form.cnpj ?? "")}
+            onChange={(v) => {
+              const onlyNumbers = v.replace(/\D/g, "");
+              update("cnpj", onlyNumbers);
+            }}
+            placeholder="00.000.000/0000-00"
           />
 
           <InputField
             label="Email profissional"
-            value={form.email}
-            onChange={(v) => update("email", v)}
+            value={form.professionalEmail}
+            onChange={(v) => update("professionalEmail", v)}
             placeholder="contato@empresa.com"
           />
 
           <InputField
             label="Telefone / WhatsApp"
-            value={form.phone}
-            onChange={(v) => update("phone", v)}
-            placeholder="+55 (11) 9 9999-9999"
+            value={formatPhone(form.professionalPhone ?? "")}
+            onChange={(v) => {
+              const onlyNumbers = v.replace(/\D/g, "").slice(0, 11);
+              update("professionalPhone", onlyNumbers);
+            }}
+            placeholder="(11) 9 9999-9999"
           />
+
         </div>
 
         {/* Descrição curta */}

@@ -1,20 +1,22 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, type Provider } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { mockProvider } from "./ProfilePage";
+import ProviderRegistrationContainer from "../components/ProviderRegistration/ProviderRegistration/Principal/ProviderRegistrationContainer";
 import ProviderHero from "../components/ProviderHero/ProviderHero";
 import {
   Star,
-  Clock,
-  DollarSign,
-  Bell,
   Plus,
   MessageSquare,
   Archive,
-  X,
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
 import ServiceEditor from "../components/ServiceEditor/ServiceEditor";
+import { providerApi } from "../api/ProviderAPI";
+import type { ProviderForm } from "../components/ProviderRegistration/ProviderRegistration/helpers/types-and-helpers";
+import { useLocation, useNavigate } from "react-router-dom";
+import ServiceFormalizerModal from "../components/Negotiation/ServiceFormalizerModal";
+
 
 /* ---------------------------
    Types & Mock data (same as antes)
@@ -223,18 +225,42 @@ export default function DashboardPrestador() {
   const [services, setServices] = useState<Service[] | null>(null);
   const [bookings, setBookings] = useState<Booking[] | null>(null);
   const [reviews, setReviews] = useState<Review[] | null>(null);
+  const [isOpenChat, setIsOpenChat]=useState(false)
 
  
 
   // mobile accordion (drawer alternative per sua escolha 'b')
   const [panelOpen, setPanelOpen] = useState(false);
 
+   /* AQUI COMEÇA A BRINCADEIRA */ 
+  const [provider, setProvider] = useState<ProviderForm | null>(null);
+
+  useEffect(() => {
+    const getProvider = async () => {
+      const token = localStorage.getItem("token");
+      if(!token) return;
+
+      const providerData: ProviderForm | null = await providerApi.getByUser(token);
+
+      if(!providerData) {
+        alert("Não existe um prestador de serviços");
+        return;
+      } else {
+        setProvider(providerData);
+      }
+
+      setProvider(providerData);
+    };
+
+    getProvider();
+  }, [])
   
   /* fetch resources (with fallback mocks) */
   useEffect(() => {
     let mounted = true;
     async function load() {
      
+      console.log("EM QUE MOMENTO ISSO É CARREGADO")
       try {
         const res = await fetchWithTimeout("/api/my/services");
         const data = await res.json();
@@ -274,15 +300,28 @@ export default function DashboardPrestador() {
   /* ---------------------------
      Render
      --------------------------- */
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const localProvider = localStorage.getItem("provider")
+  if (localProvider == "0") {
+    navigate("/home");
+  }
+  }, [provider, navigate]);
+
+  if (localStorage.getItem("provider") == "0") {
+    return null; // impede o carregamento do componente
+  }
+
   return (
     <LayoutGroup>
       <div className="min-h-screen bg-[var(--bg-dark)] pt-25 text-[var(--text)] px-4 sm:px-6 md:px-8 lg:px-10 py-6">
         {/* header */}        
         <div className="max-w-[90%] mx-auto flex flex-col lg:flex-row gap-6">
           {/* aside (desktop) visible at right; on mobile it will be an accordion below header */}
-          <ProviderHero provider={mockProvider}/>
+          {provider && <ProviderHero provider={provider} />}
           <aside className="w-full mt-6 lg:w-80">
-            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className=" lg:block mb-4 bg-[var(--bg-light)]/40 backdrop-blur-xl rounded-2xl p-4 border border-[var(--border)] shadow-md">
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className=" lg:block hidden md:flex mb-4 bg-[var(--bg-light)]/40 backdrop-blur-xl rounded-2xl p-4 border border-[var(--border)] shadow-md">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-semibold">Atalhos</h3>
                 <div className="text-xs text-[var(--text-muted)]">Acesso rápido</div>
@@ -292,10 +331,10 @@ export default function DashboardPrestador() {
                 <button onClick={()=>setOpenCreateService(true)} className="flex items-center gap-3 p-2 rounded-lg bg-[var(--primary)]/90 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
                   <Plus /> <span className="text-sm">Novo serviço</span>
                 </button>
-                <button className="flex items-center gap-3 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
+                <button onClick={()=>{setIsOpenChat(true)}} className="flex items-center gap-3 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
                   <MessageSquare /> <span className="text-sm">Mensagens</span>
-                </button>
-                <button className="flex items-center gap-3 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
+                </button>                
+                <button onClick={()=>navigate("/progress")} className="flex items-center gap-3 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
                   <Archive /> <span className="text-sm">Relatórios</span>
                 </button>
               </div>
@@ -310,7 +349,7 @@ export default function DashboardPrestador() {
             </motion.div>
 
             {/* mobile accordion panel (option b) */}
-            <div className="lg:hidden mt-4">
+            <div className="lg:hidden mb-4">
               <motion.button
                 onClick={() => setPanelOpen((s) => !s)}
                 initial={{ opacity: 0, y: 6 }}
@@ -344,13 +383,13 @@ export default function DashboardPrestador() {
                   >
                     <div className="p-4 rounded-2xl bg-[var(--bg-light)]/30 border border-[var(--border)]">
                       <div className="flex flex-col gap-3">
-                        <button onClick={()=>setOpenCreateService(true)} className="flex items-center gap-3 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
+                        <button onClick={()=>setOpenCreateService(true)} className="flex items-center gap-3 p-2 rounded-lg bg-[var(--primary)] border border-[var(--border-muted)] hover:border-[var(--highlight)]">
                           <Plus /> <span  className="text-sm">Novo serviço</span>
                         </button>
-                        <button className="flex items-center gap-3 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
+                        <button onClick={()=>{setIsOpenChat(true)}} className="flex items-center gap-3 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
                           <MessageSquare /> <span className="text-sm">Mensagens</span>
                         </button>
-                        <button className="flex items-center gap-3 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
+                        <button onClick={()=>navigate("/progress")} className="flex items-center gap-3 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border-muted)] hover:border-[var(--highlight)]">
                           <Archive /> <span className="text-sm">Relatórios</span>
                         </button>
                       </div>
@@ -369,7 +408,7 @@ export default function DashboardPrestador() {
             </div>
             <div >
 
-            {openCreateService&&( <div className="fixed inset-0 z-20 "><ServiceEditor isOpen={openCreateService} onClose={() => setOpenCreateService(false)} /></div>)}
+            {openCreateService&&( <div className="fixed inset-0 z-20 "><ServiceEditor serviceId={null} isOpen={openCreateService} onClose={() => setOpenCreateService(false)} /></div>)}
             </div>
             {/* right column inside main (bookings + reviews) */}
             <aside className="lg:col-span-1">
@@ -402,7 +441,7 @@ export default function DashboardPrestador() {
                 </div>
 
                 <div className="mt-4">
-                  <button className="w-full px-3 py-2 rounded-lg bg-[var(--primary)] text-white font-semibold">Ver todas reservas</button>
+                  <button onClick={()=>navigate("/progress")} className="w-full px-3 py-2 rounded-lg bg-[var(--primary)] text-white font-semibold">Ver todas reservas</button>
                 </div>
               </motion.div>
 
@@ -428,20 +467,10 @@ export default function DashboardPrestador() {
           </aside>
         </div>
 
+        {/* CHAT */}
+        <ServiceFormalizerModal service={undefined} isOpen={isOpenChat} onClose={() => setIsOpenChat(false)}/>
         {/* main content: services + bookings */}
-        <div className="max-w-[90%] mx-auto grid gap-6 mt-6">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-            
-            {/* services list */}
-            <section className="space-y-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                
-              </div>              
-            </section>
-
-            
-          </div>
-        </div>
+        
       </div>
 
       

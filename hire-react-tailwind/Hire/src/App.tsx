@@ -44,13 +44,14 @@ export default function App() {
       <Routes>
         {/* Página inicial */}
         
-        <Route path="/" element={<DashboardPrestador />} />
+        <Route path="/" element={<AuthPage />} />
 
         {/* Rotas principais */}
         <Route path="/home" element={<ProfilePage />} />
         <Route path="/auth" element={<AuthPage />} />
-        <Route path="/buisness" element={<DashboardPrestador />} />
+        <Route path="/business" element={<DashboardPrestador />} />
         <Route path="/client" element={<ServiceDashboardSophisticated />} />
+        <Route path="/progress" element={<DemoServiceProgressContainer/>} />
 
       
         {/* Contratos */}

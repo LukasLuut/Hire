@@ -2,7 +2,6 @@
 // Container principal: gerencia estado, navegação e submit.
 
 import React, { useState, useEffect } from "react";
-import type {ReactNode} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { toFiles } from "../helpers/file-helpers";
@@ -17,10 +16,14 @@ import StepAddress from "../Etapa3/StepAddress";
 import StepDocuments from "../Etapa4/StepDocuments";
 import StepPreferences from "../Etapa5/StepPreferences";
 import ProfilePreview from "../ProfilePreview/ProfilePreview";
+import { addressAPI } from "../../../../api/AddressAPI";
+import type { Address } from "../../../../interfaces/AddressInterface";
+import { providerApi } from "../../../../api/ProviderAPI";
+import { validateFormData } from "../../../../validate/validateFormData";
+
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  
 }
 
 export default function ProviderRegistrationContainer({ isOpen, onClose }: ModalProps) {
@@ -42,16 +45,16 @@ export default function ProviderRegistrationContainer({ isOpen, onClose }: Modal
   const initialForm: ProviderForm = {
   // Identidade
   name: "Lucas William",
-  cpfCnpj: "033.046.990-82",
-  email: "lucas.william@Hire.com",
-  phone: "(51) 98765-4321",
+  cnpj: "",
+  professionalEmail: "lucas.william@Hire.com",
+  professionalPhone: "51984584293",
   shortDescription:
     "Profissional dedicado com foco em qualidade e atendimento personalizado.",
   profilePhoto: null,
 
   // Profissional
   companyName: "Reformas William",
-  category: "Construção Civil",
+  category: "",
   subcategories: ["Pintura", "Elétrica", "Reparos gerais"],
   experienceLevel: "especialista",
   portfolio: [],
@@ -73,12 +76,12 @@ export default function ProviderRegistrationContainer({ isOpen, onClose }: Modal
   // Endereço
   hasPhysicalLocation: true,
   address: {
-    cep: "93120-520",
-    street: "Rua Elsa Dauber Steimer",
-    number: "67",
-    neighborhood: "Scharlau",
-    city: "São Leopoldo",
-    state: "RS",
+    cep: "",
+    street: "",
+    number: "",
+    neighborhood: "",
+    city: "",
+    state: "",
   },
   serviceRadiusKm: 25,
 
@@ -156,15 +159,80 @@ export default function ProviderRegistrationContainer({ isOpen, onClose }: Modal
   const removeSubcategory = (t: string) =>
     update("subcategories", form.subcategories.filter((s) => s !== t));
 
+  function validateAddress() {
+    if (!form.address?.cep || form.address.cep.trim() === "" || form.address.cep.length !== 9) { alert("Coloque um CEP válido"); return null}
+    if (!form.address?.street || form.address.street.trim() === "") { alert("Rua é obrigatório"); return null}
+    if (!form.address?.number || form.address.number.trim() === "") { alert("Número é obrigatório"); return null}
+    if (!form.address?.neighborhood || form.address.neighborhood.trim() === "") { alert("Bairro é obrigatório"); return null}
+    if (!form.address?.city || form.address.city.trim() === "") { alert("Cidade é obrigatório"); return null}
+    if (!form.address?.state || form.address.state.trim() === "") { alert("Estado é obrigatório"); return null}
+
+    return true;
+  }
   /* navigation */
-  const next = () => setStep((s) => Math.min(s + 1, totalSteps - 1));
+  const next = () => {
+
+    if(!validateFormData(form, step)) {
+      return;
+    }
+
+    if(step == 2) {
+      if (!validateAddress()) return;
+    }
+    setStep((s) => Math.min(s + 1, totalSteps - 1))
+  };
   const prev = () => setStep((s) => Math.max(s - 1, 0));
 
   /* submit */
   const handleFinish = async () => {
+
+    const token = localStorage.getItem("token");
+    if(!token) return;
+
+    const formData = new FormData();
+
+    formData.append("companyName", form.companyName);
+    formData.append("professionalName", form.name);
+    formData.append("professionalEmail", form.professionalEmail);
+    formData.append("professionalPhone", form.professionalPhone);
+    formData.append("description", form.shortDescription);
+    formData.append("cnpj", form.cnpj ? form.cnpj : "");
+    formData.append("subcategories", JSON.stringify(form.subcategories));
+    formData.append("attendsPresent", JSON.stringify(form.inPerson));
+    formData.append("attendsOnline", JSON.stringify(form.online));
+    formData.append("personalizedProposals", JSON.stringify(form.acceptsCustomProposals));
+    formData.append("approximateLocation", JSON.stringify(form.showApproxLocation));
+    formData.append("publicReviews", JSON.stringify(form.allowReviews));
+    formData.append("pricesOnPage", JSON.stringify(form.showPrices));
+    formData.append("whatsNotification", JSON.stringify(form.notifications.whatsapp));
+    formData.append("emailNotification", JSON.stringify(form.notifications.email));
+    formData.append("status", form.status);
+    formData.append("onlineLink", form.onlineLink);
+    formData.append("links", JSON.stringify(form.links));
+    formData.append("image", form.profilePhoto ? form.profilePhoto : "");
+
+    providerApi.create(formData, token);
+
+    const address: Address = {
+      id: 0,
+      num: form.address?.number,
+      street: form.address?.street,
+      neighborhood: form.address?.neighborhood,
+      city: form.address?.city,
+      state: form.address?.state,
+      country: "Brazi",
+      postalCode: form.address?.cep
+    }
+   addressAPI.create(address, token);
+
     console.log("Submitting: ", form);
     alert("Simulação: formulário enviado. Ver console.");
+    onClose();
   };
+
+  useEffect(() => {
+    console.log(form)
+  }, [form])
 
   return (
     <div className="min-h-auto bg-[var(--bg-dark)] text-[var(--text)] p-4 md:p-8">

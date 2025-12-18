@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, number } from "framer-motion";
 import { MapPin, Map, Loader2 } from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -22,6 +22,7 @@ export default function StepAddress({
   // Estados locais para inputs
   const [cep, setCep] = useState(form.address?.cep || "");
   const [street, setStreet] = useState(form.address?.street || "");
+  const [number, setNumber] = useState(form.address?.number || "");
   const [neighborhood, setNeighborhood] = useState(form.address?.neighborhood || "");
   const [city, setCity] = useState(form.address?.city || "");
   const [state, setState] = useState(form.address?.state || "");
@@ -65,6 +66,7 @@ export default function StepAddress({
             ...current,
             cep,
             street: data.logradouro || "",
+            number: data.logradouro || "",
             neighborhood: data.bairro || "",
             city: data.localidade || "",
             state: data.uf || "",
@@ -89,15 +91,30 @@ export default function StepAddress({
 
   // Atualiza form manualmente no blur
   const handleBlur = () => {
+  
+    if(!cep || cep.trim() == "") {
+      alert("CEP INVÁLIDO");
+      return;
+    }
+  
     update("address", {
       ...(form.address || {}),
       cep,
       street,
       neighborhood,
+      number,
       city,
       state,
     });
   };
+
+  function maskCEP(value: string) {
+  return value
+    .replace(/\D/g, '')          // remove tudo que não for número
+    .replace(/^(\d{5})(\d)/, '$1-$2') // coloca o hífen
+    .slice(0, 9);                // limita em 9 caracteres
+}
+
 
   return (
     <motion.div
@@ -118,19 +135,7 @@ export default function StepAddress({
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 bg-[var(--bg)] border border-[var(--border)] rounded-2xl p-4 shadow-sm">
-        <Toggle
-          checked={form.hasPhysicalLocation}
-          onChange={(v) => update("hasPhysicalLocation", v)}
-          label="Tenho local físico de atendimento"
-        />
-        <p className="text-xs text-[var(--text-muted)] sm:ml-2">
-          Ative para adicionar endereço completo e visualizar no mapa.
-        </p>
-      </div>
-
       <AnimatePresence mode="wait">
-        {form.hasPhysicalLocation ? (
           <motion.div
             key="physical"
             initial={{ opacity: 0, y: 5 }}
@@ -140,8 +145,9 @@ export default function StepAddress({
             className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-md overflow-hidden"
           >
             <div className="grid  grid-cols-1 md:grid-cols-2 gap-4 p-6">
-              <Input label="CEP" value={cep} placeholder="00000-000" onChange={setCep} onBlur={handleBlur} />
-              <Input label="Rua / Número" value={street} placeholder="Rua, número" onChange={setStreet} onBlur={handleBlur} />
+              <Input label="CEP" value={cep} placeholder="00000-000" onChange={(value) => setCep(maskCEP(value))} onBlur={handleBlur} />
+              <Input label="Rua" value={street} placeholder="Rua, número" onChange={setStreet} onBlur={handleBlur} />
+              <Input label="Número" value={number} placeholder="Número" onChange={setNumber} onBlur={handleBlur} />
               <Input label="Bairro" value={neighborhood} placeholder="Bairro" onChange={setNeighborhood} onBlur={handleBlur} />
               <Input
                 label="Cidade / Estado"
@@ -173,28 +179,6 @@ export default function StepAddress({
               )}
             </div>
           </motion.div>
-        ) : (
-          <motion.div
-            key="radius"
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            transition={{ duration: 0.25 }}
-            className="bg-[var(--bg)] flex  flex-col border border-[var(--border)] rounded-2xl shadow-md p-6 max-w-sm"
-          >
-            <label className="text-sm text-[var(--text-muted)]">Raio de atuação (km)</label>
-            <input
-              type="number"
-              className="input w-20 rounded-md px-3 bg-[var(--bg-light)] mt-2"
-              value={form.serviceRadiusKm || ""}
-              onChange={(e) => update("serviceRadiusKm", Number(e.target.value))}
-              placeholder="Ex: 20"
-            />
-            <p className="text-xs text-[var(--text-muted)] mt-2">
-              Exemplo: 20 → você atende até 20 km da sua cidade base.
-            </p>
-          </motion.div>
-        )}
       </AnimatePresence>
     </motion.div>
   );

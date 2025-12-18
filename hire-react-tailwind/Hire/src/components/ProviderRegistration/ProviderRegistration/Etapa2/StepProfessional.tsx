@@ -3,11 +3,13 @@
 // StepProfessional.tsx — versão completa com sistema de disponibilidade inteligente
 // ---------------------------------------------------------------------------------
 
-import React from "react";
 import { motion } from "framer-motion";
 import type { Availability, DayKey, ProviderForm } from "../helpers/types-and-helpers";
 import { TagInput, Toggle } from "../helpers/types-and-helpers";
-import { Upload, Layers, Briefcase } from "lucide-react";
+import { Upload, Layers } from "lucide-react";
+import { useEffect, useState } from "react";
+import type { Category } from "../../../../interfaces/CategoryInterface";
+import { categoryAPI } from "../../../../api/CategoryAPI";
 
 export default function StepProfessional({
   form,
@@ -43,6 +45,26 @@ export default function StepProfessional({
     saturday: "Sábado",
     sunday: "Domingo",
   } as const;
+
+  const [categories, setCategories] = useState<Category[]>([])
+
+  useEffect(() => {
+      const getCategory = async () => {
+          const response: Category[] | null = await categoryAPI.getCategory();
+  
+          if(!response || response == undefined) return;
+  
+          const categoriesClone: Category[] = response.map((e) => {
+            return {
+             id: e.id,
+             name: e.name,
+             description: e.description };
+          })
+          setCategories(categoriesClone);
+      }
+  
+      getCategory();
+    }, []);
 
   return (
     <motion.div
@@ -83,14 +105,28 @@ export default function StepProfessional({
             <div className="relative">
               <Layers
                 size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"
+                className="absolute left-0 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"
               />
-              <input
+              <select
+                      required
+                      value={form.category ? form.category : ""}
+                      onChange={(e) => update("category", e.target.value)}
+                      className="p-2 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-[var(--text)] ml-6"
+                    >
+                      <option value="" disabled selected>Selecione uma categoria</option>
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option> 
+                      ))}
+
+                    </select>
+              {/* <input
                 className="input p-3 pl-9 rounded-lg border-[var(--border)] bg-[var(--bg)] focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/30 transition-all w-full"
                 value={form.category}
                 onChange={(e) => update("category", e.target.value)}
                 placeholder="Ex: Beleza, Tecnologia..."
-              />
+              /> */}
             </div>
           </div>
         </div>

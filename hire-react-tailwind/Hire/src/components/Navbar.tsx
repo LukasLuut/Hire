@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 export default function Navbar({ theme, setTheme }: { theme: string; setTheme: (t: "dark"|"light") => void }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const links = ["Home", "Buisness", "Perfil"];
+  const links = ["Home", "Business", "Perfil"];
   const navigate = useNavigate();
 
   return (
@@ -63,13 +63,13 @@ export default function Navbar({ theme, setTheme }: { theme: string; setTheme: (
           >
             {links.map((link) => (
               <a
-                key={link}
-                href={`#${link.toLowerCase()}`}
-                className="text-[var(--text)] hover:text-[var(--highlight)] transition py-2"
-                onClick={() => setMobileOpen(false)}
-              >
-                {link}
-              </a>
+              onClick={()=>navigate(link.toLowerCase())}
+              key={link}
+              href={`${link.toLowerCase()}`}
+              className="text-[var(--text)] hover:text-[var(--highlight)] transition"
+            >
+              {link}
+            </a>
             ))}
 
             {/* Toggle Theme */}

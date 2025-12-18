@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -23,6 +24,9 @@ export class Service {
   @Column()
   negotiable: boolean;
 
+  @Column()
+  requiresScheduling: boolean;
+
   @Column({ nullable: false })
   price: number;
 
@@ -32,20 +36,24 @@ export class Service {
   @Column({ length: 200, default: "Has no subcategory" })
   subcategory?: string;
 
-  @Column({ default: false })
-  requiresScheduling?: boolean;
-
   @Column({ default: 0 })
   likesNumber?: number;
 
   @Column({ type: "varchar", length: 255, nullable: true })
   imageUrl?: string | null;
 
-  @ManyToOne(() => ServiceProvider, (provider) => provider.services)
+  @ManyToOne(() => ServiceProvider, (provider) => provider.services, {
+    onDelete: "CASCADE",
+  })
+  @JoinColumn()
   provider: ServiceProvider;
 
-  @ManyToOne(() => Category, (category) => category.services)
+  @ManyToOne(() => Category, (category) => category.services, {
+  nullable: false,
+  })
+  @JoinColumn({ name: "category_id" })
   category: Category;
+
 
   @OneToOne(() => Hire, (hire) => hire.service)
   hire: Hire;
