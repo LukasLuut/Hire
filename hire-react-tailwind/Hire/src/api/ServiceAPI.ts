@@ -12,7 +12,13 @@ export interface ServiceData {
   active: boolean,
   duration: string,
   rating: number,
-  imageUrl: string
+  imageUrl: string,
+  provider?:{
+    id?: number,
+    professionalName?: string,
+    profileImageUrl?: string,
+    description?: string
+  }
 }
 
 export const serviceAPI = {
@@ -46,7 +52,13 @@ export const serviceAPI = {
         active: true,
         duration: e.duration,
         rating: 4.6,
-        imageUrl: e.imageUrl
+        imageUrl: e.imageUrl,
+        provider:{
+          id: e.provider?.id,
+          professionalName: e.provider?.professionalName,
+          profileImageUrl: e.provider?.profileImageUrl,
+          description: e.provider?.description
+        }
   
       }
     })
@@ -74,7 +86,15 @@ export const serviceAPI = {
       active: true,
       duration: response.duration,
       rating: 4.6,
-      imageUrl: response.imageUrl
+      imageUrl: response.imageUrl,
+      provider:{
+        id: response.provider?.id,
+        professionalName: response.provider?.professionalName,
+        profileImageUrl: response.provider?.profileImageUrl,
+        description: response.provider?.description
+
+      }
+
     }
   },
 

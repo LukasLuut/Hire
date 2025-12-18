@@ -124,10 +124,10 @@ export default function Acessibility() {
             setOpen((v) => !v);
           }
         }}
-        className="fixed left-4 top-1/2 z-50  flex items-center justify-center w-12 h-12 rounded-lg shadow-lg border-2 border-[var(--border)] bg-[var(--bg-light)]  focus:outline-none focus-visible:ring-4"
+        className="fixed left-4 top-25 z-50  flex items-center justify-center w-16 h-16 rounded-lg shadow-lg border-2 border-[var(--border)] bg-[var(--text)]/70  focus:outline-none focus-visible:ring-4"
       >
         {/* Icon: accessibility (simple) */}
-       <Accessibility className="w-6 h-6 text-[var(--primary)]" aria-hidden="true" />
+       <Accessibility className="w-10 h-10 text-[var(--primary)]" aria-hidden="true" />
         <span className="sr-only">Acessibilidade</span>
       </button>
 

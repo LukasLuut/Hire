@@ -38,6 +38,13 @@ type Service = {
   price: string;
   duration: string;
   location?: string;
+  provider?: {
+    professionalName?: string,
+    profileImageUrl?: string,
+    description?: string,
+    id: number;
+
+  }
 };
 
 type Provider = {
@@ -220,6 +227,12 @@ export default function ServiceDashboardSophisticated() {
               duration: e.duration,
               rating: 4.6,
               images: [image],
+              provider: e.provider ? {
+                id: e.provider.id,
+                professionalName: e.provider.professionalName,
+                profileImageUrl: e.provider.profileImageUrl,
+                description: e.provider.description
+              } : undefined
             };
           });
 
@@ -301,6 +314,7 @@ export default function ServiceDashboardSophisticated() {
       <h1 className="mt-10 mb-5 text-4xl px-12 font-bold leading-tight">Busque e pesquise pelos melhores serviços.</h1>
       <h3 className=" md:flex hidden px-12 leading-tight">
         Escolha o tipo de serviço e encontre profissionais disponíveis. Filtre
+        
         por categoria, avaliação e preço.
       </h3>
       <div className="min-h-screen bg-[var(--bg-dark)] md:min-w-screen text-[var(--text)] p-6 md:p-10 ">
@@ -494,9 +508,41 @@ export default function ServiceDashboardSophisticated() {
                     </div>
 
                     <div className="p-3  ">
+
+                      {srv.provider && (
+                        <motion.div
+                          key={srv.provider.id}
+                          className="min-w-[200px] flex-shrink-0 rounded-2xl p-3 bg-[var(--bg-light)]/30 border border-[var(--border)]"
+                        >
+                          <div className="flex gap-3 items-center">
+                            <img
+                              src={srv.provider.profileImageUrl}
+                              alt={srv.provider.professionalName}
+                              className="w-12 h-12 rounded-full object-cover border border-[var(--border)]"
+                            />
+                            <div>
+                              <div className="font-medium">{srv.provider.professionalName}</div>
+                              <div className="text-xs text-[var(--text-muted)]">
+                                {srv.provider.description}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between mt-3">
+                            <div className="flex items-center gap-1 text-yellow-400">
+                              <Star size={14} /> 4.8  {/*srv.provider.rating.toFixed(2)*/}
+                            </div>
+                            <button className="text-xs px-3 py-1 rounded-full bg-[var(--highlight)] text-black">
+                              Ver perfil
+                            </button>
+                          </div>
+                        </motion.div>
+
+                      )}
+                      
                       <h3 className="text-lg font-semibold leading-tight">
                         {srv.title}
                       </h3>
+                      
                       <p className="text-sm text-[var(--text-muted)] mt-2 line-clamp-2">
                         {srv.shortDescription}
                       </p>
