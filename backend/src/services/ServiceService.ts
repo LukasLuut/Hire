@@ -52,7 +52,8 @@ export class ServiceService {
   }
 
   async getById(id: number) {
-    return await this.serviceRepository.findOne({ where: { id: id }, relations: { category: true}});
+    const service = await this.serviceRepository.findOne({ where: { id: id }, relations: { category: true, provider: true, hire: true }});
+    return service;
   }
 
   async update(id: number, data: Partial<Service>, file?: Express.Multer.File) {

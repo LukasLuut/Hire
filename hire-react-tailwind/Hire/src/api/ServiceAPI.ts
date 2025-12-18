@@ -12,7 +12,13 @@ export interface ServiceData {
   active: boolean,
   duration: string,
   rating: number,
-  imageUrl: string
+  imageUrl: string,
+  provider?: {
+    id?: number
+  },
+  hire?: {
+    id?: number
+  }
 }
 
 export const serviceAPI = {
@@ -74,7 +80,13 @@ export const serviceAPI = {
       active: true,
       duration: response.duration,
       rating: 4.6,
-      imageUrl: response.imageUrl
+      imageUrl: response.imageUrl,
+      provider: {
+        id: response.provider?.id
+      },
+      hire: {
+        id: response.hire?.id
+      }
     }
   },
 

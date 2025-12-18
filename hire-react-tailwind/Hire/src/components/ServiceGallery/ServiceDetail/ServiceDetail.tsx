@@ -7,8 +7,12 @@ import {
   Heart,
   ChevronLeft,
   ChevronRight,
+  Trash2,
 } from "lucide-react";
 import ServiceNegotiationModal from "../../Negotiation/ServiceNegotiationModal";
+import { serviceAPI } from "../../../api/ServiceAPI";
+import { userAPI } from "../../../api/UserAPI";
+import { hireAPI } from "../../../api/HireAPI";
 
 /* --------------------------------------------------------------------------
  * Tipos
@@ -49,7 +53,10 @@ export default function ServiceDetail({
   const [direction, setDirection] = useState(0);
   const [liked, setLiked] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
-  const [Open, setOpen]=useState(false)
+  const [Open, setOpen]=useState(false);
+  const [hireId, setHireId] = useState<number | null>(null)
+  const [hasHire, setHasHire] = useState<boolean>(false)
+  const [concluded, setConcluded] = useState<boolean>(false)
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -95,8 +102,138 @@ export default function ServiceDetail({
     exit: (dir: number) => ({ x: dir > 0 ? -200 : 200, opacity: 0 }),
   };
 
-  const handleNegociar =()=>{
-    setOpen(true);
+  const [hireLoading, setHireLoading] = useState(true);
+
+  useEffect(() => {
+    const getHire = async () => {
+      try {
+        setHireLoading(true);
+
+        const serviceWithHire = await serviceAPI.getServiceById(service?.id);
+
+        if (!serviceWithHire?.hire?.id) {
+          setHasHire(false);
+          return;
+        }
+
+        setHasHire(true);
+        setHireId(serviceWithHire.hire.id);
+      } catch (err) {
+        setHasHire(false);
+      } finally {
+        setHireLoading(false);
+      }
+    };
+
+    if (service?.id) {
+      getHire();
+    }
+  }, [service?.id]);
+
+
+  const handleNegociar = async () => {
+
+    try {
+      const token = localStorage.getItem("token");
+      if(!token) {
+        alert("Token Inválido")
+        return;
+      }
+      // setOpen(true);
+      const id = service.id;
+      console.log("ESSE É O ID DO SERVIÇO: " + id);
+
+      const price = service.price;
+      console.log("ESSE É O PREÇO DO SERVIÇO: " + price);
+
+      const user = await userAPI.getUser(token);
+      if(!user) {
+        alert("User não encontrado");
+        return;
+      }
+
+      const userId = user.id;
+      console.log("ESSE É O ID DO USER: " + userId);
+
+      const serviceWithProvider = await serviceAPI.getServiceById(id);
+      if(!serviceWithProvider) {
+        alert("Provedor não encontrado");
+        return;
+      }
+
+      const providerId = serviceWithProvider.provider?.id;
+      console.log("ESSE É O PROVIDERID: " + providerId);
+
+      if(!providerId) {
+        alert("Provider não encontrado");
+        return;
+      }
+
+      const createHire = await hireAPI.create({
+        price: Number(price),
+        providerId: providerId ? providerId : 54,
+        userId, 
+        serviceId: Number(id)
+      });
+      if(!createHire) {
+        alert("Erro ao criar serviço");
+        return;
+      }
+
+      console.log("ESSE É O SERVIÇO: " + createHire);
+      alert("Serviço contratado com sucesso.");
+      setHireId (createHire)
+      setHasHire(true);
+      
+    } 
+    catch (err: any) {
+      console.error(err);
+
+  }
+
+    // const createService = await serviceAPI.create();
+  }
+
+  const handleDeleteHire = async () => {    
+    try {
+      if(!hireId) {
+        alert("Serviço inválido")
+        return;
+      }
+
+      const response = await hireAPI.deleteHire(hireId);
+      if(!response) {
+        return;
+      }
+
+      alert("Contratação de serviço excluída com sucesso!");
+      window.location.reload();
+    } 
+    catch (err: any) {
+      console.error(err)
+    }
+  }
+
+  const handleConcluir = async () => {
+    try {
+      const id = hireId;
+      if(!id) {
+        alert("Não foi possível completar a conclusão");
+        return;
+      }
+
+      await hireAPI.concludeHire(id);
+      alert("Serviço concluído com sucesso");
+      setConcluded(true);
+
+    }
+    catch(err: any) {
+      console.error(err)
+    }
+  }
+
+  if (hireLoading) {
+    return <p>Verificando contratação...</p>;
   }
 
   return (
@@ -237,6 +374,23 @@ export default function ServiceDetail({
               </div>
 
               {/* ----------------------- Ações ----------------------- */}
+              {hasHire ?
+              <div className="flex gap-3 mt-4">
+                <button 
+                onClick={handleConcluir}
+                className="flex-1 flex items-center justify-center gap-2 bg-[var(--primary)] text-white font-semibold py-3 rounded-xl shadow-md hover:scale-[1.02] hover:shadow-lg transition-all">
+                  <Handshake size={18} />{
+                    concluded ? "Concluído" : "Marcar como concluído"
+                  }
+                  
+                </button>
+
+                <button className="flex-1 flex items-center justify-center gap-2 border border-red-700 text-[var(--text)] font-semibold py-3 rounded-xl hover:bg-red-500 hover:text-[var(--bg-light)] hover:scale-[1.02] hover:shadow-lg transition-all"
+                onClick={handleDeleteHire}>
+                  <Trash2 size={18} />
+                  Excluír Serviço
+                </button>  
+              </div> :
               <div className="flex gap-3 mt-4">
                 <button 
                 onClick={handleNegociar}
@@ -248,8 +402,9 @@ export default function ServiceDetail({
                 <button className="flex-1 flex items-center justify-center gap-2 border border-[var(--primary)] text-[var(--text)] font-semibold py-3 rounded-xl hover:bg-[var(--primary)] hover:text-[var(--bg-light)] hover:scale-[1.02] hover:shadow-lg transition-all">
                   <MessageCircle size={18} />
                   Mensagem
-                </button>
+                </button>  
               </div>
+              }
             </div>
           </motion.div>
 

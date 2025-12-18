@@ -13,7 +13,7 @@ import { ServiceCreationWizardModal } from "./components/ServiceCreator/ServiceC
 import ServiceDashboard from "./components/ServiceEditor/ServiceEditor";
 import PostCard from "./components/ServiceGallery/Service/Service";
 import ServiceDashboardSophisticated from "./pages/DashboardClient";
-import { DemoServiceProgressContainer } from "./components/ServiceProgress";
+import { DemoServiceProgressContainer, ServiceProgress } from "./components/ServiceProgress";
 import Accessibility from "./components/Accessibility";
 
 
@@ -51,7 +51,6 @@ export default function App() {
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/business" element={<DashboardPrestador />} />
         <Route path="/client" element={<ServiceDashboardSophisticated />} />
-
       
         {/* Contratos */}
         {/* <Route path="/contract/viewer" element={<ContractViewer />} /> */}
