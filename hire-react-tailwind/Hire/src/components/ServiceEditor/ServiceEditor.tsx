@@ -133,6 +133,7 @@ export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalPr
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -198,9 +199,6 @@ export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalPr
     getCategory();
   }, []);
 
-  useEffect(() => {
-  }, [categories]);
-
 
   const [priceDigits, setPriceDigits] = useState(""); 
 
@@ -219,15 +217,18 @@ export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalPr
 
   useEffect(() => {
     const getCategoryName = async () => {
+      if(!selectedService.categoryId) return;
+      console.log("ESSE É O ID DA CATEGORIA: " + selectedService.categoryId)
+
       const category = await categoryAPI.getCategoryById(Number(selectedService.categoryId))
 
       if(!category) return;
 
-      setCategoryName(category.name || "Marcenaria");
+      setCategoryName(category.name || "Eletricista");
     }
 
     getCategoryName();
-  }, [selectedService.categoryId])
+  }, [selectedService])
 
   const [hasService, setHasService] = useState<boolean>(false);
 
@@ -253,7 +254,7 @@ export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalPr
         description_service: serviceData.description_service,
         price: String(serviceData.price),
         duration: serviceData.duration,
-        categoryId: 10,
+        categoryId: service.categoryId,
         subcategory: serviceData.subcategory,
         negotiable: false,
         requiresScheduling: false,
@@ -284,19 +285,18 @@ export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalPr
 
   const handleUpdate = async () => {
     try {
-      console.log("HANDLEEEEEE UPDATEDO")
       const formData = new FormData();
 
       formData.append("title", selectedService.title);
       formData.append("description_service", selectedService.description_service);
-      formData.append("categoryId", String(selectedService.categoryId));
+      formData.append("category", String(selectedService.categoryId));
       formData.append("providerId", String(providerId));
       formData.append("price", selectedService.price);
       formData.append("duration", selectedService.duration);
-      // formData.append("subcategory", selectedService.subcategory);
-      formData.append("negotiable", String(selectedService.negotiable));
-      formData.append("requiresScheduling", String(selectedService.requiresScheduling));
-      // formData.append("image", imageFile);
+      formData.append("subcategory", selectedService.subcategory ? selectedService.subcategory : "");
+      formData.append("negotiable", selectedService.negotiable ? "true" : "false");
+      formData.append("requiresScheduling", selectedService.requiresScheduling ? "true" : "false");
+      formData.append("image", imageFile ? imageFile : "");
       await serviceAPI.update(selectedService.id, formData);
 
       alert("Informações editadas com sucesso");
@@ -372,13 +372,13 @@ export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalPr
                     <span className="text-[var(--text-muted)] text-sm mb-1">Categoria</span>
                     <select
                       required
-                      value={selectedService.categoryId ? selectedService.categoryId : ""}
+                      value={selectedService.categoryId ?? ""}
                       onChange={(e) => handleChange("categoryId", Number(e.target.value))}
                       className="p-2 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-[var(--text)]"
                     >
                       <option value="" disabled selected>Selecione uma categoria</option>
                       {categories.map((cat) => (
-                        <option key={cat.id} value={cat.id}>
+                        <option key={cat.id} value={cat.id} >
                           {cat.name}
                         </option>
                       ))}
@@ -549,7 +549,13 @@ export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalPr
                           id="imageUpload"
                           type="file"
                           accept="image/*"
-                          onChange={handleImageChange}
+                          onChange={()=>{
+                            console.log("IMAGE SETADA: " + imageFile)
+                            handleImageChange
+                            setTimeout(() => {
+                              console.log("IMAGEM DEPOIS DE 5 SEGUNDOS: " + JSON.stringify(imageFile) )
+                            }, 5000)
+                          }}
                           className="hidden"
                         />
                       </>
@@ -592,7 +598,7 @@ export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalPr
                       formData.append("price", selectedService.price);
                       formData.append("duration", selectedService.duration);
                       formData.append("subcategory", selectedService.subcategory);
-                      formData.append("negotiable", String(selectedService.negotiable));
+                      formData.append("negotiable", selectedService.negotiable ? "1" : "0");
                       formData.append("requiresScheduling", String(selectedService.requiresScheduling));
                       formData.append("image", imageFile);
 

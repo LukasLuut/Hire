@@ -52,17 +52,26 @@ export class ServiceService {
   }
 
   async getById(id: number) {
-    return await this.serviceRepository.findOne({ where: { id: id },relations: { category: true}});
+    return await this.serviceRepository.findOne({ where: { id: id }, relations: { category: true}});
   }
 
-  async update(id: number, data: Partial<Service>) {
-    const service = await this.serviceRepository.findOne({ where: { id: id }});
-    if (!service) throw new Error("Serviço não encontrado");
-    
-    const { ...rest } = data;
-    Object.assign(service, rest);
-    return await this.serviceRepository.save(service);
+  async update(id: number, data: Partial<Service>, file?: Express.Multer.File) {
+  const service = await this.serviceRepository.findOne({
+    where: { id },
+  });
+
+  if (!service) {
+    throw new Error('Serviço não encontrado');
   }
+
+  if (file) {
+    data.imageUrl = `/uploads/${file.filename}`;
+  }
+
+  Object.assign(service, data);
+  return await this.serviceRepository.save(service);
+}
+
 
   async remove(id: number) {
     const service = await this.serviceRepository.findOne({ where: { id } });

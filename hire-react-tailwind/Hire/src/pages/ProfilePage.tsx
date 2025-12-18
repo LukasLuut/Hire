@@ -335,7 +335,7 @@ export default function ProfilePage() {
                 className="md:w-2xl w-xs bg-[var(--bg-light)] border border-[var(--primary)] rounded-lg p-2 text-[var(--text)] resize-none h-32"
               />
             ) : (
-              <p className="text-[var(--text-muted)] max-w-2xl">{user.about ? user.about : "Fale um pouco sobre você... Por exemplo: ''Sou uma pessoa dedicada, sempre em busca de aprendizado e novas experiências. Gosto de colaborar, compartilhar conhecimento e enfrentar desafios que contribuam para meu crescimento pessoal e profissional.''"}</p>
+              <p className="text-[var(--text-muted)] max-w-2xl">{!user.about ? "Fale um pouco sobre você... Por exemplo: ''Sou uma pessoa dedicada, sempre em busca de aprendizado e novas experiências. Gosto de colaborar, compartilhar conhecimento e enfrentar desafios que contribuam para meu crescimento pessoal e profissional.''" : user.about}</p>
             )} 
             {isEditing && (
               <input

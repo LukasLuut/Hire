@@ -94,9 +94,6 @@ export const serviceAPI = {
   ) => {
     const response = await apiRequest(`/services/${id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
       body: data
     })
     return response;

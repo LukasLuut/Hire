@@ -3,10 +3,25 @@ import { ServiceService } from "../services/ServiceService";
 
 const serviceService = new ServiceService;
 
+function toBoolean(value: any): boolean {
+  return value === true || value === "true" || value === "1" || value === 1;
+}
+
 export class ServiceController {
     create = async (req: Request, res: Response) => {
         try {
-            const service = await serviceService.create(req.body, req.file);
+            const {
+                negotiable,
+                requiresScheduling
+            } = req.body;
+
+            const body = {
+                ...req.body,
+                negotiable: toBoolean(negotiable),
+                requiresScheduling: toBoolean(requiresScheduling),
+            };
+
+            const service = await serviceService.create(body, req.file);
             res.status(201).json(service);
         } 
         catch(err: any) {
@@ -37,8 +52,19 @@ export class ServiceController {
 
     update = async (req: Request, res: Response) => {
           try {
+                const {
+                    negotiable,
+                    requiresScheduling
+                } = req.body;
+
+                const body = {
+                    ...req.body,
+                    negotiable: toBoolean(negotiable),
+                    requiresScheduling: toBoolean(requiresScheduling),
+                };
+
                 const { id } = req.params;
-                const service = await serviceService.update(Number(id), req.body)
+                const service = await serviceService.update(Number(id), body)
                 res.json(service)
             } catch (e: any) {
                 res.status(400).json({ message: e.message })
