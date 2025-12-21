@@ -51,6 +51,8 @@ export default function App() {
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/business" element={<DashboardPrestador />} />
         <Route path="/client" element={<ServiceDashboardSophisticated />} />
+        <Route path="/progress" element={<DemoServiceProgressContainer/>} />
+
       
         {/* Contratos */}
         {/* <Route path="/contract/viewer" element={<ContractViewer />} /> */}

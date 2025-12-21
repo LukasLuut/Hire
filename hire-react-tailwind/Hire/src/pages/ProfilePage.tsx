@@ -18,7 +18,6 @@ import { Star, Edit3, MessageSquare } from "lucide-react";
 import ServiceNegotiationModal from "../components/Negotiation/ServiceNegotiationModal";
 import ServiceResponseModal from "../components/Negotiation/ServiceResponseModal";
 import ServiceFormalizerModal from "../components/Negotiation/ServiceFormalizerModal";
-import ProviderRegistration from "../components/ProviderRegistration/ProviderRegistration";
 import ProviderRegistrationContainer from "../components/ProviderRegistration/ProviderRegistration/Principal/ProviderRegistrationContainer";
 import ServiceEditor from "../components/ServiceEditor/ServiceEditor";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -26,7 +25,6 @@ import { userAPI } from "../api/UserAPI";
 import { type User } from "../interfaces/UserInterface"
 import { providerApi } from "../api/ProviderAPI";
 import type { ProviderForm } from "../components/ProviderRegistration/ProviderRegistration/helpers/types-and-helpers";
-import ProviderHero from "../components/ProviderHero/ProviderHero";
 import ServiceDashboardSophisticated from "./DashboardClient";
 
 /* --------------------------------------------------------------------------
@@ -209,7 +207,7 @@ export default function ProfilePage() {
   }
 
   /* ------------------------------------------------------------------------
-   * FUNÇÃO PARA ABERTURA DO MODAL DE CONTRATAÇÃO
+   * FUNÇÃO PARA ABERTURA DO MODAL DE UPDATE
    * ------------------------------------------------------------------------ */
   const handleUpdate = async () => {
     if(!isEditing) return;
@@ -309,15 +307,17 @@ export default function ProfilePage() {
               <button className="px-2 py-2 text-md bg-red-700 rounded-md" onClick={handleDelete}>Excluir Usuário</button>
             )}
 
-            {/* <div className="flex items-center gap-1 text-yellow-400">
-              <Star size={20} fill="currentColor" />
+            <div className="flex items-center md:flex-row flex-col gap-1 text-yellow-400">
+              <div className="flex flex-row">
+                <Star size={20} fill="currentColor" />
               <span className="font-semibold">
                 {profile?.rating ? profile.rating.toFixed(1) : "0.0"}
               </span>
+              </div>
               <span className="text-[var(--text-muted)] text-sm">
                 ({profile?.reviewsCount} avaliações)
               </span>
-            </div> */}
+            </div>
           </div>
 
           {/* <p className="pl-2 text-[var(--text-muted)]">

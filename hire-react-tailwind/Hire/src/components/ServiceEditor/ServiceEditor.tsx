@@ -549,13 +549,7 @@ export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalPr
                           id="imageUpload"
                           type="file"
                           accept="image/*"
-                          onChange={()=>{
-                            console.log("IMAGE SETADA: " + imageFile)
-                            handleImageChange
-                            setTimeout(() => {
-                              console.log("IMAGEM DEPOIS DE 5 SEGUNDOS: " + JSON.stringify(imageFile) )
-                            }, 5000)
-                          }}
+                          onChange={ handleImageChange }
                           className="hidden"
                         />
                       </>

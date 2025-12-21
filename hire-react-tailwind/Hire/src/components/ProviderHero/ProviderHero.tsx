@@ -1,9 +1,12 @@
 // ProviderHero.tsx — Hero institucional refatorado (responsivo)
 // ------------------------------------------------------
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import type { ProviderForm, DayKey } from "../ProviderRegistration/ProviderRegistration/helpers/types-and-helpers";
+import type {
+  ProviderForm,
+  DayKey,
+} from "../ProviderRegistration/ProviderRegistration/helpers/types-and-helpers";
 import {
   Building2,
   Briefcase,
@@ -14,21 +17,25 @@ import {
   FileText,
   MapPin,
   Star,
+  Edit3,
 } from "lucide-react";
 import ServiceGallery from "../ServiceGallery/ServiceGallery/ServiceGallery";
 import { useNavigate } from "react-router-dom";
 import { LOCAL_PORT } from "../../api/ApiClient";
-
+import { userAPI } from "../../api/UserAPI";
+import ProviderRegistrationContainer from "../ProviderRegistration/ProviderRegistration/Principal/ProviderRegistrationContainer";
 
 interface ProviderHeroProps {
   provider: any | null;
 }
 
 export default function ProviderHero({ provider }: ProviderHeroProps) {
+  const [isEditing, setIsEditing] = useState(false);
 
   const navigate = useNavigate();
-  const imageLink = provider.profileImageUrl ?
-  LOCAL_PORT + provider.profileImageUrl : null;
+  const imageLink = provider.profileImageUrl
+    ? LOCAL_PORT + provider.profileImageUrl
+    : null;
 
   useEffect(() => {
     if (!provider) {
@@ -54,59 +61,136 @@ export default function ProviderHero({ provider }: ProviderHeroProps) {
 
   const availabilityList = days.filter(([key]) => availability?.[key]);
 
+  // Fecha com ESC
+  useEffect(() => {
+    function handleEsc(e: KeyboardEvent) {
+      if (e.key === "Escape") setIsEditing(false);
+    }
+
+    if (isEditing) window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [isEditing]);
+
+  /* ------------------------------------------------------------------------
+   * FUNÇÕES DE EDIÇÃO
+   * ------------------------------------------------------------------------ */
+  const handleEditToggle = () => {
+    setIsEditing((prev) => !prev);
+    ;
+  };
+
+  /* ------------------------------------------------------------------------
+   * FUNÇÃO PARA ABERTURA DO MODAL DE UPDATE
+   * ------------------------------------------------------------------------ */
+  const handleUpdate = async () => {
+    if (!isEditing) return;
+
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const res = await userAPI.update(
+        { name: provider?.name, about: provider?.about },
+        token
+      );
+      const updateEmail = await userAPI.updateUser(token, provider.email);
+      alert("Informações editadas com sucesso!");
+      return { res, updateEmail };
+    } catch (err: any) {
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const res = await userAPI.deleteUser(token);
+      alert("Usuário deletado com sucesso!");
+      localStorage.removeItem("token");
+      navigate("/auth");
+      return res;
+    } catch (err: any) {
+      console.error(err);
+    }
+  };
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="mt-4 md:mt-2 mb-8 md:mb-10 bg-[var(--bg-dark)] px-4 sm:px-6 py-6 text-[var(--text)] "
+      className="mt-4 md:mt-2 mb-8 md:mb-10 bg-[var(--bg-dark)] md:px-4 py-6 text-[var(--text)] "
     >
       {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
         <div className="flex flex-col sm:flex-row gap-5">
-          {/* Avatar / Logo */}
-          <div className="w-28 h-28 sm:w-40 sm:h-40 ml-0 mr-0 md:mr-10 md:ml-40 lg:w-70 lg:h-70 rounded-full bg-[var(--bg)] border border-[var(--primary)] flex items-center justify-center shrink-0 mx-auto sm:mx-0">
-            {imageLink ?
-            <img src={imageLink} className="w-12 h-12 sm:w-16 sm:h-16 lg:w-70 lg:h-70 rounded-full text-[var(--primary)]" /> :
-            <Building2 className="w-12 h-12 sm:w-16 sm:h-16 lg:w-24 lg:h-24 text-[var(--primary)]" />
-            }
+          <div className="relative">
+            {/* Avatar / Logo */}
+            <div className="w-72 h-72 sm:w-40 sm:h-40   md:ml-40 lg:w-72 lg:h-72 rounded-full bg-[var(--bg)] border-4 border-[var(--primary)] flex items-center justify-center shrink-0 mx-auto sm:mx-0">
+              {imageLink ? (
+                <img
+                  src={imageLink}
+                  className="w-70 h-70 sm:w-16 sm:h-16 lg:w-70 lg:h-70 rounded-full text-[var(--primary)]"
+                />
+              ) : (
+                <Building2 className="w-12 h-12 sm:w-16 sm:h-16 lg:w-24 lg:h-24 text-[var(--primary)]" />
+              )}
+            </div>
+            {/* BOTÃO DE EDIÇÃO */}
+            <button
+              onClick={handleEditToggle}
+              className="absolute bottom-1 right-3 md:right-0 bg-[var(--primary)] text-white rounded-full p-2"
+              title="Editar perfil"            >
+              <Edit3 size={18} />
+            </button>           
           </div>
-
           {/* Info principal */}
-          <div className="flex items-center md:items-start flex-col gap-2">
-            <div className="flex flex-row sm:items-center gap-2 sm:gap-3">
-              <h2 className="text-xl sm:text-2xl font-semibold leading-tight">
+          <div className="flex items-center md:items-start  flex-col gap-2">
+            <div className="flex flex-col md:flex-row sm:items-center gap-2 sm:gap-3">
+              <h2 className="text-4xl sm:text-4xl font-semibold leading-tight">
                 {provider.companyName || provider.name}
               </h2>
               <div className="flex items-center gap-1 text-yellow-400 text-sm">
                 <Star size={16} fill="currentColor" />
                 <span className="font-semibold">4.8</span>
-                <span className="text-[var(--text-muted)]">(35 avaliações)</span>
+                <span className="text-[var(--text-muted)]">
+                  (35 avaliações)
+                </span>
               </div>
             </div>
 
             <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
               <Briefcase className="w-4 h-4 text-[var(--primary)]" />
-              <span>{provider.category ? provider.category.name : "Categoria não informada"}</span>
+              <span>
+                {provider.category
+                  ? provider.category.name
+                  : "Categoria não informada"}
+              </span>
             </div>
 
-            <h2 className="mt-2 ml-3 text-[var(--bg-dark)] md:text-[var(--text)]">Sobre</h2>
+            <h2 className="mt-2 md:ml-6 text-[var(--text)]">
+              Sobre
+            </h2>
             {provider.description && (
-              <p className="mt-3 md:ml-3  max-w-2xl text-sm text-[var(--text-muted)] leading-relaxed">
+              <p className="mt-3 md:ml-6  max-w-2xl text-sm text-[var(--text-muted)] leading-relaxed">
                 {provider.description}
               </p>
             )}
 
             {provider.subcategories?.length > 0 && (
-              <div className="flex md:ml-3 flex-wrap gap-2 mt-2">
-                {provider.subcategories.map((sub: { id: number, name: string}, i: number) => (
-                  <span
-                    key={i}
-                    className="px-3 py-1 text-xs rounded-full bg-[var(--primary)]/10 border border-[var(--primary)]/20"
-                  >
-                    {sub.name}
-                  </span>
-                ))}
+              <div className="flex md:ml-6 flex-wrap gap-2 mt-2">
+                {provider.subcategories.map(
+                  (sub: { id: number; name: string }, i: number) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1 text-xs rounded-full bg-[var(--primary)]/10 border border-[var(--primary)]/20"
+                    >
+                      {sub.name}
+                    </span>
+                  )
+                )}
               </div>
             )}
           </div>
@@ -120,23 +204,28 @@ export default function ProviderHero({ provider }: ProviderHeroProps) {
                 ? "bg-[var(--primary)]/10 text-[var(--primary)] border-[var(--primary)]/30"
                 : "bg-yellow-500/10 text-yellow-400 border-yellow-500/30"
             }`}
-          > 
-            {provider.status === "available"
-              ? "Aberto"
-              : "Agenda fechada"}
+          >
+            {provider.status === "available" ? "Aberto" : "Agenda fechada"}
           </span>
 
-          
-            <span className="px-3 py-1 rounded-full text-xs sm:text-sm border border-[var(--border)]">
-              Nível Iniciante
-            </span>
+          <span className="px-3 py-1 rounded-full text-xs sm:text-sm border border-[var(--border)]">
+            Nível Iniciante
+          </span>
         </div>
       </div>
 
       {/* MODELO DE ATENDIMENTO */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-24">
-        <InfoCard icon={<Globe />} label="Atendimento Online" value={provider.attendsOnline ? "Disponível" : "—"} />
-        <InfoCard icon={<Map />} label="Atendimento Presencial" value={provider.attendsPresent ? "Disponível" : "—"} />
+        <InfoCard
+          icon={<Globe />}
+          label="Atendimento Online"
+          value={provider.attendsOnline ? "Disponível" : "—"}
+        />
+        <InfoCard
+          icon={<Map />}
+          label="Atendimento Presencial"
+          value={provider.attendsPresent ? "Disponível" : "—"}
+        />
         <InfoCard
           icon={<Clock />}
           label="Agenda"
@@ -206,7 +295,8 @@ export default function ProviderHero({ provider }: ProviderHeroProps) {
           />
         )}
       </div> */}
-      <ServiceGallery/>
+       {isEditing&&(<div className=""><ProviderRegistrationContainer isOpen={isEditing} onClose={()=>setIsEditing(false)}/></div>)}
+      <ServiceGallery />
     </motion.section>
   );
 }
@@ -230,9 +320,7 @@ function InfoCard({
         })}
         <span className="text-xs">{label}</span>
       </div>
-      <div className="font-medium text-[var(--highlight)] text-sm">
-        {value}
-      </div>
+      <div className="font-medium text-[var(--highlight)] text-sm">{value}</div>
     </div>
   );
 }
@@ -254,7 +342,11 @@ function StatusLine({
         })}
       </div>
       <span
-        className={`text-sm ${highlight ? "font-medium text-[var(--highlight)]" : "text-[var(--text-muted)]"}`}
+        className={`text-sm ${
+          highlight
+            ? "font-medium text-[var(--highlight)]"
+            : "text-[var(--text-muted)]"
+        }`}
       >
         {text}
       </span>

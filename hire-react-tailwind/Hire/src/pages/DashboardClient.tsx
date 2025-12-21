@@ -52,7 +52,8 @@ const MOCK_SERVICES: Service[] = [
   {
     id: 1,
     title: "Design de Interfaces Premium",
-    shortDescription: "UI/UX para produtos digitais com entrega aposta e protótipos",
+    shortDescription:
+      "UI/UX para produtos digitais com entrega aposta e protótipos",
     description:
       "Design completo de interfaces, protótipos interativos e guidelines de estilo. Inclui 2 rodadas de revisão e entrega em Figma/Sketch.",
     category: "Design",
@@ -148,7 +149,11 @@ const MOCK_PROVIDERS: Provider[] = [
   },
 ];
 
-const fetchWithTimeout = (url: string, options: RequestInit = {}, timeout = 2500) =>
+const fetchWithTimeout = (
+  url: string,
+  options: RequestInit = {},
+  timeout = 2500
+) =>
   new Promise<Response>((resolve, reject) => {
     const controller = new AbortController();
     const id = setTimeout(() => {
@@ -174,7 +179,9 @@ export default function ServiceDashboardSophisticated() {
   const [query, setQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("Todos");
   const [minRating, setMinRating] = useState<number>(0);
-  const [sortBy, setSortBy] = useState<"relevance" | "rating" | "price">("relevance");
+  const [sortBy, setSortBy] = useState<"relevance" | "rating" | "price">(
+    "relevance"
+  );
 
   // UI state
   const [loading, setLoading] = useState(true);
@@ -195,36 +202,32 @@ export default function ServiceDashboardSophisticated() {
       setLoading(true);
       try {
         const data = await serviceAPI.getServices();
-        if(!data) throw new Error();
+        if (!data) throw new Error();
 
-        if(Array.isArray(data)) {
+        if (Array.isArray(data)) {
           const list: Service[] = data.map((e) => {
-            const image = LOCAL_PORT +  e.imageUrl;
+            const image = LOCAL_PORT + e.imageUrl;
 
             return {
-            id: e.id,
-            title: e.title,
-            shortDescription: e.description_service,
-            description: e.description_service,
-            subcategory: e.subcategory,
-            category: e.category.name,
-            price: String(e.price),
-            active: true,
-            duration: e.duration,
-            rating: 4.6,
-            images: [image]
-            }
+              id: e.id,
+              title: e.title,
+              shortDescription: e.description_service,
+              description: e.description_service,
+              subcategory: e.subcategory,
+              category: e.category.name,
+              price: String(e.price),
+              active: true,
+              duration: e.duration,
+              rating: 4.6,
+              images: [image],
+            };
           });
 
-          setServices(list)
+          setServices(list);
         }
-
-
-
       } catch {
         if (mounted) setServices(MOCK_SERVICES);
       }
-
 
       try {
         const provRes = await fetchWithTimeout("/api/providers");
@@ -258,7 +261,8 @@ export default function ServiceDashboardSophisticated() {
         debouncedQuery.trim() === "" ||
         s.title.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
         s.shortDescription.toLowerCase().includes(debouncedQuery.toLowerCase());
-      const matchesCategory = categoryFilter === "Todos" || s.category === categoryFilter;
+      const matchesCategory =
+        categoryFilter === "Todos" || s.category === categoryFilter;
       const matchesRating = s.rating >= minRating;
       return matchesQuery && matchesCategory && matchesRating;
     });
@@ -287,13 +291,18 @@ export default function ServiceDashboardSophisticated() {
   const skeletons = Array.from({ length: 8 }).map((_, i) => i);
 
   const [open, setOpen] = useState(false);
-  
+
   const handleDetail = () => {
-    setOpen(true)
-  }
+    setOpen(true);
+  };
 
   return (
     <LayoutGroup>
+      <h1 className="mt-10 mb-5 text-4xl px-12 font-bold leading-tight">Busque e pesquise pelos melhores serviços.</h1>
+      <h3 className=" md:flex hidden px-12 leading-tight">
+        Escolha o tipo de serviço e encontre profissionais disponíveis. Filtre
+        por categoria, avaliação e preço.
+      </h3>
       <div className="min-h-screen bg-[var(--bg-dark)] md:min-w-screen text-[var(--text)] p-6 md:p-10 ">
         {/* Floating Search + Filters (sophisticated) */}
         <motion.div
@@ -302,9 +311,9 @@ export default function ServiceDashboardSophisticated() {
           transition={{ duration: 0.45 }}
           className="max-w-7xl mx-auto grid gap-4"
         >
-          <div className="relative pt-20 ">
+          <div className="relative ">
             <div
-              className="absolute top-6 left-1/2 -translate-x-1/2 w-full md:w-[92%] lg:w-full"
+              className="absolute top-6 left-1/2 -translate-x-1/2 w-full md:w-[90%] lg:w-full"
               aria-hidden
             />
             <div className="flex flex-col mb-10 md:flex-row items-stretch gap-4">
@@ -345,7 +354,7 @@ export default function ServiceDashboardSophisticated() {
                   <select
                     value={categoryFilter}
                     onChange={(e) => setCategoryFilter(e.target.value)}
-                    className="bg-transparent outline-none text-[var(--text)]"
+                    className="bg-[var(--bg)] outline-none text-[var(--text)]"
                     aria-label="Filtrar por categoria"
                   >
                     {categories.map((c) => (
@@ -374,7 +383,7 @@ export default function ServiceDashboardSophisticated() {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as any)}
-                    className="bg-transparent outline-none text-[var(--text)]"
+                    className="bg-[var(--bg)] outline-none text-[var(--text)]"
                     aria-label="Ordenar por"
                   >
                     <option value="relevance">Relevância</option>
@@ -382,35 +391,23 @@ export default function ServiceDashboardSophisticated() {
                     <option value="price">Preço</option>
                   </select>
                 </div>
-
-                {/* mobile filter button */}
-                <div className="md:hidden">
-                  <button
-                    onClick={() => {
-                      // on mobile we could open filter modal - here we just toggle a simple UI
-                      const next = categoryFilter === "Todos" ? "Design" : "Todos";
-                      setCategoryFilter(next);
-                    }}
-                    className="p-2 rounded-xl bg-[var(--bg-light)]/30 border border-[var(--border-muted)]"
-                    aria-label="Abrir filtros"
-                  >
-                    <Filter />
-                  </button>
-                </div>
               </div>
             </div>
           </div>
         </motion.div>
 
         {/* main content area */}
-        <div className="  max-w-full sm:max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 mt-8">
+        <div className="  max-w-full sm:max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 md:mt-8">
           {/* SERVICES GRID */}
           <section className="relative ">
-            <div className="flex items-center  justify-between mb-4">
-              <div>
+            <div className="flex items-baseline  justify-between mb-4">
+              <div className="">
                 <h2 className="text-2xl font-semibold">Explorar serviços</h2>
                 <p className="text-sm text-[var(--text-muted)]">
-                  Resultado: <strong className="text-[var(--highlight)]">{filteredLengthLabel(filtered)}</strong>
+                  Resultado:{" "}
+                  <strong className="text-[var(--text-muted)]">
+                    {filteredLengthLabel(filtered)}
+                  </strong>
                 </p>
               </div>
 
@@ -424,7 +421,9 @@ export default function ServiceDashboardSophisticated() {
                 >
                   Alternar ordenação
                 </button>
-                <div className="text-xs text-[var(--text-muted)]">Página {page}/{totalPages}</div>
+                <div className="text-xs text-[var(--text-muted)]">
+                  Página {page}/{totalPages}
+                </div>
                 <div className="flex gap-1">
                   <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
@@ -446,7 +445,7 @@ export default function ServiceDashboardSophisticated() {
 
             {/* grid */}
             <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
+              className="grid grid-cols-1 mt-10 sm:grid-cols-2 xl:grid-cols-3 gap-6"
               initial="hidden"
               animate="visible"
             >
@@ -476,7 +475,10 @@ export default function ServiceDashboardSophisticated() {
                     variants={cardVariants}
                     initial="hidden"
                     animate="visible"
-                    whileHover={{ y: -6, boxShadow: "0 12px 30px rgba(0,0,0,0.5)" }}
+                    whileHover={{
+                      y: -6,
+                      boxShadow: "0 12px 30px rgba(0,0,0,0.5)",
+                    }}
                     className="relative rounded-2xl overflow-hidden bg-[linear-gradient(180deg,rgba(255,255,255,0.01), rgba(255,255,255,0.015))] border border-[var(--border)] shadow-[0_6px_18px_rgba(0,0,0,0.3)]"
                   >
                     <div className="relative">
@@ -492,14 +494,22 @@ export default function ServiceDashboardSophisticated() {
                     </div>
 
                     <div className="p-3  ">
-                      <h3 className="text-lg font-semibold leading-tight">{srv.title}</h3>
-                      <p className="text-sm text-[var(--text-muted)] mt-2 line-clamp-2">{srv.shortDescription}</p>
-                        <div className=" mt-4  text-[var(--highlight)] font-semibold">R$ {srv.price}</div>
+                      <h3 className="text-lg font-semibold leading-tight">
+                        {srv.title}
+                      </h3>
+                      <p className="text-sm text-[var(--text-muted)] mt-2 line-clamp-2">
+                        {srv.shortDescription}
+                      </p>
+                      <div className=" mt-4  text-[var(--highlight)] font-semibold">
+                        R$ {srv.price}
+                      </div>
                       <div className=" flex items-center  justify-between">
                         <div className="flex items-center  gap-3">
                           <div className="flex items-center  bg-[var(--bg-light)]/30 px-2 py-1 rounded-md border border-[var(--border-muted)]">
                             <Star size={14} className="text-yellow-400 mr-1" />
-                            <span className="text-sm font-medium">{srv.rating.toFixed(1)}</span>
+                            <span className="text-sm font-medium">
+                              {srv.rating.toFixed(1)}
+                            </span>
                           </div>
                           <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
                             <Clock size={14} /> <span>{srv.duration}</span>
@@ -507,9 +517,11 @@ export default function ServiceDashboardSophisticated() {
                         </div>
 
                         <div className="text-right">
-                          
                           <button
-                            onClick={() => {setSelectedService(srv); handleDetail()}}
+                            onClick={() => {
+                              setSelectedService(srv);
+                              handleDetail();
+                            }}
                             className="mt-2 text-xs px-3 py-1 rounded-full bg-[var(--primary)] text-white font-medium hover:brightness-95 transition"
                           >
                             Ver detalhes
@@ -549,7 +561,11 @@ export default function ServiceDashboardSophisticated() {
                     className="flex items-center gap-3 p-2 rounded-lg bg-[var(--bg)] border border-[var(--border-muted)] hover:border-[var(--highlight)] transition"
                     whileHover={{ scale: 1.02 }}
                   >
-                    <img src={p.avatar} alt={p.name} className="w-12 h-12 rounded-full object-cover border border-[var(--border)]" />
+                    <img
+                      src={p.avatar}
+                      alt={p.name}
+                      className="w-12 h-12 rounded-full object-cover border border-[var(--border)]"
+                    />
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <div className="font-medium">{p.name}</div>
@@ -557,8 +573,12 @@ export default function ServiceDashboardSophisticated() {
                           <Star size={14} /> {p.rating.toFixed(2)}
                         </div>
                       </div>
-                      <div className="text-xs text-[var(--text-muted)] mt-1">{p.specialty}</div>
-                      <button className="mt-2 text-xs px-3 py-1 rounded-full bg-[var(--bg)]/60 border border-[var(--border)]">Ver perfil</button>
+                      <div className="text-xs text-[var(--text-muted)] mt-1">
+                        {p.specialty}
+                      </div>
+                      <button className="mt-2 text-xs px-3 py-1 rounded-full bg-[var(--bg)]/60 border border-[var(--border)]">
+                        Ver perfil
+                      </button>
                     </div>
                   </motion.div>
                 ))}
@@ -576,15 +596,25 @@ export default function ServiceDashboardSophisticated() {
                   className="min-w-[200px] flex-shrink-0 rounded-2xl p-3 bg-[var(--bg-light)]/30 border border-[var(--border)]"
                 >
                   <div className="flex gap-3 items-center">
-                    <img src={p.avatar} alt={p.name} className="w-12 h-12 rounded-full object-cover border border-[var(--border)]" />
+                    <img
+                      src={p.avatar}
+                      alt={p.name}
+                      className="w-12 h-12 rounded-full object-cover border border-[var(--border)]"
+                    />
                     <div>
                       <div className="font-medium">{p.name}</div>
-                      <div className="text-xs text-[var(--text-muted)]">{p.specialty}</div>
+                      <div className="text-xs text-[var(--text-muted)]">
+                        {p.specialty}
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center justify-between mt-3">
-                    <div className="flex items-center gap-1 text-yellow-400"><Star size={14}/> {p.rating.toFixed(2)}</div>
-                    <button className="text-xs px-3 py-1 rounded-full bg-[var(--highlight)] text-black">Ver perfil</button>
+                    <div className="flex items-center gap-1 text-yellow-400">
+                      <Star size={14} /> {p.rating.toFixed(2)}
+                    </div>
+                    <button className="text-xs px-3 py-1 rounded-full bg-[var(--highlight)] text-black">
+                      Ver perfil
+                    </button>
                   </div>
                 </motion.div>
               ))}
@@ -596,10 +626,18 @@ export default function ServiceDashboardSophisticated() {
       {/* DETAILS MODAL */}
       <AnimatePresence>
         {selectedService && (
-          <ServiceDetail service={selectedService} images={selectedService.images} isOpen={open} onClose={()=>{setOpen(false)}}/>)}
+          <ServiceDetail
+            service={selectedService}
+            images={selectedService.images}
+            isOpen={open}
+            onClose={() => {
+              setOpen(false);
+            }}
+          />
+        )}
       </AnimatePresence>
     </LayoutGroup>
-  );  
+  );
 }
 
 /* small helper for filtered count label */
