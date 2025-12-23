@@ -5,6 +5,7 @@ import hirePng from "../assets/Hire..png"
 import { userAPI, type UserAPI, type UserLoginAPI } from "../api/UserAPI";
 import { useNavigate } from 'react-router-dom';
 import UseTerms from "../components/Terms/UseTerms";
+import { useToast } from "../components/Toast/ToastContext"
 
 
 
@@ -24,6 +25,8 @@ export default function AuthPage() {
     password: "",
   });
   const navigate = useNavigate()
+  const { showToast } = useToast();
+  
 
   useEffect(() => {
     localStorage.removeItem("token");
@@ -66,19 +69,19 @@ export default function AuthPage() {
       } else {
 
         if (!formData.acceptedTerms) {
-          alert("Você precisa aceitar os termos antes de continuar.");
+          showToast("Você precisa aceitar os termos antes de continuar.", "warning");
           return;
         }
 
         await handleRegistrar(formData);
-        alert("Usuário registrado com sucesso!");
+         showToast("Usuário registrado com sucesso!", "success");
         setIsLogin(true);
         cleanForm();
 
       }
     } catch (error: any) {
       console.error(isLogin ? "Usuário não encontrado: " : "Erro ao registrar usuário:", error);
-      isLogin ? alert("Email e/ou senha inválido(s)") : alert(error.message || "Erro na requisição!");
+      isLogin ? showToast('E-mail e/ou senha informado é inválido', 'error') : showToast(error.message || "Erro na requisição!","error");
     }
   };
 

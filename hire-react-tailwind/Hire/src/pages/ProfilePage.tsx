@@ -26,6 +26,7 @@ import { type User } from "../interfaces/UserInterface"
 import { providerApi } from "../api/ProviderAPI";
 import type { ProviderForm } from "../components/ProviderRegistration/ProviderRegistration/helpers/types-and-helpers";
 import ServiceDashboardSophisticated from "./DashboardClient";
+import ProfileCardSkeleton from "../skeletons/ProfileCardSkeleton";
 
 /* --------------------------------------------------------------------------
  * MOCKS DE DADOS
@@ -151,6 +152,9 @@ export default function ProfilePage() {
    * ------------------------------------------------------------------------ */
 
   useEffect(() => {
+
+    setLoading(true);
+
     const getUser = async () => {
       if(!token) {
       navigate('/auth')
@@ -171,6 +175,10 @@ export default function ProfilePage() {
         setUser(user);
       };
 
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000)
+      
       const provider = await providerApi.getByUser(token);
 
       if(!provider) {
@@ -178,6 +186,7 @@ export default function ProfilePage() {
       } else {
         setProvider(true);
       }
+
     }
 
     getUser();  
@@ -185,8 +194,14 @@ export default function ProfilePage() {
 
   
   useEffect(() => {
+    setLoading(true);
+    
     if(provider) localStorage.setItem("provider", "1");
     if(!provider) localStorage.setItem("provider", "0")
+
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000)    
   }, [provider])
 
    // Fecha com ESC
@@ -246,19 +261,19 @@ export default function ProfilePage() {
   /* ------------------------------------------------------------------------
    * ESTADO DE CARREGAMENTO (Tela de loading)
    * ------------------------------------------------------------------------ */
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[var(--bg)] text-[var(--text)]">
-        <div className="relative w-16 h-16">
-          <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-500 animate-spin" />
-          <div className="absolute inset-1 rounded-full border-4 border-transparent border-t-blue-300 animate-spin-slow" />
-        </div>
-        <p className="mt-6 text-lg text-[var(--text-muted)] animate-pulse">
-          Carregando perfil...
-        </p>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex flex-col items-center justify-center min-h-screen bg-[var(--bg)] text-[var(--text)]">
+  //       <div className="relative w-16 h-16">
+  //         <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-500 animate-spin" />
+  //         <div className="absolute inset-1 rounded-full border-4 border-transparent border-t-blue-300 animate-spin-slow" />
+  //       </div>
+  //       <p className="mt-6 text-lg text-[var(--text-muted)] animate-pulse">
+  //         Carregando perfil...
+  //       </p>
+  //     </div>
+  //   );
+  // }
  
   /* ------------------------------------------------------------------------
    * RENDERIZAÇÃO PARA PRESTADOR (COM GALERIA DE SERVIÇOS)
@@ -269,6 +284,8 @@ export default function ProfilePage() {
       {/* ===============================================================
        * SEÇÃO HERO / CABEÇALHO DO PERFIL
        * =============================================================== */}
+       { loading ? 
+       <ProfileCardSkeleton/> : 
       <section className="relative flex flex-col md:flex-row items-center justify-center gap-6 bg-[var(--bg-dark)] p-8">
         {/* IMAGEM DE PERFIL */}
         <div className="relative">
@@ -379,6 +396,7 @@ export default function ProfilePage() {
           </div>
         </div>
       </section>
+      }
       {/* ===============================================================
        * SEÇÃO DO CHAT
        * =============================================================== */}      

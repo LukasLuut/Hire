@@ -1,7 +1,5 @@
-import React, { useEffect, useMemo, useState, type Provider } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
-import { mockProvider } from "./ProfilePage";
-import ProviderRegistrationContainer from "../components/ProviderRegistration/ProviderRegistration/Principal/ProviderRegistrationContainer";
 import ProviderHero from "../components/ProviderHero/ProviderHero";
 import {
   Star,
@@ -14,8 +12,10 @@ import {
 import ServiceEditor from "../components/ServiceEditor/ServiceEditor";
 import { providerApi } from "../api/ProviderAPI";
 import type { ProviderForm } from "../components/ProviderRegistration/ProviderRegistration/helpers/types-and-helpers";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ServiceFormalizerModal from "../components/Negotiation/ServiceFormalizerModal";
+import { ProviderProfileSkeleton } from "../skeletons/ProviderProfileSkeleton/ProviderProfileSkeleton";
+import { ServicesGallerySkeleton } from "../skeletons/ServiceGallerySkeleton/ServicesGallerySkeleton";
 
 
 /* ---------------------------
@@ -225,7 +225,8 @@ export default function DashboardPrestador() {
   const [services, setServices] = useState<Service[] | null>(null);
   const [bookings, setBookings] = useState<Booking[] | null>(null);
   const [reviews, setReviews] = useState<Review[] | null>(null);
-  const [isOpenChat, setIsOpenChat]=useState(false)
+  const [isOpenChat, setIsOpenChat]=useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
  
 
@@ -236,6 +237,7 @@ export default function DashboardPrestador() {
   const [provider, setProvider] = useState<ProviderForm | null>(null);
 
   useEffect(() => {
+    setLoading(true);
     const getProvider = async () => {
       const token = localStorage.getItem("token");
       if(!token) return;
@@ -250,48 +252,17 @@ export default function DashboardPrestador() {
       }
 
       setProvider(providerData);
+
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000)
     };
 
     getProvider();
   }, [])
   
   /* fetch resources (with fallback mocks) */
-  useEffect(() => {
-    let mounted = true;
-    async function load() {
-     
-      console.log("EM QUE MOMENTO ISSO É CARREGADO")
-      try {
-        const res = await fetchWithTimeout("/api/my/services");
-        const data = await res.json();
-        if (mounted) setServices(data);
-      } catch {
-        if (mounted) setServices(MOCK_SERVICES);
-      }
-
-      try {
-        const res2 = await fetchWithTimeout("/api/my/bookings");
-        const data2 = await res2.json();
-        if (mounted) setBookings(data2);
-      } catch {
-        if (mounted) setBookings(MOCK_BOOKINGS);
-      }
-
-      try {
-        const res3 = await fetchWithTimeout("/api/my/reviews");
-        const data3 = await res3.json();
-        if (mounted) setReviews(data3);
-      } catch {
-        if (mounted) setReviews(MOCK_REVIEWS);
-      }
-
-     
-    }
-    load();
-    return () => {
-      mounted = false;
-    };
-  }, []);  
+  
 
   // UI motion variants
   const panelVariant = { closed: { height: 0, opacity: 0 }, open: { height: "auto", opacity: 1 } };
@@ -315,6 +286,8 @@ export default function DashboardPrestador() {
 
   return (
     <LayoutGroup>
+      { loading ?
+        <ProviderProfileSkeleton/> :
       <div className="min-h-screen bg-[var(--bg-dark)] pt-25 text-[var(--text)] px-4 sm:px-6 md:px-8 lg:px-10 py-6">
         {/* header */}        
         <div className="max-w-[90%] mx-auto flex flex-col lg:flex-row gap-6">
@@ -472,8 +445,7 @@ export default function DashboardPrestador() {
         {/* main content: services + bookings */}
         
       </div>
-
-      
+      }      
     </LayoutGroup>
   );
 }

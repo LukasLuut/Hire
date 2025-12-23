@@ -19,60 +19,14 @@ import { motion,  LayoutGroup } from "framer-motion";
 import { Search, X, Filter } from "lucide-react";
 import PostCard from "../Service/Service";
 import { providerApi } from "../../../api/ProviderAPI";
-import type { Service } from "../../../interfaces/ServiceInterface";
-
-/* --------------------------------------------------------------------------
- * MOCK DE DADOS
- * Aqui simulamos alguns serviços para demonstração.
- * Em um projeto real, esses dados viriam de uma API ou banco de dados.
- * -------------------------------------------------------------------------- */
-const servicesMock = [
-  {
-    id: 1,
-    title: "Design de Interface",
-    description: "Criação de telas otimizadas com foco em UX e responsividade.",
-    category: "UI/UX",
-    price: "R$500",
-    duration: "2 dias",
-    rating: 4.8,
-    images: ["https://images.pexels.com/photos/4348401/pexels-photo-4348401.jpeg", "/img/uiux2.jpg"],
-  },
-  {
-    id: 2,
-    title: "Prototipagem Rápida",
-    description: "Protótipos interativos no Figma para testes de usabilidade.",
-    category: "Design",
-    price: "R$350",
-    duration: "1 dia",
-    rating: 4.5,
-    images: ["https://images.pexels.com/photos/585419/pexels-photo-585419.jpeg"],
-  },
-  {
-    id: 3,
-    title: "Consultoria de Experiência",
-    description: "Análise de jornada do usuário e melhorias em UX/UI.",
-    category: "Consultoria",
-    price: "R$800",
-    duration: "3 dias",
-    rating: 5.0,
-    images: ["https://images.pexels.com/photos/669619/pexels-photo-669619.jpeg", "/img/ux2.jpg"],
-  },
-   {
-    id: 34,
-    title: "Consultoria de Experiência",
-    description: "Análise de jornada do usuário e melhorias em UX/UI.",
-    category: "Consultoria",
-    price: "R$800",
-    duration: "3 dias",
-    rating: 5.0,
-    images: ["https://images.pexels.com/photos/1267338/pexels-photo-1267338.jpeg", "/img/ux2.jpg"],
-  },
-];
+import { ServicesGallerySkeleton } from "../../../skeletons/ServiceGallerySkeleton/ServicesGallerySkeleton";
 
 /* ==========================================================================
  * COMPONENTE PRINCIPAL
  * ========================================================================== */
 export default function ServiceGalleryZoom() {
+
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [services, setServices] = useState([
     {
@@ -89,6 +43,8 @@ export default function ServiceGalleryZoom() {
 ]);
 
   useEffect(() => {
+    setLoading(true);
+
     const getServices = async () => {
       const token = localStorage.getItem("token");
       if(!token) return;
@@ -116,6 +72,9 @@ export default function ServiceGalleryZoom() {
       setServices(list);
 
       }
+
+      setLoading(false);
+
     }
 
     getServices();
@@ -181,13 +140,12 @@ export default function ServiceGalleryZoom() {
     setFiltered(results);
   }, [searchTerm, priceOrder, minRating, services]);
 
-
-
   /* ==========================================================================
    * RENDERIZAÇÃO
    * ========================================================================== */
   return (
     <LayoutGroup>
+      
       <div className="min-h-screen bg-[var(--bg-dark)] overflow-x-hidden text-[var(--text)]/80  px-6 md:px-20 transition-colors duration-300">
         {/* ------------------------------------------------------------------
          * CABEÇALHO
@@ -285,6 +243,7 @@ export default function ServiceGalleryZoom() {
 
        
       </div>
+      
     </LayoutGroup>
   );
 }

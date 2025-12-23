@@ -10,11 +10,13 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  HandCoins,
 } from "lucide-react";
 import { serviceAPI, type ServiceData } from "../api/ServiceAPI";
 import { categoryAPI } from "../api/CategoryAPI";
 import { LOCAL_PORT } from "../api/ApiClient";
 import ServiceDetail from "../components/ServiceGallery/ServiceDetail/ServiceDetail";
+import { ServicesPageSkeleton } from "../skeletons/ServiceSkeleton/ServicesPageSkeleton";
 
 /**
  * ServiceDashboardSophisticated.tsx
@@ -38,6 +40,12 @@ type Service = {
   price: string;
   duration: string;
   location?: string;
+  provider?: {
+    professionalName?: string;
+    profileImageUrl?: string;
+    description?: string;
+    id: number;
+  };
 };
 
 type Provider = {
@@ -198,8 +206,9 @@ export default function ServiceDashboardSophisticated() {
   // fetch data with fallback to mock
   useEffect(() => {
     let mounted = true;
+    setLoading(true);
+
     const load = async () => {
-      setLoading(true);
       try {
         const data = await serviceAPI.getServices();
         if (!data) throw new Error();
@@ -220,6 +229,14 @@ export default function ServiceDashboardSophisticated() {
               duration: e.duration,
               rating: 4.6,
               images: [image],
+              provider: e.provider
+                ? {
+                    id: e.provider.id,
+                    professionalName: e.provider.professionalName,
+                    profileImageUrl: e.provider.profileImageUrl,
+                    description: e.provider.description,
+                  }
+                : undefined,
             };
           });
 
@@ -237,7 +254,10 @@ export default function ServiceDashboardSophisticated() {
       } catch {
         setProviders(MOCK_PROVIDERS);
       } finally {
-        if (mounted) setLoading(false);
+    
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000)
       }
     };
 
@@ -296,9 +316,15 @@ export default function ServiceDashboardSophisticated() {
     setOpen(true);
   };
 
+  if(loading) {
+    return <ServicesPageSkeleton/>
+  }
+
   return (
     <LayoutGroup>
-      <h1 className="mt-10 mb-5 text-4xl px-12 font-bold leading-tight">Busque e pesquise pelos melhores serviços.</h1>
+      <h1 className="mt-10 mb-5 text-4xl px-12 font-bold leading-tight">
+        Busque e pesquise pelos melhores serviços.
+      </h1>
       <h3 className=" md:flex hidden px-12 leading-tight">
         Escolha o tipo de serviço e encontre profissionais disponíveis. Filtre
         por categoria, avaliação e preço.
@@ -366,7 +392,7 @@ export default function ServiceDashboardSophisticated() {
                 </div>
 
                 <div className="hidden md:flex items-center gap-2 p-2 rounded-2xl bg-[var(--bg-light)]/30 border border-[var(--border-muted)]">
-                  <Star className="text-yellow-400" />
+                  <Star fill="currentColor" className="text-yellow-400" />
                   <input
                     aria-label="Avaliação mínima"
                     type="range"
@@ -494,25 +520,54 @@ export default function ServiceDashboardSophisticated() {
                     </div>
 
                     <div className="p-3  ">
+                      {srv.provider && (
+                        <motion.div
+                          key={srv.provider.id}
+                          className="flex items-center cursor-pointer gap-3 py-4 px-2 mb-2 border-b-1 border-t-1 rounded-lg bg-[var(--bg-dark)] border-[var(--highlight)]/50 transition"
+                          whileHover={{ scale: 1.02 }}
+                        >
+                          <img
+                            src="https://api.dicebear.com/9.x/miniavs/svg?seed=vitorreis.svg"
+                            alt={srv.provider.professionalName}
+                            className="w-12 h-12 rounded-full object-cover border border-[var(--border)]"
+                          />
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <div className="font-medium">
+                                {srv.provider.professionalName}
+                                Lucas William
+                              </div>
+                              <div className="flex items-center gap-1 text-yellow-400 text-sm">
+                                <Star fill="currentColor" size={14} />
+                                4.8
+                              </div>
+                            </div>
+                            <div className="text-xs text-[var(--text-muted)] mt-1">
+                              {srv.provider.description} Tenho tenho tenho tenho
+                            </div>
+                            {/* <button className="mt-2 text-xs px-3 py-1 rounded-full bg-[var(--bg)]/60 border border-[var(--border)]">
+                              Ver perfil
+                            </button> */}
+                          </div>
+                        </motion.div>
+                      )}
+
                       <h3 className="text-lg font-semibold leading-tight">
                         {srv.title}
                       </h3>
+
                       <p className="text-sm text-[var(--text-muted)] mt-2 line-clamp-2">
                         {srv.shortDescription}
                       </p>
-                      <div className=" mt-4  text-[var(--highlight)] font-semibold">
+                      <div className=" mt-4 flex items-center mb-2 text-[var(--highlight)] font-semibold">
+                         <HandCoins size={20} className="text-[var(--text)]/70 mr-2" />
                         R$ {srv.price}
                       </div>
                       <div className=" flex items-center  justify-between">
                         <div className="flex items-center  gap-3">
-                          <div className="flex items-center  bg-[var(--bg-light)]/30 px-2 py-1 rounded-md border border-[var(--border-muted)]">
-                            <Star size={14} className="text-yellow-400 mr-1" />
-                            <span className="text-sm font-medium">
-                              {srv.rating.toFixed(1)}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
-                            <Clock size={14} /> <span>{srv.duration}</span>
+                          
+                          <div className="flex items-center mb-2 text-[var(--highlight)] font-semibold">
+                            <Clock className="text-[var(--text)]/70 mr-2"  size={20} /> <span>{srv.duration}</span>
                           </div>
                         </div>
 
@@ -522,7 +577,7 @@ export default function ServiceDashboardSophisticated() {
                               setSelectedService(srv);
                               handleDetail();
                             }}
-                            className="mt-2 text-xs px-3 py-1 rounded-full bg-[var(--primary)] text-white font-medium hover:brightness-95 transition"
+                            className="mt-2 mb-2 mr-2 text-xs px-3 py-1 rounded-full bg-[var(--primary)] text-white font-medium hover:brightness-95 transition"
                           >
                             Ver detalhes
                           </button>
@@ -570,7 +625,7 @@ export default function ServiceDashboardSophisticated() {
                       <div className="flex items-center justify-between">
                         <div className="font-medium">{p.name}</div>
                         <div className="flex items-center gap-1 text-yellow-400 text-sm">
-                          <Star size={14} /> {p.rating.toFixed(2)}
+                          <Star fill="currentColor" size={14} /> {p.rating.toFixed(2)}
                         </div>
                       </div>
                       <div className="text-xs text-[var(--text-muted)] mt-1">
@@ -610,7 +665,7 @@ export default function ServiceDashboardSophisticated() {
                   </div>
                   <div className="flex items-center justify-between mt-3">
                     <div className="flex items-center gap-1 text-yellow-400">
-                      <Star size={14} /> {p.rating.toFixed(2)}
+                      <Star fill="currentColor" size={14} /> {p.rating.toFixed(2)}
                     </div>
                     <button className="text-xs px-3 py-1 rounded-full bg-[var(--highlight)] text-black">
                       Ver perfil

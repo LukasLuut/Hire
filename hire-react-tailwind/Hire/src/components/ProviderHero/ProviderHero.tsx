@@ -4,7 +4,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import type {
-  ProviderForm,
   DayKey,
 } from "../ProviderRegistration/ProviderRegistration/helpers/types-and-helpers";
 import {
@@ -13,9 +12,6 @@ import {
   Globe,
   Map,
   Clock,
-  ShieldCheck,
-  FileText,
-  MapPin,
   Star,
   Edit3,
 } from "lucide-react";
@@ -268,33 +264,6 @@ export default function ProviderHero({ provider }: ProviderHeroProps) {
           </div>
         )}
       </div>
-
-      {/* CONFIANÇA */}
-      {/* <div className="mt-6 pt-4 border-t border-[var(--border)] flex flex-col md:flex-row  gap-2 text-sm">
-        <StatusLine
-          icon={<ShieldCheck />}
-          text={provider.idDocument ? "Identidade verificada" : "Verificação pendente"}
-          highlight={!!provider.idDocument}
-        />
-
-        <StatusLine
-          icon={<FileText />}
-          text={ 
-            provider.certifications.length > 0
-              ? `${provider.certifications.length} certificado${provider.certifications.length > 1 ? "s" : ""}`
-              : "Nenhum certificado informado"
-          }
-          highlight={provider.certifications.length > 0}
-        />
-
-        {provider.address?.city && (
-          <StatusLine
-            icon={<MapPin />}
-            text={`Atendimento regional • ${provider.address.city}/${provider.address.state ?? ""}`}
-            highlight
-          />
-        )}
-      </div> */}
        {isEditing&&(<div className=""><ProviderRegistrationContainer isOpen={isEditing} onClose={()=>setIsEditing(false)}/></div>)}
       <ServiceGallery />
     </motion.section>

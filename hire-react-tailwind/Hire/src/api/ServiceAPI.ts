@@ -13,8 +13,11 @@ export interface ServiceData {
   duration: string,
   rating: number,
   imageUrl: string,
-  provider?: {
-    id?: number
+  provider?:{
+    id?: number,
+    professionalName?: string,
+    profileImageUrl?: string,
+    description?: string
   },
   hire?: {
     id?: number
@@ -52,7 +55,16 @@ export const serviceAPI = {
         active: true,
         duration: e.duration,
         rating: 4.6,
-        imageUrl: e.imageUrl
+        imageUrl: e.imageUrl,
+        provider:{
+          id: e.provider?.id,
+          professionalName: e.provider?.professionalName,
+          profileImageUrl: e.provider?.profileImageUrl,
+          description: e.provider?.description
+        },
+        hire: {
+          id: e.hire?.id
+        }
   
       }
     })
@@ -81,12 +93,16 @@ export const serviceAPI = {
       duration: response.duration,
       rating: 4.6,
       imageUrl: response.imageUrl,
-      provider: {
-        id: response.provider?.id
+      provider:{
+        id: response.provider?.id,
+        professionalName: response.provider?.professionalName,
+        profileImageUrl: response.provider?.profileImageUrl,
+        description: response.provider?.description
       },
       hire: {
         id: response.hire?.id
       }
+
     }
   },
 
