@@ -18,7 +18,8 @@ export class ProviderController {
         publicReviews,
         pricesOnPage,
         whatsNotification,
-        emailNotification
+        emailNotification,
+        availabilities
       } = req.body;
 
       const body = {
@@ -30,7 +31,8 @@ export class ProviderController {
         publicReviews: toBoolean(publicReviews),
         pricesOnPage: toBoolean(pricesOnPage),
         whatsNotification: toBoolean(whatsNotification),
-        emailNotification: toBoolean(emailNotification)
+        emailNotification: toBoolean(emailNotification),
+        availabilities: availabilities ? JSON.parse(availabilities) : ""
       };
       const provider = await providerService.create(
         (req as any).user.id,

@@ -11,6 +11,7 @@ export class ProviderService {
   private userRepository = AppDataSource.getRepository(User);
   private subcategoryRepository = AppDataSource.getRepository(Subcategory);
   private linkRepository = AppDataSource.getRepository(Link);
+  private availabilityRepository = AppDataSource.getRepository(Availability);
 
   async create(
     idUser: number,
@@ -18,7 +19,13 @@ export class ProviderService {
       companyName: string;
       subcategories?: string;
       links?: string;
-      },
+      availabilities?: {
+        day?: {
+          start?: string,
+          end?: string
+        }
+      };
+    },
     file?: Express.Multer.File
   ) {
     const profileImageUrl = file ? `/uploads/${file.filename}` : null;
@@ -28,15 +35,17 @@ export class ProviderService {
       relations: { provider: true },
     });
     if (!user) throw new Error("Usuário não existente");
-
     if (user.provider) throw new Error("Prestador de serviços já existente");
 
     const newData: any = { ...data, user, profileImageUrl };
 
-    const provider = this.providerRepository.create(newData);
-    const providerSaved = await this.providerRepository.save(provider);
+    const providerSaved = await this.providerRepository.save(
+      this.providerRepository.create(newData)
+    );
 
-    const subcategories = JSON.parse(data.subcategories ? data.subcategories : "");
+    const subcategories = JSON.parse(
+      data.subcategories ? data.subcategories : ""
+    );
     const links = JSON.parse(data.links ? data.links : "");
 
     // Caso tenha subcategorias...
@@ -47,9 +56,9 @@ export class ProviderService {
         categoryList.push({ name: element, provider: providerSaved });
       });
 
-      const subcategoriesToSave = this.subcategoryRepository.create(categoryList);
-
-      this.subcategoryRepository.save(subcategoriesToSave);
+      this.subcategoryRepository.save(
+        this.subcategoryRepository.create(categoryList)
+      );
     }
 
     // Caso tenha subcategorias...
@@ -60,17 +69,39 @@ export class ProviderService {
         linksList.push({ name: element, provider: providerSaved });
       });
 
-      const linksToSave = this.linkRepository.create(linksList);
-
-      this.linkRepository.save(linksToSave);
+      this.linkRepository.save(
+        this.linkRepository.create(linksList)
+      );
     }
+
+    if (data.availabilities) {
+      
+       const availabilities = Object.entries(data.availabilities)
+        .filter(([, value]) => value !== null)
+        .map(([day, { start, end }]) =>
+          this.availabilityRepository.create({
+            day,
+            start,
+            end,
+            provider: providerSaved as any
+          })
+        );
+
+      await this.availabilityRepository.save(availabilities);
+    }
+
 
     return providerSaved;
   }
 
   async getById(id: number) {
     const provider = await this.providerRepository.findOne({
-      relations: { user: true, subcategories: true, links: true, category: true },
+      relations: {
+        user: true,
+        subcategories: true,
+        links: true,
+        category: true,
+      },
       where: {
         user: {
           id: id,
@@ -85,17 +116,19 @@ export class ProviderService {
 
   async getServices(id: number) {
     const provider = await this.providerRepository.findOne({
-      relations: { services: {
-        category: true
-       } },
+      relations: {
+        services: {
+          category: true,
+        },
+      },
       where: {
         user: {
-          id: id
-        }
-      }
+          id: id,
+        },
+      },
     });
 
-    if(!provider) throw new Error("Provedor não encontrado");
+    if (!provider) throw new Error("Provedor não encontrado");
 
     return provider.services;
   }
@@ -125,16 +158,6 @@ export class ProviderService {
     });
   }
 
-  //   async findById(id: number) {
-  //     const user = await this.providerRepository.findOne({ where: { id } });
-
-  //     if (!user) throw new Error("Usuário não encontrado");
-
-  //     const clone: any = { ...user };
-  //     delete clone.password;
-  //     return clone;
-  //   }
-
   async update(id: number, data: Partial<ServiceProvider>) {
     const user = await this.userRepository.findOne({
       where: { id: id },
@@ -152,18 +175,4 @@ export class ProviderService {
 
     return await this.providerRepository.save(provider);
   }
-
-  //   async remove(id: number) {
-  //     const user = await this.providerRepository.findOne({ where: { id } });
-
-  //     if (!user) throw new Error("Usuário não encontrado");
-
-  //     await this.providerRepository.remove(user);
-
-  //     return { message: "Usuário removido" };
-  //   }
-
-  //   async findByEmail(email: string) {
-  //     return this.providerRepository.findOne({ where: { email }, select: ['id', 'name', 'email', 'password', 'cpf_cnpj', 'address'] });
-  //   }
 }

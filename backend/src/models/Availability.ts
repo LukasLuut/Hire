@@ -3,8 +3,6 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { ServiceProvider } from "./ServiceProvider";
@@ -15,7 +13,7 @@ export class Availability {
   id: number;
 
   @Column({ length: 255, nullable: false })
-  name: string;
+  day: string;
 
   @Column({ length: 10, nullable: false })
   start: string;

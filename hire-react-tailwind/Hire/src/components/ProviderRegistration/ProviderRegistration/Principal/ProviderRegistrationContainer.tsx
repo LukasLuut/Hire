@@ -209,6 +209,7 @@ export default function ProviderRegistrationContainer({ isOpen, onClose }: Modal
     formData.append("status", form.status);
     formData.append("onlineLink", form.onlineLink);
     formData.append("links", JSON.stringify(form.links));
+    formData.append("availabilities", JSON.stringify(form.availability));
     formData.append("image", form.profilePhoto ? form.profilePhoto : "");
 
     providerApi.create(formData, token);
