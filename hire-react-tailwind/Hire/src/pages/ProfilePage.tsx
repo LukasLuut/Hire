@@ -125,13 +125,13 @@ export default function ProfilePage() {
    * ------------------------------------------------------------------------ */
   const [profile, setProfile] = useState<typeof mockProfile | null>(null);
   const [reviews, setReviews] = useState<typeof mockReviews | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [open, setOpen] = useState(false);
   const [openContratar, setOpenContratar]=useState(false)
   const [isOpenResponse, setIsOpenResponse]=useState(false)
   const [isOpenChat, setIsOpenChat]=useState(false)
-  const [isClient, setIsClient]=useState(true)
+  const [isClient] = useState(true)
   const [registration, setRegistration]=useState(false)
   const location = useLocation();
   const navigate = useNavigate();
@@ -255,25 +255,6 @@ export default function ProfilePage() {
       console.error(err)
     }
   }
-
-   
-
-  /* ------------------------------------------------------------------------
-   * ESTADO DE CARREGAMENTO (Tela de loading)
-   * ------------------------------------------------------------------------ */
-  // if (loading) {
-  //   return (
-  //     <div className="flex flex-col items-center justify-center min-h-screen bg-[var(--bg)] text-[var(--text)]">
-  //       <div className="relative w-16 h-16">
-  //         <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-500 animate-spin" />
-  //         <div className="absolute inset-1 rounded-full border-4 border-transparent border-t-blue-300 animate-spin-slow" />
-  //       </div>
-  //       <p className="mt-6 text-lg text-[var(--text-muted)] animate-pulse">
-  //         Carregando perfil...
-  //       </p>
-  //     </div>
-  //   );
-  // }
  
   /* ------------------------------------------------------------------------
    * RENDERIZAÇÃO PARA PRESTADOR (COM GALERIA DE SERVIÇOS)

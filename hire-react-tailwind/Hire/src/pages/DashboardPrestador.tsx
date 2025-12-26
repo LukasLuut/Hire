@@ -199,32 +199,14 @@ const MOCK_REVIEWS: Review[] = [
   },
 ];
 
-const fetchWithTimeout = (url: string, options: RequestInit = {}, timeout = 2200) =>
-  new Promise<Response>((resolve, reject) => {
-    const controller = new AbortController();
-    const id = setTimeout(() => {
-      controller.abort();
-      reject(new Error("timeout"));
-    }, timeout);
-    fetch(url, { ...options, signal: controller.signal })
-      .then((res) => {
-        clearTimeout(id);
-        resolve(res);
-      })
-      .catch((err) => {
-        clearTimeout(id);
-        reject(err);
-      });
-  });
-
 /* ---------------------------
    Component
    --------------------------- */
 export default function DashboardPrestador() {
   // data
-  const [services, setServices] = useState<Service[] | null>(null);
-  const [bookings, setBookings] = useState<Booking[] | null>(null);
-  const [reviews, setReviews] = useState<Review[] | null>(null);
+  const [services] = useState<Service[] | null>(null);
+  const [bookings] = useState<Booking[] | null>(null);
+  const [reviews] = useState<Review[] | null>(null);
   const [isOpenChat, setIsOpenChat]=useState(false);
   const [loading, setLoading] = useState<boolean>(false);
 

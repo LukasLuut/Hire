@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default function ProfileCardSkeleton() {
   return (
     <section className="relative flex flex-col md:flex-row items-center justify-center gap-6 bg-[var(--bg-dark)] p-8 animate-pulse">
