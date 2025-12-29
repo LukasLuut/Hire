@@ -48,7 +48,7 @@ export class ServiceService {
   }
 
   async list() {
-    return await this.serviceRepository.find({ relations: { category: true}});
+    return await this.serviceRepository.find({ relations: { category: true, provider: true }});
   }
 
   async getById(id: number) {

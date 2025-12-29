@@ -519,7 +519,7 @@ export default function ServiceDashboardSophisticated() {
                       </div>
                     </div>
 
-                    <div className="p-3  ">
+                    <div className="p-3">
                       {srv.provider && (
                         <motion.div
                           key={srv.provider.id}
@@ -527,7 +527,11 @@ export default function ServiceDashboardSophisticated() {
                           whileHover={{ scale: 1.02 }}
                         >
                           <img
-                            src="https://api.dicebear.com/9.x/miniavs/svg?seed=vitorreis.svg"
+                            src={
+                              srv.provider.profileImageUrl
+                              ? `${LOCAL_PORT}${srv.provider.profileImageUrl}`
+                              : 'https://api.dicebear.com/9.x/miniavs/svg?seed=vitorreis'
+                            }
                             alt={srv.provider.professionalName}
                             className="w-12 h-12 rounded-full object-cover border border-[var(--border)]"
                           />
@@ -535,7 +539,6 @@ export default function ServiceDashboardSophisticated() {
                             <div className="flex items-center justify-between">
                               <div className="font-medium">
                                 {srv.provider.professionalName}
-                                Lucas William
                               </div>
                               <div className="flex items-center gap-1 text-yellow-400 text-sm">
                                 <Star fill="currentColor" size={14} />
@@ -543,7 +546,7 @@ export default function ServiceDashboardSophisticated() {
                               </div>
                             </div>
                             <div className="text-xs text-[var(--text-muted)] mt-1">
-                              {srv.provider.description} Tenho tenho tenho tenho
+                              {srv.provider.description}
                             </div>
                             {/* <button className="mt-2 text-xs px-3 py-1 rounded-full bg-[var(--bg)]/60 border border-[var(--border)]">
                               Ver perfil
