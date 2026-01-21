@@ -1,4 +1,5 @@
 import { AppDataSource } from "../config/data-source";
+import { Hire, StatusEnum } from "../models/Hire";
 import { Service } from "../models/Service";
 
 interface ServiceInterface {
@@ -15,6 +16,7 @@ interface ServiceInterface {
 
 export class ServiceService {
   private serviceRepository = AppDataSource.getRepository(Service);
+  private hireRepository = AppDataSource.getRepository(Hire);
 
   async create(data: ServiceInterface, file?: Express.Multer.File) {
     const {
@@ -76,8 +78,13 @@ export class ServiceService {
 
   async remove(id: number) {
     const service = await this.serviceRepository.findOne({ where: { id } });
-
     if (!service) throw new Error("Serviço não encontrado");
+
+    const hire = await this.hireRepository.findOne({ where: [
+      { status: StatusEnum.EM_ANDAMENTO, service: { id: id } },
+      { status: StatusEnum.PENDENTE, service: { id: id } },
+    ]});
+    if(hire) throw new Error("Esse serviço não pode ter nenhuma contratação em andamento");
 
     await this.serviceRepository.remove(service);
 

@@ -257,7 +257,7 @@ export default function ProfilePage() {
       navigate('/auth')
       return res;
     } catch (err: any) {
-      console.error(err)
+      showToast(err.message ?? "Erro inesperado", "error");
     }
   }
  

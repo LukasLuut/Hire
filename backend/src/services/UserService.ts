@@ -1,8 +1,12 @@
 import { AppDataSource } from "../config/data-source";
+import { Hire, StatusEnum } from "../models/Hire";
+import { ServiceProvider } from "../models/ServiceProvider";
 import { User } from "../models/User";
 
 export class UserService {
   private repo = AppDataSource.getRepository(User);
+  private providerRepository = AppDataSource.getRepository(ServiceProvider);
+  private hireRepository = AppDataSource.getRepository(Hire);
 
   async create(data: {
     name: string;
@@ -14,10 +18,6 @@ export class UserService {
     about?: string;
   }) {
     const exists = await this.repo.findOne({ where: { email: data.email } });
-
-    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-    console.log(data.acceptedAt)
     
     if (exists) throw new Error("Usuário já existente");
 
@@ -75,11 +75,23 @@ export class UserService {
 
   async remove(id: number) {
     const user = await this.repo.findOne({ where: { id } });
-
     if (!user) throw new Error("Usuário não encontrado");
 
-    await this.repo.remove(user);
+    const provider = await this.providerRepository.findOne({ where: {
+      user: { 
+        id: id
+      }
+    }});
 
+    const hire = await this.hireRepository.findOne({ where: [
+      { status: StatusEnum.EM_ANDAMENTO, user: { id: id }},
+      { status: StatusEnum.EM_ANDAMENTO, provider: { id: provider?.id }},
+      { status: StatusEnum.PENDENTE, user: { id: id }},
+      { status: StatusEnum.PENDENTE, provider: { id: provider?.id}}
+    ]});
+    if(hire) throw new Error("Usuário não pode ser excluído. Serviço contratado/prestado não foi concluído.");
+    
+    await this.repo.remove(user);
     return { message: "Usuário removido" };
   }
 

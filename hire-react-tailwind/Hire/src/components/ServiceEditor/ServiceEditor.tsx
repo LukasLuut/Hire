@@ -276,7 +276,7 @@ export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalPr
 
   const handleDelete = async () => {
     try {
-      await serviceAPI.deleteUser(selectedService.id);
+     const deleteService = await serviceAPI.deleteUser(selectedService.id);
      showToast("Serviço removido com sucesso!", "success");
 
       setTimeout(() => {
@@ -393,15 +393,6 @@ export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalPr
                       ))}
 
                     </select>
-                    {/* <input
-                      placeholder="Ex: Tecnologia, Beleza..."
-                      type="text"
-                      value={selectedService.categoryId}
-                      onChange={(e) =>
-                        handleChange("categoryId", e.target.value)
-                      }
-                      className="p-2 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-[var(--text)]"
-                    /> */}
                   </label>
                   <label className="flex flex-col">
                     <span className="text-[var(--text-muted)] text-sm mb-1">Subcategoria</span>
@@ -477,23 +468,7 @@ export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalPr
                     />
                   </label>
 
-                  {/* Política de cancelamento */}
-                  {selectedService.requiresScheduling && (
-                    <label className="flex flex-col mt-2">
-                      <span className="text-[var(--text-muted)] text-sm mb-1">
-                        Política de cancelamento
-                      </span>
-                      <textarea
-                        placeholder="Ex: Cancelamentos devem ser feitos com 24h de antecedência..."
-                        value={selectedService.cancellationNotice}
-                        onChange={(e) =>
-                          handleChange("cancellationNotice", e.target.value)
-                        }
-                        rows={3}
-                        className="p-2 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-[var(--text)] resize-none"
-                      />
-                    </label>
-                  )}
+                  
                 </div>
 
                 {/* --------------------------- Editor de imagens --------------------------- */}
@@ -698,12 +673,6 @@ export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalPr
             <span className="font-semibold text-[var(--text)]">Exige agendamento:</span>{" "}
             {selectedService.requiresScheduling ? "Sim" : "Não"}
           </div>
-          {selectedService.requiresScheduling && (
-            <div>
-              <span className="font-semibold text-[var(--text)]">Política de cancelamento:</span>{" "}
-              {selectedService.cancellationNotice || "-"}
-            </div>
-          )}
         </div>
 
         {/* --------------------------- Lista de imagens adicionais --------------------------- */}
