@@ -1,5 +1,4 @@
 import {  useEffect, useState } from "react";
-import type {ReactNode} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PanInfo } from "framer-motion";
 import { Save, Trash2, PlusCircle, Trash } from "lucide-react";
@@ -8,6 +7,7 @@ import type { Service } from "../../interfaces/ServiceInterface";
 import { categoryAPI } from "../../api/CategoryAPI";
 import type { Category } from "../../interfaces/CategoryInterface";
 import { providerApi } from "../../api/ProviderAPI";
+import { useToast } from "../../components/Toast/ToastContext";
 
 
 /* --------------------------------------------------------------------------
@@ -41,6 +41,8 @@ export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalPr
   /* --------------------------- Estado inicial dos serviços --------------------------- */
   
   const [providerId, setProviderId] = useState(0);
+  const { showToast } = useToast();
+
 
   useEffect(() => {
     const getProvider = async () => {
@@ -275,10 +277,14 @@ export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalPr
   const handleDelete = async () => {
     try {
       await serviceAPI.deleteUser(selectedService.id);
-      alert("Serviço removido com sucesso!")
-      window.location.reload(); 
+     showToast("Serviço removido com sucesso!", "success");
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000)
     }
     catch (err: any) {
+      showToast("Erro ao remover serviço!", "error");
       console.error(err)
     }
   }
@@ -299,8 +305,11 @@ export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalPr
       formData.append("image", imageFile ? imageFile : "");
       await serviceAPI.update(selectedService.id, formData);
 
-      alert("Informações editadas com sucesso");
-      window.location.reload();
+      showToast("Informações editadas com sucesso", "success")
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000)
 
     } catch (err: any) {
       console.error(err);
@@ -575,11 +584,11 @@ export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalPr
                         !selectedService.price ||
                         !selectedService.subcategory
                       ) {
-                        alert("Preencha todos os campos obrigatórios.");
+                        showToast("Preencha todos os campos obrigatórios.", "warning")
                         return;
                       }
 
-                      if (!imageFile) return alert("Selecione uma imagem");
+                      if (!imageFile) return showToast("Selecione uma imagem", "warning");
 
                       const formData = new FormData();
 
@@ -598,8 +607,11 @@ export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalPr
 
                       try {
                         serviceAPI.create(formData);
-                        alert("Serviço criado com sucesso;");
-                        window.location.reload();
+                        showToast("Serviço criado com sucesso.", "success");
+                        
+                        setTimeout(() => {
+                          window.location.reload();
+                        }, 500)
                         onClose();
                       } catch (err: any) {
                         console.error(err)
@@ -668,7 +680,7 @@ export default function ServiceDashboard({ isOpen, onClose, serviceId }: ModalPr
             {selectedService.subcategory || "-"}
           </div>
           <div>
-            <span className="font-semibold text-[var(--text)]">Preço:</span>{" "}
+            <span className="font-semibold text-[var(--text)]">Preço: R$</span>{" "}
             {selectedService.price || "-"}
           </div>
           <div>

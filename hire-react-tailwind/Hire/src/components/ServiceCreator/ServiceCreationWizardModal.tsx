@@ -115,7 +115,8 @@ export const ServiceCreationWizardModal = ({
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type } = e.target;
+    const { checked }: any = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -235,7 +236,7 @@ const ServicePreview = (
 
         {/* -------------------- PREÇO -------------------- */}
         <p>
-          <strong>Preço:</strong>{" "}
+          <strong>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA:</strong>{" "}
           {formData.price ? `R$ ${formData.price}` : "-"}{" "}
           {formData.negotiable && "(Negociável)"}
         </p>

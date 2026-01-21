@@ -27,6 +27,7 @@ import { providerApi } from "../api/ProviderAPI";
 import type { ProviderForm } from "../components/ProviderRegistration/ProviderRegistration/helpers/types-and-helpers";
 import ServiceDashboardSophisticated from "./DashboardClient";
 import ProfileCardSkeleton from "../skeletons/ProfileCardSkeleton";
+import { useToast } from "../components/Toast/ToastContext"
 
 /* --------------------------------------------------------------------------
  * MOCKS DE DADOS
@@ -135,6 +136,7 @@ export default function ProfilePage() {
   const [registration, setRegistration]=useState(false)
   const location = useLocation();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const token = localStorage.getItem("token");
   // Todas as informações do usuário
   const [user, setUser] = useState<User>({
@@ -207,7 +209,10 @@ export default function ProfilePage() {
    // Fecha com ESC
   useEffect(() => {
     function handleEsc(e: KeyboardEvent) {
-      if (e.key === "Escape") setIsEditing(false);
+      if (e.key === "Escape") {
+        setIsEditing(false);
+        showToast("Informações do usuário não editadas", "error")
+      }
     }
 
     if (isEditing) window.addEventListener("keydown", handleEsc);
@@ -233,7 +238,7 @@ export default function ProfilePage() {
     try {
       const res = await userAPI.update({name: user?.name, about: user?.about}, token);
       const updateEmail = await userAPI.updateUser(token, user.email);
-      alert("Informações editadas com sucesso!")
+      showToast("Informações editadas com sucesso!", "success");
       return { res, updateEmail };
     } catch (err: any) {
       console.error(err)
@@ -246,8 +251,8 @@ export default function ProfilePage() {
     if(!token) return;
     
     try {
-      const res = await userAPI.deleteUser(token)
-      alert("Usuário deletado com sucesso!")
+      const res = await userAPI.deleteUser(token);
+      showToast("Usuário deletado com sucesso!", "success");
       localStorage.removeItem("token");
       navigate('/auth')
       return res;
