@@ -7,7 +7,6 @@
 // - Comentários educativos organizados em seções para um estagiário
 // - Usa variáveis CSS do projeto: --bg, --bg-light, --border, --text, --primary, --highlight
 
-import React from "react";
 import { CheckCircle, User } from "lucide-react";
 import PostCard from "./ServiceGallery/Service/Service";
 
@@ -118,7 +117,6 @@ export function ServiceProgress({
   currentStep,
   provider,
   client,
-
   details,
   viewFor,
   onAction,
@@ -344,80 +342,4 @@ function UserBadge({ user }: { user: UserBadgeData }) {
    MOCKS e Export de Demonstração
    - Fornece dados prontos para testes locais
    - Fácil para o estagiário entender e alterar
-   ----------------------------- */
-
-export const demoSteps: Step[] = [
-  { id: "created", label: "Solicitação criada", date: "2025-04-20" },
-  { id: "accepted", label: "Prestador aceitou", date: "2025-04-21" },
-  { id: "started", label: "Serviço concluído", date: "2025-04-25" },
-
-];
-
-export const demoProvider: UserBadgeData = {
-  id: "u1",
-  name: "Lucas William",
-  role: "Prestador",
-  avatar: null,
-};
-
-export const demoClient: UserBadgeData = {
-  id: "u2",
-  name: "Cliente Exemplo",
-  role: "Contratante",
-  avatar: null,
-};
-
-
-
-export const demoDetails: ServiceDetails = {
-  orderId: "123456",
-  title: "Renovação do banheiro",
-  price: 1000,
-  deadline: "3 dias",
-  rating: 4.9,
-  paymentMethod: "Cartão de crédito",
-};
-
-// Container de exemplo que o estagiário pode importar na App
-export function DemoServiceProgressContainer() {
-  const handleAction = (act: string) => alert(`Ação: ${act}`);
-  const handleMessage = () => alert("Abrir chat");
-
-  return (
-    <div className="bg-[var(--bg-dark)] md:px-120 p-4 md:p-10">
-      <ServiceProgress
-        steps={demoSteps}
-        currentStep={"started"}
-        provider={demoProvider}
-        client={demoClient}
-
-        details={demoDetails}
-        viewFor={"provider"}
-        onAction={handleAction}
-        onMessage={handleMessage}
-      />
-
-      {/* Versão para contratante também disponível para testes */}
-      <div className="mt-8">
-        <ServiceProgress
-          steps={demoSteps}
-          currentStep={"started"}
-          provider={demoProvider}
-          client={demoClient}
-
-          details={demoDetails}
-          viewFor={"client"}
-          onAction={handleAction}
-          onMessage={handleMessage}
-        />
-      </div>
-    </div>
-  );
-}
-
-/* -----------------------------
-   Notas para o estagiário (finais)
-   - Teste alterando os mocks acima.
-   - Para integrar com a API, substitua os mocks por hooks (useEffect + fetch) e passe handlers reais.
-   - A estilização usa variáveis CSS; confirme que estão definidas no seu global.css ou tailwind:root.
    ----------------------------- */

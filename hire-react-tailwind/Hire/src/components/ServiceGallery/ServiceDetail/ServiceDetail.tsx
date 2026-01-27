@@ -7,12 +7,12 @@ import {
   Heart,
   ChevronLeft,
   ChevronRight,
-  Trash2,
 } from "lucide-react";
-import ServiceNegotiationModal from "../../Negotiation/ServiceNegotiationModal";
 import { serviceAPI } from "../../../api/ServiceAPI";
 import { userAPI } from "../../../api/UserAPI";
 import { hireAPI } from "../../../api/HireAPI";
+import { useToast } from "../../../components/Toast/ToastContext";
+
 
 /* --------------------------------------------------------------------------
  * Tipos
@@ -57,6 +57,8 @@ export default function ServiceDetail({
   const [hireId, setHireId] = useState<number | null>(null)
   const [hasHire, setHasHire] = useState<boolean>(false)
   const [concluded, setConcluded] = useState<boolean>(false)
+  const { showToast } = useToast();
+
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -136,36 +138,31 @@ export default function ServiceDetail({
     try {
       const token = localStorage.getItem("token");
       if(!token) {
-        alert("Token Inválido")
+        showToast("Token Inválido", "error");
         return;
       }
       // setOpen(true);
       const id = service.id;
-      console.log("ESSE É O ID DO SERVIÇO: " + id);
-
       const price = service.price;
-      console.log("ESSE É O PREÇO DO SERVIÇO: " + price);
 
       const user = await userAPI.getUser(token);
       if(!user) {
-        alert("User não encontrado");
+        showToast("User não encontrado", "warning");
         return;
       }
 
       const userId = user.id;
-      console.log("ESSE É O ID DO USER: " + userId);
 
       const serviceWithProvider = await serviceAPI.getServiceById(id);
       if(!serviceWithProvider) {
-        alert("Provedor não encontrado");
+        showToast("Provedor não encontrado", "warning");
         return;
       }
 
       const providerId = serviceWithProvider.provider?.id;
-      console.log("ESSE É O PROVIDERID: " + providerId);
 
       if(!providerId) {
-        alert("Provider não encontrado");
+        showToast("Provider não encontrado", "warning");
         return;
       }
 
@@ -176,12 +173,11 @@ export default function ServiceDetail({
         serviceId: Number(id)
       });
       if(!createHire) {
-        alert("Erro ao criar serviço");
+        showToast("Erro ao criar serviço", "error");
         return;
       }
 
-      console.log("ESSE É O SERVIÇO: " + createHire);
-      alert("Serviço contratado com sucesso.");
+      showToast("Serviço contratado com sucesso.", "success");
       setHireId (createHire)
       setHasHire(true);
       
@@ -197,7 +193,7 @@ export default function ServiceDetail({
   const handleDeleteHire = async () => {    
     try {
       if(!hireId) {
-        alert("Serviço inválido")
+        showToast("Serviço inválido", "warning")
         return;
       }
 
@@ -206,8 +202,10 @@ export default function ServiceDetail({
         return;
       }
 
-      alert("Contratação de serviço excluída com sucesso!");
       window.location.reload();
+      setTimeout(() => {
+        showToast("Contratação de serviço excluída com sucesso!", "success");
+      }, 1000)
     } 
     catch (err: any) {
       console.error(err)
@@ -218,12 +216,17 @@ export default function ServiceDetail({
     try {
       const id = hireId;
       if(!id) {
-        alert("Não foi possível completar a conclusão");
+        showToast("Não foi possível completar a conclusão", "warning");
         return;
       }
 
       await hireAPI.concludeHire(id);
-      alert("Serviço concluído com sucesso");
+      showToast("Serviço concluído com sucesso", "success");
+      
+      setTimeout(() => {
+        handleDeleteHire();
+      }, 2000);
+      
       setConcluded(true);
 
     }
@@ -384,12 +387,6 @@ export default function ServiceDetail({
                   }
                   
                 </button>
-
-                <button className="flex-1 flex items-center justify-center gap-2 border border-red-700 text-[var(--text)] font-semibold py-3 rounded-xl hover:bg-red-500 hover:text-[var(--bg-light)] hover:scale-[1.02] hover:shadow-lg transition-all"
-                onClick={handleDeleteHire}>
-                  <Trash2 size={18} />
-                  Excluír Serviço
-                </button>  
               </div> :
               <div className="flex gap-3 mt-4">
                 <button 

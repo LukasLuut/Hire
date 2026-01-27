@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 export default function Navbar({ theme, setTheme }: { theme: string; setTheme: (t: "dark"|"light") => void }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const links = ["Home", "Business", "Perfil"];
+  const links = ["Home", "Business"];
   const navigate = useNavigate();
 
   return (

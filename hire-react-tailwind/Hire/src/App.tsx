@@ -5,16 +5,16 @@ import Navbar from "./components/Navbar";
 import ProfilePage from "./pages/ProfilePage";
 import DashboardPrestador from "./pages/DashboardPrestador";
 import AuthPage from "./pages/AuthPage";
-import ContractViewer from "./components/ContractViwer";
+// import ContractViewer from "./components/ContractViwer";
 import { ContractPreview } from "./components/ContractPreview";
 import NegotiationRoom from "./components/Negotiation/NegotiationRoom";
 import ScheduleConfigurator from "./components/Schedule";
-import { ServiceCreationWizardModal } from "./components/ServiceCreator/ServiceCreationWizardModal";
-import ServiceDashboard from "./components/ServiceEditor/ServiceEditor";
-import PostCard from "./components/ServiceGallery/Service/Service";
+// import { ServiceCreationWizardModal } from "./components/ServiceCreator/ServiceCreationWizardModal";
+// import ServiceDashboard from "./components/ServiceEditor/ServiceEditor";
+// import PostCard from "./components/ServiceGallery/Service/Service";
 import ServiceDashboardSophisticated from "./pages/DashboardClient";
-import { DemoServiceProgressContainer, ServiceProgress } from "./components/ServiceProgress";
 import Accessibility from "./components/Accessibility";
+import { ServiceProgressContainer } from "./components/ServiceProgressContainer";
 
 
 export default function App() {
@@ -51,7 +51,7 @@ export default function App() {
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/business" element={<DashboardPrestador />} />
         <Route path="/client" element={<ServiceDashboardSophisticated />} />
-        <Route path="/progress" element={<DemoServiceProgressContainer/>} />
+        <Route path="/progress" element={<ServiceProgressContainer/>} />
 
       
         {/* Contratos */}
