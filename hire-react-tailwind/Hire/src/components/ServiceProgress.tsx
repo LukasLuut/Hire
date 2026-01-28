@@ -9,6 +9,8 @@
 
 import { CheckCircle, User } from "lucide-react";
 import PostCard from "./ServiceGallery/Service/Service";
+import { ServiceProgressSkeleton } from "../skeletons/ServiceProgressSkeleton/ServiceProgressSkeleton";
+import { useEffect, useState } from "react";
 
 interface Service {
   id: number;
@@ -122,12 +124,22 @@ export function ServiceProgress({
   onAction,
 }: ServiceProgressProps) {
   const idxOf = stepsIndex(steps);
-  const currentIndex = idxOf(currentStep);
+  const currentIndex = idxOf(currentStep);  
+  // const [loading, setLoading] = useState<boolean>(true);
 
-  // Trecho ajustado de ServiceProgress com A11Y baseado na WCAG 2.2
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setLoading(false);
+  //   }, 1000);
+  // }, []);
+
+  // if(loading) {
+  //   return <ServiceProgressSkeleton/>
+  // }
+
   return (
     <div
-      className="w-full p-6 mt-20 border-1 border-[var(--border)] md:p-10 bg-[var(--bg-light)] rounded-2xl text-[var(--text)] shadow-lg hover:shadow-[0_0_25px_-5px_var(--primary)/20]"
+      className="w-full h-full p-6 mt-20 border-1 border-[var(--border)] md:p-10 bg-[var(--bg-light)] rounded-2xl text-[var(--text)] shadow-lg hover:shadow-[0_0_25px_-5px_var(--primary)/20]"
       role="region"
       aria-labelledby="service-progress-title"
     >

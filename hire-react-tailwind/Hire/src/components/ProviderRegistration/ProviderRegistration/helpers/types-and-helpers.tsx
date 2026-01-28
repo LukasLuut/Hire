@@ -85,6 +85,7 @@ export type Availability = Record<DayKey, DayAvailability | null>;
 
 // Interface ProviderForm atualizada
 export interface ProviderForm {
+  id?: number;
   name: string;
   cnpj: string;
   professionalEmail: string;

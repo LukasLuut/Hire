@@ -27,7 +27,7 @@ export const hireAPI = {
       headers: {
         "Content-Type": "application/json",
       }
-    })
+    });
     return response;
   },
 
@@ -40,9 +40,21 @@ export const hireAPI = {
       body: JSON.stringify({
         status: "CONCLUIDO"
       })
-    })
+    });
     return response;
+  },
+
+  getHireByProviderId: async (id: number): Promise<Array<any>>  => {
+    const response = await apiRequest(`/hires/provider/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+
+    return response as Array<any>;
   }
+
 };
 
 
