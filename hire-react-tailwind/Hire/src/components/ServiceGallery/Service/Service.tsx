@@ -26,7 +26,7 @@ interface Service {
 /* --------------------------------------------------------------------------
  * Componente PostCard com Partículas de Like
  * -------------------------------------------------------------------------- */
-export default function PostCard({ service }: { service: Service }) {
+export default function PostCard({ service, noEdit = false }: { service: Service, noEdit?: boolean }) {
  
   const image1 = service.images[0];
 
@@ -145,7 +145,9 @@ export default function PostCard({ service }: { service: Service }) {
       
 
       {/* Botão like canto superior */}
-      <div className="absolute top-4 px-3 z-20 flex flex-row justify-between min-w-full items-top ">
+      { !noEdit && (
+        <div className="absolute top-4 px-3 z-20 flex flex-row justify-between min-w-full items-top ">
+        
         <button
           onClick={handleEdit}
           className="p-2 w-9 h-9 rounded-full bg-[var(--primary)]/40 backdrop-blur-md hover:bg-[var(--primary)]/70"
@@ -163,7 +165,8 @@ export default function PostCard({ service }: { service: Service }) {
           <span className="text-xs absolut text-white/90">{likeCount}</span>
         </button>
         
-      </div>
+        </div>
+      )}
 
       {/* Like central */}
       <AnimatePresence>

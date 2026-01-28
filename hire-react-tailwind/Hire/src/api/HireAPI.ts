@@ -44,6 +44,32 @@ export const hireAPI = {
     return response;
   },
 
+  concludeHireProvider: async (id: number) => {
+    const response = await apiRequest(`/hires/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        status_provider: "CONCLUIDO"
+      })
+    });
+    return response;
+  },
+
+  beginHireProvider: async (id: number) => {
+    const response = await apiRequest(`/hires/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        status_provider: "EM ANDAMENTO"
+      })
+    });
+    return response;
+  },
+
   getHireByProviderId: async (id: number): Promise<Array<any>>  => {
     const response = await apiRequest(`/hires/provider/${id}`, {
       method: "GET",

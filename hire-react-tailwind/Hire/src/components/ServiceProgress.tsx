@@ -12,31 +12,6 @@ import PostCard from "./ServiceGallery/Service/Service";
 import { ServiceProgressSkeleton } from "../skeletons/ServiceProgressSkeleton/ServiceProgressSkeleton";
 import { useEffect, useState } from "react";
 
-interface Service {
-  id: number;
-  title: string;
-  description: string;
-  category?: string;
-  subcategory?: string;
-  price?: string;
-  negotiable?: boolean;
-  duration?: string;
-  status?: string;
-  images: string[];
-  likes?: number;
-}
-
-const service: Service = {
-  id: 2,
-  title: "Prototipagem Rápida",
-  description: "Protótipos interativos no Figma para testes de usabilidade.",
-  category: "Design",
-  price: "R$350",
-  duration: "1 dia",
-  likes: 4,
-  images: ["https://images.pexels.com/photos/585419/pexels-photo-585419.jpeg"],
-};
-
 /* -----------------------------
    Tipagens (Types) - fácil leitura
    ----------------------------- */
@@ -81,14 +56,12 @@ export type ServiceProgressProps = {
   // dados principais
   steps: Step[];
   currentStep: StepId;
-  provider: UserBadgeData;
-  client: UserBadgeData;
-
-  details: ServiceDetails;
   // profile: qual view renderizar: "provider" | "client" (comportamentos/ações diferentes)
+  data: any;
   viewFor: "provider" | "client";
   // callbacks (em app real substituir por handlers)
-  onAction?: (action: string) => void;
+  onAction?: (action: number) => void;
+  onBegin: (id: number) => void;
   onMessage?: () => void;
 };
 
@@ -117,25 +90,24 @@ function stepsIndex(steps: Step[]) {
 export function ServiceProgress({
   steps,
   currentStep,
-  provider,
-  client,
-  details,
   viewFor,
+  data,
   onAction,
+  onBegin
 }: ServiceProgressProps) {
   const idxOf = stepsIndex(steps);
   const currentIndex = idxOf(currentStep);  
-  // const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setLoading(false);
-  //   }, 1000);
-  // }, []);
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }, []);
 
-  // if(loading) {
-  //   return <ServiceProgressSkeleton/>
-  // }
+  if(loading) {
+    return <ServiceProgressSkeleton />
+  }
 
   return (
     <div
@@ -152,10 +124,10 @@ export function ServiceProgress({
           >
             <div >
               <h1 id="service-progress-title" className="text-3xl  md:text-4xl font-bold">
-                {details.title}
+                {data.service.title}
               </h1>
               <p className="text-xs text-[var(--text-muted)] mt-1">
-                Nº do pedido: {details.orderId}
+                Nº do pedido: 000{data.id}
               </p>
             </div>
 
@@ -173,9 +145,9 @@ export function ServiceProgress({
                 role="group"
                 aria-label="Prestador e contratante"
               >
-                <UserBadge user={provider} />
+                <UserBadge name={data.provider.professionalName} role="Prestador" />
                 <span className="text-sm text-[var(--text-muted)]">—</span>
-                <UserBadge user={client} />
+                <UserBadge name={data.user.name} role="Cliente" />
               </div>
 
               {/* TIMELINE ------------------------------------------------ */}
@@ -248,7 +220,7 @@ export function ServiceProgress({
                   focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]
                   focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
                         aria-label="Iniciar serviço"
-                        onClick={() => onAction?.("start")}
+                        onClick={() => onBegin?.(data.id)}
                       >
                         Iniciar serviço
                       </button>
@@ -261,7 +233,7 @@ export function ServiceProgress({
                   focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]
                   focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
                         aria-label="Marcar serviço como concluído"
-                        onClick={() => onAction?.("complete")}
+                        onClick={() => onAction?.(data.id)}
                       >
                         Marcar como concluído
                       </button>
@@ -274,7 +246,7 @@ export function ServiceProgress({
                   focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]
                   focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
                         aria-label="Confirmar início do serviço"
-                        onClick={() => onAction?.("confirm_start")}
+                        onClick={() => onAction?.(data.id)}
                       >
                         Confirmar início
                       </button>
@@ -286,7 +258,7 @@ export function ServiceProgress({
                   focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]
                   focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
                         aria-label="Solicitar alteração no serviço"
-                        onClick={() => onAction?.("request_change")}
+                        onClick={() => onAction?.(data.id)}
                       >
                         Solicitar alteração
                       </button>
@@ -303,24 +275,18 @@ export function ServiceProgress({
         </div>
         {/* SIDEBAR -------------------------------------------------- */}
         <aside className="flex relative  flex-col items-end " aria-label="Detalhes do serviço">
-          <div
-            className="flex items-center absolute top-11 left-5 z-1 gap-3"
-            role="status"
-            aria-label={`Status do serviço: ${currentStep === "done" ? "Concluído" : "Em andamento"
-              }`}
-          >
-            <span
-              className={`px-3 py-1 rounded-full text-sm font-medium ${currentStep === "done"
-                ? "bg-[var(--primary)]/70 text-[var(--text)]"
-                : "bg-[var(--primary)]/70 text-[var(--text)]"
-                }`}
-            >
-              {currentStep === "done" ? "Concluído" : "Em andamento"}
-            </span>
-          </div>
-
-          <PostCard service={service} />
-
+          <PostCard service={{
+            id: data.service.id,
+            title: data.service.title,
+            description: data.service.description_service,
+            category: data.service.category.name,
+            price: data.service.price,
+            negotiable: data.service.negotiable,
+            subcategory: data.service.subcategory,
+            duration: data.service.duration,
+            images: [data.service.imageUrl]
+          }} 
+          noEdit={true} />
 
         </aside>
       </div>
@@ -332,15 +298,11 @@ export function ServiceProgress({
    Subcomponentes pequenos: UserBadge
    - Componentização melhora organização e facilita testes unitários
    ----------------------------- */
-function UserBadge({ user }: { user: UserBadgeData }) {
+function UserBadge(user: { name: string, role: string}) {
   return (
     <div className="flex items-center gap-3">
       <div className="w-12 h-12 rounded-full overflow-hidden bg-[var(--bg-light)] border border-[var(--border)] flex items-center justify-center">
-        {user.avatar ? (
-          <img src={user.avatar} alt={`${user.name} avatar`} className="w-full h-full object-cover" />
-        ) : (
-          <User className="w-6 h-6 text-[var(--primary)]" />
-        )}
+          <User className="w-6 h-6 text-[var(--primary)]" />        
       </div>
       <div>
         <div className="font-medium">{user.name}</div>

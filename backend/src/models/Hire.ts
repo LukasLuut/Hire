@@ -49,6 +49,13 @@ export class Hire {
   })
   status: StatusEnum;
 
+  @Column({
+    type: "enum",
+    enum: StatusEnum,
+    default: StatusEnum.PENDENTE,
+  })
+  status_provider: StatusEnum;
+
   @ManyToOne(() => ServiceProvider, (provider) => provider.hires)
   provider: ServiceProvider;
 

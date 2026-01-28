@@ -48,7 +48,7 @@ export class HireController {
             }
         }
 
-    async delete(req: Request, res: Response) {
+    delete = async (req: Request, res: Response) => {
             try {
                 const { id } = req.params
                 const result = await hireService.remove(Number(id))

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import {
   Search,
@@ -13,7 +13,6 @@ import {
   HandCoins,
 } from "lucide-react";
 import { serviceAPI, type ServiceData } from "../api/ServiceAPI";
-import { categoryAPI } from "../api/CategoryAPI";
 import { LOCAL_PORT } from "../api/ApiClient";
 import ServiceDetail from "../components/ServiceGallery/ServiceDetail/ServiceDetail";
 import { ServicesPageSkeleton } from "../skeletons/ServiceSkeleton/ServicesPageSkeleton";

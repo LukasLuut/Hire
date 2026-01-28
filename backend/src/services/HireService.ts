@@ -25,8 +25,12 @@ export class HireService {
 
     async update(id: number, data: Partial<Hire>) {
         const hire = await this.hireRepository.findOne({ where: { id } });
-
         if (!hire) throw new Error("Serviço não encontrado");
+
+        if(data.status) {
+            if(hire.status_provider !== "CONCLUIDO") throw new Error("O prestador do serviço precisa concluir o serviço primeiro. Entre em contato com seu prestador.");
+        }
+
         const { ...rest } = data
         Object.assign(hire, rest);
         return await this.hireRepository.save(hire);
@@ -43,7 +47,7 @@ export class HireService {
     }
 
     async getListByProviderId(id: number) {
-        return await this.hireRepository.find({ relations: { user: true, provider: true, service: true }, where: {
+        return await this.hireRepository.find({ relations: { user: true, provider: true, service: { category: true } }, where: {
             provider: {id: id}
         }});
     }

@@ -231,7 +231,7 @@ export default function ServiceDetail({
 
     }
     catch(err: any) {
-      console.error(err)
+      showToast(err.message, "error")
     }
   }
 
