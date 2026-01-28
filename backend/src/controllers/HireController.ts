@@ -27,6 +27,17 @@ export class HireController {
         }
     }
 
+    getByProviderId = async(req: Request, res: Response) => {
+        try {
+            const { id } = req.params;
+            const hires = await hireService.getListByProviderId(Number(id));
+            res.json(hires);
+        }
+        catch(err: any) {
+            res.status(400).json({ message: err.message})
+        }
+    }
+
     update = async (req: Request, res: Response) => {
           try {
                 const { id } = req.params;

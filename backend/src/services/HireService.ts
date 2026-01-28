@@ -21,7 +21,6 @@ export class HireService {
     }
 
     async list() {
-        return await this.hireRepository.find({ relations: { user: true, provider: true, service: true }});
     }
 
     async update(id: number, data: Partial<Hire>) {
@@ -41,5 +40,11 @@ export class HireService {
         await this.hireRepository.remove(hire);
 
         return { message: "Serviço removido com sucesso" }
+    }
+
+    async getListByProviderId(id: number) {
+        return await this.hireRepository.find({ relations: { user: true, provider: true, service: true }, where: {
+            provider: {id: id}
+        }});
     }
 }
